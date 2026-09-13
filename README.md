@@ -62,6 +62,9 @@ before publishing.
 
 - [Cosign container signing and verification](screenshots/24-cosign-keyless-container-signing-success.jpg)
 - [Main-branch protection ruleset](screenshots/25-main-branch-protection-ruleset.jpg)
+- [Trivy container scan workflow](screenshots/15-trivy-github-actions-success.jpg)
+- [OWASP ZAP scan workflow](screenshots/19-zap-github-actions-success.jpg)
+- [CycloneDX SBOM generation workflow](screenshots/21-sbom-github-actions-success.jpg)
 
 
 ## Container Hardening
