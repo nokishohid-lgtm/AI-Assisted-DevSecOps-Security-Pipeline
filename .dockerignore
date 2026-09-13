@@ -1,0 +1,12 @@
+target/
+.git/
+.github/
+.vscode/
+.idea/
+screenshots/
+*.log
+.env
+*.key
+*.pem
+.DS_Store
+Thumbs.db
