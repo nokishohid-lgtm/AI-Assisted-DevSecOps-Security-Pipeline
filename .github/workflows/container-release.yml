@@ -1,0 +1,71 @@
+name: Secure Container Release
+
+"on":
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ghcr.io/nokishohid-lgtm/ai-assisted-devsecops-security-pipeline
+
+jobs:
+  secure-release:
+    name: Scan and Publish Container
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Build container image
+        run: |
+          docker build --pull \
+            -t "${IMAGE_NAME}:${GITHUB_SHA}" \
+            -t "${IMAGE_NAME}:latest" \
+            .
+
+      - name: Block vulnerable container images
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --scanners vuln \
+            --pkg-types os \
+            --timeout 15m \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --format table \
+            "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish container image
+        run: |
+          docker push "${IMAGE_NAME}:${GITHUB_SHA}"
+          docker push "${IMAGE_NAME}:latest"
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.1.0
+
+      - name: Sign container image with GitHub OIDC
+        run: cosign sign --yes "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Verify container signature
+        run: |
+          cosign verify \
+            --certificate-identity="https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/.github/workflows/container-release.yml@refs/heads/main" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            "${IMAGE_NAME}:${GITHUB_SHA}"

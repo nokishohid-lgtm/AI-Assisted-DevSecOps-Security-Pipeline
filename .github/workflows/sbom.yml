@@ -1,0 +1,51 @@
+name: CycloneDX SBOM Generation
+
+"on":
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-sbom:
+    name: Build Image and Generate SBOM
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build --pull -t devsecops-security-app:${{ github.sha }} .
+
+      - name: Create writable SBOM directory
+        run: |
+          mkdir -p sbom-output
+          chmod 777 sbom-output
+
+      - name: Generate CycloneDX SBOM with Syft
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${{ github.workspace }}/sbom-output:/output" \
+            anchore/syft:latest \
+            devsecops-security-app:${{ github.sha }} \
+            -o cyclonedx-json=/output/sbom.cdx.json
+
+      - name: Validate generated SBOM
+        run: |
+          test -s sbom-output/sbom.cdx.json
+          jq -e '.components | length > 0' sbom-output/sbom.cdx.json
+
+      - name: Upload CycloneDX SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyclonedx-sbom
+          path: sbom-output/sbom.cdx.json
+          if-no-files-found: error

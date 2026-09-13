@@ -1,0 +1,38 @@
+name: Trivy Container Security Scan
+
+"on":
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trivy-scan:
+    name: Build and Scan Container
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build --pull -t devsecops-security-app:${{ github.sha }} .
+
+      - name: Scan for HIGH and CRITICAL vulnerabilities
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --scanners vuln \
+            --pkg-types os \
+            --timeout 15m \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --format table \
+            devsecops-security-app:${{ github.sha }}
