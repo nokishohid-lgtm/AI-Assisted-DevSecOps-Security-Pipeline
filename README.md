@@ -57,6 +57,13 @@ the Build and Test check; it does not require every security workflow.
 The container-release workflow also performs its own vulnerability check
 before publishing.
 
+
+## Project Evidence
+
+- [Cosign container signing and verification](screenshots/24-cosign-keyless-container-signing-success.jpg)
+- [Main-branch protection ruleset](screenshots/25-main-branch-protection-ruleset.jpg)
+
+
 ## Container Hardening
 
 The Docker build uses:
