@@ -48,8 +48,9 @@ jobs:
           exit 1
 
       - name: Create ZAP report directory
-        run: mkdir -p zap-reports
-
+        run: |
+          mkdir -p zap-reports
+          chmod 777 zap-reports
       - name: Run OWASP ZAP baseline scan
         run: |
           docker run --rm \
