@@ -8,6 +8,7 @@ name: Secure Container Release
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 env:
   REGISTRY: ghcr.io
@@ -55,3 +56,16 @@ jobs:
         run: |
           docker push "${IMAGE_NAME}:${GITHUB_SHA}"
           docker push "${IMAGE_NAME}:latest"
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.1.0
+
+      - name: Sign container image with GitHub OIDC
+        run: cosign sign --yes "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Verify container signature
+        run: |
+          cosign verify \
+            --certificate-identity="https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/.github/workflows/container-release.yml@refs/heads/main" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            "${IMAGE_NAME}:${GITHUB_SHA}"
