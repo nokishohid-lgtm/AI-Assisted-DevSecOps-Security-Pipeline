@@ -8,3 +8,4 @@ target/
 *.pem
 .DS_Store
 Thumbs.db
+zap-reports/

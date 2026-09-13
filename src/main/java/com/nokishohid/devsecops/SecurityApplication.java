@@ -40,6 +40,8 @@ public class SecurityApplication {
         exchange.getResponseHeaders().set(
                 "X-Content-Type-Options", "nosniff");
         exchange.getResponseHeaders().set(
+                "Cross-Origin-Resource-Policy", "same-origin");
+        exchange.getResponseHeaders().set(
                 "Content-Security-Policy", "default-src 'none'");
         exchange.getResponseHeaders().set(
                 "Cache-Control", "no-store");
