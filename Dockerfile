@@ -10,9 +10,10 @@ RUN mvn --batch-mode clean test compile
 
 FROM eclipse-temurin:17-jre-alpine
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-WORKDIR /app
+RUN apk upgrade --no-cache && \
+    addgroup -S appgroup && \
+    adduser -S appuser -G appgroup
+    WORKDIR /app
 
 COPY --from=build --chown=appuser:appgroup \
     /workspace/target/classes ./classes
