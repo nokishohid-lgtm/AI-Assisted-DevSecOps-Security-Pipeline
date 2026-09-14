@@ -146,8 +146,9 @@ docker rm -f devsecops-reproduce
 - [Trivy container scan workflow](screenshots/15-trivy-github-actions-success.jpg)
 - [OWASP ZAP scan workflow](screenshots/19-zap-github-actions-success.jpg)
 - [CycloneDX SBOM generation workflow](screenshots/21-sbom-github-actions-success.jpg)
-
 - [HTTP test troubleshooting case study](HTTP-TEST-CASE-STUDY.md)
+
+- [Required checks block merging after an intentional test failure](screenshots/26-required-check-blocks-merge.png)
 
 ## Container Hardening
 
