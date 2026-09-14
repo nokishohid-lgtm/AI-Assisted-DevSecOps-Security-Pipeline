@@ -12,7 +12,12 @@ public class SecurityApplication {
     private static final int PORT = 8080;
 
     public static void main(String[] args) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        startServer(PORT);
+        System.out.println("Application started at http://localhost:" + PORT);
+    }
+
+    public static HttpServer startServer(int port) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/", exchange ->
                 sendResponse(exchange, 200,
@@ -24,8 +29,7 @@ public class SecurityApplication {
 
         server.setExecutor(null);
         server.start();
-
-        System.out.println("Secure application started at http://localhost:" + PORT);
+        return server;
     }
 
     private static void sendResponse(
@@ -47,7 +51,10 @@ public class SecurityApplication {
                 "Cache-Control", "no-store");
 
         exchange.sendResponseHeaders(statusCode, responseBytes.length);
-        exchange.getResponseBody().write(responseBytes);
-        exchange.close();
+        try (var responseBody = exchange.getResponseBody()) {
+            responseBody.write(responseBytes);
+        } finally {
+            exchange.close();
+        }
     }
 }
