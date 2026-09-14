@@ -35,6 +35,26 @@ A hands-on cybersecurity project integrating automated testing and security chec
 
 ➡️ [View the DevSecOps Pipeline Architecture](docs/architecture.md)
 
+## What This Project Demonstrates
+
+This project demonstrates practical DevSecOps skills across secure software development, CI/CD automation, application security testing, and container security.
+
+- Built and tested a Java application through GitHub Actions
+- Integrated CodeQL for static application security testing
+- Added Gitleaks to detect exposed secrets
+- Scanned container images with Trivy
+- Performed dynamic security testing with OWASP ZAP
+- Generated a CycloneDX software bill of materials
+- Signed container images with Cosign using GitHub OIDC
+- Published signed container images to GitHub Container Registry
+- Protected the `main` branch with pull requests and required security checks
+- Restricted container releases to `main`
+- Documented security evidence, validation results, and pipeline architecture
+
+### Skills Demonstrated
+
+`DevSecOps` · `GitHub Actions` · `CI/CD` · `Java` · `Docker` · `CodeQL` · `Gitleaks` · `Trivy` · `OWASP ZAP` · `CycloneDX` · `Cosign` · `SBOM` · `SAST` · `DAST` · `Container Security` · `Supply Chain Security`
+
 ## Architecture
 
 This project uses a secure CI/CD workflow with automated testing, security scanning, protected pull requests, container validation, image signing, and GitHub Container Registry publishing.
