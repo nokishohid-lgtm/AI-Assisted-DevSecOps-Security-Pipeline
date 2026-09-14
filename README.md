@@ -27,7 +27,7 @@ Results observed during the documented project runs:
 - Syft: the locally generated CycloneDX SBOM contained 1,295 components.
 - GitHub Container Registry: container image published successfully.
 - Cosign: keyless image signing and signature verification completed successfully.
-- GitHub ruleset: pull requests and the Build and Test check are required for the main branch.
+- GitHub ruleset: pull requests, up-to-date branches, and three checks are required for main: Build and Test, Detect Hardcoded Secrets, and Build and Scan Container.
 
 The remaining ZAP warning concerned non-storable content, consistent with
 the application's intentional Cache-Control: no-store setting.
@@ -52,11 +52,13 @@ Workflow files are stored in `.github/workflows/`.
 
 Dependabot configuration is stored in `.github/dependabot.yml`.
 
-These workflows run separately. The main-branch ruleset currently requires
-the Build and Test check; it does not require every security workflow.
-The container-release workflow also performs its own vulnerability check
-before publishing.
+These workflows run separately. The main-branch ruleset requires
+Build and Test, Detect Hardcoded Secrets, and Build and Scan Container.
+Other security workflows run but are not required merge checks.
 
+The Trivy gate blocks fixable HIGH or CRITICAL operating-system
+vulnerabilities. The container-release workflow independently repeats
+this vulnerability check before publishing.
 
 ## Project Evidence
 
