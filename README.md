@@ -12,6 +12,21 @@ A hands-on cybersecurity project integrating automated testing and security chec
 - Sign and verify container images using Cosign and GitHub OIDC.
 - Protect the main branch with pull requests and required CI checks.
 
+## Security Highlights
+
+- Protected `main` branch with pull-request-only changes
+- Required CI security checks enforced before merge
+- CodeQL static application security testing (SAST)
+- Gitleaks secret detection
+- Trivy container vulnerability scanning
+- OWASP ZAP dynamic application security testing (DAST)
+- CycloneDX software bill of materials (SBOM) generation
+- Cosign keyless container image signing using OIDC
+- GitHub Container Registry (GHCR) secure image publishing
+- Main-branch-only container releases with concurrency protection
+
+➡️ [View the DevSecOps Pipeline Architecture](docs/architecture.md)
+
 ## Architecture
 
 This project uses a secure CI/CD workflow with automated testing, security scanning, protected pull requests, container validation, image signing, and GitHub Container Registry publishing.
