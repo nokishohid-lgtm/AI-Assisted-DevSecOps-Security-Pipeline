@@ -14,8 +14,13 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/nokishohid-lgtm/ai-assisted-devsecops-security-pipeline
 
+concurrency:
+  group: secure-container-release
+  cancel-in-progress: false
+
 jobs:
   secure-release:
+    if: github.ref == 'refs/heads/main'
     name: Scan and Publish Container
     runs-on: ubuntu-latest
     timeout-minutes: 25
