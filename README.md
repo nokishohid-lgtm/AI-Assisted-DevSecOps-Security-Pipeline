@@ -12,6 +12,12 @@ A hands-on cybersecurity project integrating automated testing and security chec
 - Sign and verify container images using Cosign and GitHub OIDC.
 - Protect the main branch with pull requests and required CI checks.
 
+## Architecture
+
+This project uses a secure CI/CD workflow with automated testing, security scanning, protected pull requests, container validation, image signing, and GitHub Container Registry publishing.
+
+➡️ [View the DevSecOps Pipeline Architecture](docs/architecture.md)
+
 ## Technology Stack
 
 Java 17, Maven, JUnit, Docker, GitHub Actions, CodeQL, Gitleaks,
