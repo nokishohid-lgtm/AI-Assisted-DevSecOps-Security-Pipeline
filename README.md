@@ -21,7 +21,7 @@ Dependabot, Trivy, OWASP ZAP, Syft, CycloneDX, GHCR, and Cosign.
 
 Results observed during the documented project runs:
 
-- Maven: 2 automated tests passed.
+- Maven: 4 automated HTTP tests passed, covering application status, health status, JSON content type, and security headers on both endpoints.
 - Trivy: zero fixable HIGH or CRITICAL operating-system vulnerabilities after remediation.
 - OWASP ZAP: zero failed checks, 66 passed checks, and one remaining warning.
 - Syft: the locally generated CycloneDX SBOM contained 1,295 components.
