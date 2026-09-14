@@ -87,8 +87,12 @@ Results apply to the specific runs observed.
   only after verification.
 - Several tool and base-image references use mutable tags.
 - The four HTTP tests do not cover all routes, methods, or failure conditions.
-- Local run instructions were tested in the existing checkout.
-  A fresh-clone walkthrough has not yet been documented.
+- A fresh checkout was validated on the same Windows computer:
+  four Maven tests passed, the Docker image built successfully,
+  both endpoints returned HTTP 200 with expected JSON and security
+  headers, and the container ran as appuser with UID 100.
+  Maven dependencies and Docker build layers could reuse local caches;
+  this was not a clean-machine or cache-free verification.
 - A controlled failure demonstrating merge blocking has not yet been documented.
 
 ## AI Assistance
