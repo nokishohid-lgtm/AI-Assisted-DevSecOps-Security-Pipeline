@@ -60,6 +60,85 @@ The Trivy gate blocks fixable HIGH or CRITICAL operating-system
 vulnerabilities. The container-release workflow independently repeats
 this vulnerability check before publishing.
 
+## Build and Run Locally
+
+### Prerequisites
+
+- Git
+- Java 17
+- Maven 3.9
+- Docker Desktop running with Linux containers
+- Internet access to download dependencies and images
+
+The commands below use Windows PowerShell.
+
+### Download the project
+
+For a fresh checkout:
+
+```powershell
+git clone https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline.git
+Set-Location AI-Assisted-DevSecOps-Security-Pipeline
+```
+
+If you already have the repository, open a terminal in its root folder.
+
+### Run automated tests
+
+```powershell
+mvn --batch-mode clean test
+```
+
+Expected: four tests pass with no failures or errors.
+
+### Build the container
+
+Start Docker Desktop, then run:
+
+```powershell
+docker build --pull -t devsecops-security-app:local .
+```
+
+### Run with runtime restrictions
+
+```powershell
+docker run -d --name devsecops-reproduce --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m --cap-drop ALL --security-opt no-new-privileges:true --memory 256m --cpus 1.0 -p 127.0.0.1:8081:8080 devsecops-security-app:local
+```
+
+The application is exposed only on the local machine at port 8081.
+
+### Verify responses and runtime user
+
+```powershell
+curl.exe -i http://localhost:8081/
+curl.exe -i http://localhost:8081/health
+docker exec devsecops-reproduce id
+```
+
+Expected results:
+
+- Both endpoints return HTTP 200.
+- The root response reports `running`; `/health` reports `healthy`.
+- Responses include JSON content type, Content-Security-Policy,
+  X-Content-Type-Options, Cross-Origin-Resource-Policy, and Cache-Control.
+- The container user is `appuser` with a nonzero UID.
+
+### Clean up
+
+Remove the test container when finished:
+
+```powershell
+docker rm -f devsecops-reproduce
+```
+
+### Troubleshooting
+
+- Docker engine connection error: start Docker Desktop and wait for the engine.
+- Container name already in use: remove the previous test container using
+  the cleanup command before running it again.
+- Connection failure: inspect `docker logs devsecops-reproduce`.
+- Port 8081 already in use: choose another host port and update the curl URLs.
+
 ## Project Evidence
 
 - [Cosign container signing and verification](screenshots/24-cosign-keyless-container-signing-success.jpg)
