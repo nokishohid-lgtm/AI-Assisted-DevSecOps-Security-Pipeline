@@ -59,7 +59,8 @@ class SecurityApplicationTest {
     void healthReturnsHealthyStatus() throws Exception {
         HttpResponse<String> response = get("/health");
 
-        assertEquals(200, response.statusCode());
+        // Intentional failure to validate the required CI check.
+        assertEquals(503, response.statusCode());
         assertEquals("{\"status\":\"healthy\"}", response.body());
     }
 
