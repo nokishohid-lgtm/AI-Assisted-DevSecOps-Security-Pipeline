@@ -93,7 +93,7 @@ Results apply to the specific runs observed.
   headers, and the container ran as appuser with UID 100.
   Maven dependencies and Docker build layers could reuse local caches;
   this was not a clean-machine or cache-free verification.
-- A controlled failure demonstrating merge blocking has not yet been documented.
+- A controlled incorrect HTTP assertion caused required checks to fail and disabled merging on PR #14. After restoring the expected HTTP 200 response, all four local tests passed. The blocked-PR screenshot is linked from the README. This validates test-failure enforcement, not detection of a real vulnerability or secret.
 
 ## AI Assistance
 
