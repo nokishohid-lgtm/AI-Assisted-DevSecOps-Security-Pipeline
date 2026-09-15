@@ -2,7 +2,7 @@ name: AI Triage
 
 on:
   workflow_run:
-    workflows: ["CodeQL"]
+    workflows: ["CodeQL Security Scan"]
     types: [completed]
   workflow_dispatch:
 
