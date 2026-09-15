@@ -235,3 +235,5 @@ pulling the published image does not automatically apply them.
 
 This project is an educational lab. Run security scans only against
 applications and infrastructure you own or have explicit permission to test.
+
+<!-- test change -->
