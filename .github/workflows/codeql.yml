@@ -1,9 +1,9 @@
 name: CodeQL Security Scan
-"on":
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+
+on:
+  workflow_run:
+    workflows: ["CodeQL Security Scan"]
+    types: [completed]
   workflow_dispatch:
   schedule:
     - cron: "30 6 * * 1"
@@ -41,3 +41,13 @@ jobs:
 
       - name: Perform CodeQL analysis
         uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:java-kotlin"
+          output: sarif-results
+          upload: false
+
+      - name: Upload SARIF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-results
+          path: sarif-results/
