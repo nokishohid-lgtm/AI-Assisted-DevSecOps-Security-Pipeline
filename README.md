@@ -8,6 +8,8 @@
 [![SBOM](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/sbom.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/sbom.yml)
 [![Container Release](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/container-release.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/container-release.yml)
 
+**Live Demo:** https://ai-assisted-devsecops-security-pipeline.onrender.com
+
 A hands-on cybersecurity project integrating automated testing and security checks into a Java application's CI/CD workflows.
 
 ## Project Goals
