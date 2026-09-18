@@ -1,9 +1,10 @@
 name: CodeQL Security Scan
 
 on:
-  workflow_run:
-    workflows: ["CodeQL Security Scan"]
-    types: [completed]
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
   schedule:
     - cron: "30 6 * * 1"
@@ -44,10 +45,11 @@ jobs:
         with:
           category: "/language:java-kotlin"
           output: sarif-results
-          upload: false
+          upload: true
 
       - name: Upload SARIF as artifact
         uses: actions/upload-artifact@v4
         with:
           name: codeql-results
           path: sarif-results/
+          if-no-files-found: error
