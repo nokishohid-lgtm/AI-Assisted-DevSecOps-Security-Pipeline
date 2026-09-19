@@ -1,6 +1,7 @@
 # AI-Assisted DevSecOps Security Pipeline
 
 **Live Demo:** https://ai-assisted-devsecops-security-pipeline.onrender.com
+
 **Pipeline Status:** ![CI](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/ci.yml/badge.svg)
 
 ## Executive Summary
@@ -78,39 +79,9 @@ This project demonstrates practical DevSecOps skills across secure software deve
 
 `DevSecOps` · `GitHub Actions` · `CI/CD` · `Java` · `Docker` · `CodeQL` · `Gitleaks` · `Trivy` · `OWASP ZAP` · `CycloneDX` · `Cosign` · `SBOM` · `SAST` · `DAST` · `Container Security` · `Supply Chain Security`
 
-## Architecture
-
-This project uses a secure CI/CD workflow with automated testing, security scanning, protected pull requests, container validation, image signing, and GitHub Container Registry publishing.
-
-➡️ [View the DevSecOps Pipeline Architecture](docs/architecture.md)
-
-## Multi-Service Architecture
-
-The pipeline runs two cooperating Java services on top of Postgres:
-
-- **API service** — `/health`, `POST /jobs`, `GET /jobs` (REST, JSON)
-- **Worker service** — polls `jobs` every 2 seconds and marks them `done`
-- **Postgres 16** — job storage with a `jobs` table, healthchecked
-
-All three run in `docker-compose.yml` with `read_only: true`,
-`cap_drop: [ALL]`, and `no-new-privileges:true`.
-
-The `multi-service-smoke` CI job proves this works end-to-end on every
-pull request: it spins up Postgres, runs the integration test, and builds
-both images.
-
-```bash
-docker compose up -d
-curl http://localhost:8081/health
-curl -X POST http://localhost:8081/jobs -H "Content-Type: application/json" -d '{"payload":"hello"}'
-sleep 3
-curl http://localhost:8081/jobs
-docker compose down
-
 ## Technology Stack
 
-Java 17, Maven, JUnit, Docker, GitHub Actions, CodeQL, Gitleaks,
-Dependabot, Trivy, OWASP ZAP, Syft, CycloneDX, GHCR, and Cosign.
+Java 17, Maven, JUnit, Docker, GitHub Actions, CodeQL, Gitleaks, Dependabot, Trivy, OWASP ZAP, Syft, CycloneDX, GHCR, and Cosign.
 
 ## Results and Evidence
 
@@ -124,12 +95,9 @@ Results observed during the documented project runs:
 - Cosign: keyless image signing and signature verification completed successfully.
 - GitHub ruleset: pull requests, up-to-date branches, and three checks are required for main: Build and Test, Detect Hardcoded Secrets, and Build and Scan Container.
 
-The remaining ZAP warning concerned non-storable content, consistent with
-the application's intentional Cache-Control: no-store setting.
+The remaining ZAP warning concerned non-storable content, consistent with the application's intentional Cache-Control: no-store setting.
 
-These results describe specific scans, not a guarantee that the application
-is free of vulnerabilities. Component counts and findings may change
-between builds.
+These results describe specific scans, not a guarantee that the application is free of vulnerabilities. Component counts and findings may change between builds.
 
 ## Automated Workflows
 
@@ -144,106 +112,13 @@ Workflow files are stored in `.github/workflows/`.
 | `zap.yml` | Run a ZAP baseline scan against the application |
 | `sbom.yml` | Generate and upload a CycloneDX SBOM |
 | `container-release.yml` | Scan, publish, sign, and verify the container image |
+| `policy.yml` | Run OPA/Conftest policy checks on Dockerfile and manifests |
 
 Dependabot configuration is stored in `.github/dependabot.yml`.
 
-These workflows run separately. The main-branch ruleset requires
-Build and Test, Detect Hardcoded Secrets, and Build and Scan Container.
-Other security workflows run but are not required merge checks.
+These workflows run separately. The main-branch ruleset requires Build and Test, Detect Hardcoded Secrets, and Build and Scan Container. Other security workflows run but are not required merge checks.
 
-The Trivy gate blocks fixable HIGH or CRITICAL operating-system
-vulnerabilities. The container-release workflow independently repeats
-this vulnerability check before publishing.
-
-## Build and Run Locally
-
-### Prerequisites
-
-- Git
-- Java 17
-- Maven 3.9
-- Docker Desktop running with Linux containers
-- Internet access to download dependencies and images
-
-The commands below use Windows PowerShell.
-
-### Download the project
-
-For a fresh checkout:
-
-```powershell
-git clone https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline.git
-Set-Location AI-Assisted-DevSecOps-Security-Pipeline
-```
-
-If you already have the repository, open a terminal in its root folder.
-
-### Run automated tests
-
-```powershell
-mvn --batch-mode clean test
-```
-
-Expected: four tests pass with no failures or errors.
-
-### Build the container
-
-Start Docker Desktop, then run:
-
-```powershell
-docker build --pull -t devsecops-security-app:local .
-```
-
-### Run with runtime restrictions
-
-```powershell
-docker run -d --name devsecops-reproduce --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m --cap-drop ALL --security-opt no-new-privileges:true --memory 256m --cpus 1.0 -p 127.0.0.1:8081:8080 devsecops-security-app:local
-```
-
-The application is exposed only on the local machine at port 8081.
-
-### Verify responses and runtime user
-
-```powershell
-curl.exe -i http://localhost:8081/
-curl.exe -i http://localhost:8081/health
-docker exec devsecops-reproduce id
-```
-
-Expected results:
-
-- Both endpoints return HTTP 200.
-- The root response reports `running`; `/health` reports `healthy`.
-- Responses include JSON content type, Content-Security-Policy,
-  X-Content-Type-Options, Cross-Origin-Resource-Policy, and Cache-Control.
-- The container user is `appuser` with a nonzero UID.
-
-### Clean up
-
-Remove the test container when finished:
-
-```powershell
-docker rm -f devsecops-reproduce
-```
-
-### Troubleshooting
-
-- Docker engine connection error: start Docker Desktop and wait for the engine.
-- Container name already in use: remove the previous test container using
-  the cleanup command before running it again.
-- Connection failure: inspect `docker logs devsecops-reproduce`.
-- Port 8081 already in use: choose another host port and update the curl URLs.
-
-## Project Evidence
-
-- [Cosign container signing and verification](screenshots/24-cosign-keyless-container-signing-success.jpg)
-- [Main-branch protection ruleset](screenshots/25-main-branch-protection-ruleset.jpg)
-- [Trivy container scan workflow](screenshots/15-trivy-github-actions-success.jpg)
-- [OWASP ZAP scan workflow](screenshots/19-zap-github-actions-success.jpg)
-- [CycloneDX SBOM generation workflow](screenshots/21-sbom-github-actions-success.jpg)
-- [HTTP test troubleshooting case study](HTTP-TEST-CASE-STUDY.md)
-
-- [Required checks block merging after an intentional test failure](screenshots/26-required-check-blocks-merge.png)
+The Trivy gate blocks fixable HIGH or CRITICAL operating-system vulnerabilities. The container-release workflow independently repeats this vulnerability check before publishing.
 
 ## Container Hardening
 
@@ -254,16 +129,17 @@ The Docker build uses:
 - Updated operating-system packages.
 - A non-root application user.
 
-The ZAP workflow starts the application container with additional runtime restrictions:
+Both `Dockerfile.api` and `Dockerfile.worker` copy runtime dependencies (including the Postgres JDBC driver) into `lib/` and put them on the classpath, so the built images run without a Maven repository.
+
+The ZAP workflow and docker-compose start the application containers with additional runtime restrictions:
 
 - A read-only root filesystem.
-- Temporary writable storage at `/tmp`.
+- Temporary writable storage at `/tmp` (noexec, nosuid).
 - All Linux capabilities dropped.
 - The `no-new-privileges` security option.
 - CPU and memory limits.
 
-Runtime restrictions must be supplied when starting the container;
-pulling the published image does not automatically apply them.
+Runtime restrictions must be supplied when starting the container; pulling the published image does not automatically apply them.
 
 ## Lessons Learned
 
@@ -274,9 +150,10 @@ pulling the published image does not automatically apply them.
 - An SBOM records software components; it is not itself a vulnerability scan.
 - Container signatures help verify image origin and integrity, but do not prove that an image is vulnerability-free.
 - Branch protection moves changes through pull requests and required checks instead of direct pushes to main.
+- Copying runtime dependencies into the container image is required when running a plain Java `-cp` entrypoint — otherwise the JDBC driver is missing at runtime.
+- Multi-service integration tests should run only when a database is available, using an env-var guard (`RUN_DB_TESTS=true`) so `mvn test` stays green locally.
 
 ## Responsible Use
 
-This project is an educational lab. Run security scans only against
-applications and infrastructure you own or have explicit permission to test.
+This project is an educational lab. Run security scans only against applications and infrastructure you own or have explicit permission to test.
 <!-- trigger CodeQL for AI triage test -->
