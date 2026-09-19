@@ -1,0 +1,29 @@
+FROM maven:3.9-eclipse-temurin-17-alpine AS build
+
+WORKDIR /workspace
+
+COPY pom.xml .
+RUN mvn --batch-mode dependency:go-offline
+
+COPY src ./src
+RUN mvn --batch-mode clean compile
+
+# Copy runtime dependencies (JDBC driver) into a lib folder
+RUN mvn --batch-mode dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=lib
+
+FROM eclipse-temurin:17-jre-alpine
+
+RUN apk upgrade --no-cache && \
+    addgroup -S appgroup && \
+    adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+COPY --from=build --chown=appuser:appgroup \
+    /workspace/target/classes ./classes
+COPY --from=build --chown=appuser:appgroup \
+    /workspace/lib ./lib
+
+USER appuser
+
+ENTRYPOINT ["java", "-cp", "classes:lib/*", "com.nokishohid.devsecops.worker.WorkerMain"]
