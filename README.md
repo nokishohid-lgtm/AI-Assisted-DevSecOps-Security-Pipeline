@@ -33,6 +33,7 @@ docker build -t devsecops-local .
 docker run -d -p 8081:8080 --read-only --cap-drop ALL \
   --security-opt no-new-privileges:true devsecops-local
 curl http://localhost:8081/health
+```
 
 ## Project Goals
 
@@ -120,6 +121,48 @@ These workflows run separately. The main-branch ruleset requires Build and Test,
 
 The Trivy gate blocks fixable HIGH or CRITICAL operating-system vulnerabilities. The container-release workflow independently repeats this vulnerability check before publishing.
 
+## Project Evidence
+
+### Multi-Service Architecture (Phase 1)
+
+The API and Worker services, backed by Postgres, run as a hardened three-container stack:
+
+![docker compose ps](screenshots/phase1-multiservice/01-docker-compose-ps.png)
+
+End-to-end test — API health check, job enqueue, worker pickup:
+
+![api curl test](screenshots/phase1-multiservice/02-api-curl-health.png)
+
+Worker processing jobs from the queue:
+
+![worker logs](screenshots/phase1-multiservice/03-worker-logs.png)
+
+### CI Enforcement
+
+All checks pass on the multi-service PR, including the new `multi-service-smoke` job:
+
+![PR checks green](screenshots/phase1-ci/01-pr-checks-green.png)
+
+The smoke test proves the whole stack works in CI — spins up Postgres, runs the integration test, and builds both images:
+
+![multi-service smoke test](screenshots/phase1-ci/02-ci-multiservice-job.png)
+
+### Architecture Decision Records
+
+Five ADRs document the key design choices (GitHub Actions, Cosign keyless, Trivy, ZAP baseline, CycloneDX):
+
+![ADR index](screenshots/phase1-docs/01-adr-index.png)
+
+### Earlier Evidence
+
+- Cosign container signing and verification
+- Main-branch protection ruleset
+- Trivy container scan workflow
+- OWASP ZAP scan workflow
+- CycloneDX SBOM generation workflow
+- HTTP test troubleshooting case study
+- Required checks block merging after an intentional test failure
+
 ## Container Hardening
 
 The Docker build uses:
@@ -156,4 +199,5 @@ Runtime restrictions must be supplied when starting the container; pulling the p
 ## Responsible Use
 
 This project is an educational lab. Run security scans only against applications and infrastructure you own or have explicit permission to test.
+
 <!-- trigger CodeQL for AI triage test -->
