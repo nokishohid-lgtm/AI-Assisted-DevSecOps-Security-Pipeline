@@ -1,16 +1,37 @@
 # AI-Assisted DevSecOps Security Pipeline
 
-[![CI](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/codeql.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/codeql.yml)
-[![Gitleaks](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/gitleaks.yml)
-[![Trivy](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/trivy.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/trivy.yml)
-[![OWASP ZAP](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/zap.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/zap.yml)
-[![SBOM](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/sbom.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/sbom.yml)
-[![Container Release](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/container-release.yml/badge.svg)](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/container-release.yml)
-
 **Live Demo:** https://ai-assisted-devsecops-security-pipeline.onrender.com
+**Pipeline Status:** ![CI](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/ci.yml/badge.svg)
 
-A hands-on cybersecurity project integrating automated testing and security checks into a Java application's CI/CD workflows.
+## Executive Summary
+
+A production-shaped DevSecOps reference pipeline that enforces security
+controls at every stage of the software supply chain — from secret
+detection at commit time to signed container images at deploy time. Built
+to demonstrate that security gates can be automated, policy-driven, and
+auditable without slowing delivery.
+
+## Business Impact
+
+| Control | Threat Mitigated | Business Risk Reduced |
+|---|---|---|
+| Gitleaks (pre-merge) | Hardcoded credentials leaked to git history | Prevents breach costs ($4.5M avg, IBM 2024) |
+| CodeQL SAST | Injection, XSS, deserialization flaws | Shifts fix cost from prod (100x) to PR (1x) |
+| Trivy + 30-day policy | Known-exploited CVEs in runtime image | Blocks supply-chain compromise vector |
+| OWASP ZAP DAST | Runtime misconfig, missing security headers | Catches what SAST structurally cannot |
+| Cosign keyless signing | Image tampering between build and deploy | Proves provenance; enables admission control |
+| CycloneDX SBOM | Unknown transitive dependencies | Enables 24-hour CVE response (log4shell-class) |
+| OPA/Conftest policies | Policy drift across teams | Encodes compliance as code, not PDFs |
+
+## Try It in 60 Seconds
+
+```bash
+git clone https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline.git
+cd AI-Assisted-DevSecOps-Security-Pipeline
+docker build -t devsecops-local .
+docker run -d -p 8081:8080 --read-only --cap-drop ALL \
+  --security-opt no-new-privileges:true devsecops-local
+curl http://localhost:8081/health
 
 ## Project Goals
 
