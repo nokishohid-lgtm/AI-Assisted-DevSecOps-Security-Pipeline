@@ -30,7 +30,7 @@ jobs:
       - name: Build and run automated tests
         run: mvn --batch-mode clean verify
 
-          multi-service-smoke:
+  multi-service-smoke:
     name: Multi-service smoke test
     runs-on: ubuntu-latest
     services:
