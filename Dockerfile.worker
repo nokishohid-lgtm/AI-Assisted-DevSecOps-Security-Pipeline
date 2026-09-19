@@ -8,6 +8,9 @@ RUN mvn --batch-mode dependency:go-offline
 COPY src ./src
 RUN mvn --batch-mode clean compile
 
+# Copy runtime dependencies (JDBC driver) into a lib folder
+RUN mvn --batch-mode dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=lib
+
 FROM eclipse-temurin:17-jre-alpine
 
 RUN apk upgrade --no-cache && \
@@ -18,7 +21,9 @@ WORKDIR /app
 
 COPY --from=build --chown=appuser:appgroup \
     /workspace/target/classes ./classes
+COPY --from=build --chown=appuser:appgroup \
+    /workspace/lib ./lib
 
 USER appuser
 
-ENTRYPOINT ["java", "-cp", "classes", "com.nokishohid.devsecops.worker.WorkerMain"]
+ENTRYPOINT ["java", "-cp", "classes:lib/*", "com.nokishohid.devsecops.worker.WorkerMain"]
