@@ -70,6 +70,7 @@ It does not wait for every separate security workflow to finish.
 - Both endpoints returned HTTP 200 with expected JSON and security headers.
 - The local container ran as appuser with UID 100.
 - A subsequent pull request showed all three intended merge checks as required.
+- ✅ Multi-service architecture with database — API + Worker services backed by Postgres, integration-tested in CI (PR #47)
 
 See README.md and the linked screenshots for documented scan results.
 Results apply to the specific runs observed.
