@@ -30,6 +30,53 @@
     [read-only rootfs, cap-drop ALL,
      no-new-privileges, non-root]
 
+## Multi-Service Architecture
+
+As of Phase 1, the application runs as two cooperating services backed by
+a shared Postgres database.
+
+    +--------------+        +--------------+
+    |  API Service |        |   Worker     |
+    |  (ApiMain)   |        |  (WorkerMain)|
+    |  :8080       |        |  poll loop   |
+    +-------+------+        +-------+------+
+            |                        |
+            |  INSERT jobs           |  UPDATE jobs SET status='done'
+            v                        v
+        +----------------------------------+
+        |           Postgres 16            |
+        |           jobs table             |
+        +----------------------------------+
+
+### API Service (`src/main/java/.../api/ApiMain.java`)
+- `/health` — liveness probe, returns `{"status":"healthy","service":"api"}`
+- `POST /jobs` — inserts a pending job, returns `{"id":N,"status":"pending"}`
+- `GET /jobs` — returns job counts by status, e.g. `{"pending":0,"done":2}`
+
+### Worker Service (`src/main/java/.../worker/WorkerMain.java`)
+- Polls `jobs` every 2 seconds for `status='pending'`
+- Uses `SELECT ... FOR UPDATE SKIP LOCKED` so multiple workers can coexist
+- Marks processed jobs as `status='done'`, records `picked_at` and `done_at`
+- Graceful shutdown via JVM shutdown hook
+
+### Database (`db/init.sql`)
+- Single table `jobs` with status lifecycle: `pending → done`
+- Loaded automatically by the Postgres container on first start
+
+### Runtime (`docker-compose.yml`)
+All three containers run with hardening applied:
+- `read_only: true` (api, worker)
+- `cap_drop: [ALL]`
+- `security_opt: [no-new-privileges:true]`
+- `tmpfs: /tmp` with `noexec,nosuid`
+- API port bound to `127.0.0.1:8081` only
+
+### CI Enforcement
+The `multi-service-smoke` job in `.github/workflows/ci.yml`:
+- Spins up Postgres 16 as a GitHub service container
+- Runs `MultiServiceIntegrationTest` with `RUN_DB_TESTS=true`
+- Builds both `Dockerfile.api` and `Dockerfile.worker`
+
 ## Components
 
 ### Application (src/)

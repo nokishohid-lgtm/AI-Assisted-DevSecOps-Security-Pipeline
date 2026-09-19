@@ -84,6 +84,29 @@ This project uses a secure CI/CD workflow with automated testing, security scann
 
 ➡️ [View the DevSecOps Pipeline Architecture](docs/architecture.md)
 
+## Multi-Service Architecture
+
+The pipeline runs two cooperating Java services on top of Postgres:
+
+- **API service** — `/health`, `POST /jobs`, `GET /jobs` (REST, JSON)
+- **Worker service** — polls `jobs` every 2 seconds and marks them `done`
+- **Postgres 16** — job storage with a `jobs` table, healthchecked
+
+All three run in `docker-compose.yml` with `read_only: true`,
+`cap_drop: [ALL]`, and `no-new-privileges:true`.
+
+The `multi-service-smoke` CI job proves this works end-to-end on every
+pull request: it spins up Postgres, runs the integration test, and builds
+both images.
+
+```bash
+docker compose up -d
+curl http://localhost:8081/health
+curl -X POST http://localhost:8081/jobs -H "Content-Type: application/json" -d '{"payload":"hello"}'
+sleep 3
+curl http://localhost:8081/jobs
+docker compose down
+
 ## Technology Stack
 
 Java 17, Maven, JUnit, Docker, GitHub Actions, CodeQL, Gitleaks,
