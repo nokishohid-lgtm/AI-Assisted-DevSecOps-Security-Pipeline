@@ -1,0 +1,4 @@
+CONTAINER            REPOSITORY                                       TAG                 PLATFORM            IMAGE ID            SIZE                CREATED
+devsecops-api        ai-assisted-devsecops-security-pipeline-api      latest              linux/amd64         cbdbaac79779        185MB               15 seconds ago
+devsecops-postgres   postgres                                         16-alpine           linux/amd64         81bd698b4594        294MB               292 years ago
+devsecops-worker     ai-assisted-devsecops-security-pipeline-worker   latest              linux/amd64         95ba47e87341        185MB               15 seconds ago
