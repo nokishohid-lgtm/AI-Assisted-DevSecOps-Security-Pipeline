@@ -12,40 +12,68 @@ permissions:
 
 jobs:
   generate-sbom:
-    name: Build Image and Generate SBOM
+    name: Generate API and Worker SBOMs
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Build Docker image
-        run: docker build --pull -t devsecops-security-app:${{ github.sha }} .
+      - name: Build API image
+        run: |
+          docker build --pull \
+            -f Dockerfile.api \
+            -t devsecops-api:${{ github.sha }} .
+
+      - name: Build worker image
+        run: |
+          docker build --pull \
+            -f Dockerfile.worker \
+            -t devsecops-worker:${{ github.sha }} .
 
       - name: Create writable SBOM directory
         run: |
           mkdir -p sbom-output
           chmod 777 sbom-output
 
-      - name: Generate CycloneDX SBOM with Syft
+      - name: Generate API CycloneDX SBOM
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v "${{ github.workspace }}/sbom-output:/output" \
             anchore/syft:latest \
-            devsecops-security-app:${{ github.sha }} \
-            -o cyclonedx-json=/output/sbom.cdx.json
+            devsecops-api:${{ github.sha }} \
+            -o cyclonedx-json=/output/api-sbom.cdx.json
 
-      - name: Validate generated SBOM
+      - name: Generate worker CycloneDX SBOM
         run: |
-          test -s sbom-output/sbom.cdx.json
-          jq -e '.components | length > 0' sbom-output/sbom.cdx.json
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${{ github.workspace }}/sbom-output:/output" \
+            anchore/syft:latest \
+            devsecops-worker:${{ github.sha }} \
+            -o cyclonedx-json=/output/worker-sbom.cdx.json
 
-      - name: Upload CycloneDX SBOM
+      - name: Validate generated SBOMs
+        run: |
+          test -s sbom-output/api-sbom.cdx.json
+          test -s sbom-output/worker-sbom.cdx.json
+          jq -e '.components | length > 0' sbom-output/api-sbom.cdx.json
+          jq -e '.components | length > 0' sbom-output/worker-sbom.cdx.json
+
+      - name: Upload API CycloneDX SBOM
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cyclonedx-sbom
-          path: sbom-output/sbom.cdx.json
+          name: api-cyclonedx-sbom
+          path: sbom-output/api-sbom.cdx.json
+          if-no-files-found: error
+
+      - name: Upload worker CycloneDX SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-cyclonedx-sbom
+          path: sbom-output/worker-sbom.cdx.json
           if-no-files-found: error
