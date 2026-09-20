@@ -19,8 +19,6 @@ spec:
     spec:
       securityContext:
         fsGroup: 999
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: postgres
           image: postgres:16-alpine
@@ -55,7 +53,14 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
-              drop: ["ALL"]
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - SETUID
+                - SETGID
+                - DAC_OVERRIDE
+                - FOWNER
       volumes:
         - name: init
           configMap:
