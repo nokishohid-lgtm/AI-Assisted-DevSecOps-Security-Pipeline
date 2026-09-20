@@ -6,34 +6,115 @@
 
 ## Executive Summary
 
-A production-shaped DevSecOps reference pipeline that enforces security
-controls at every stage of the software supply chain — from secret
-detection at commit time to signed container images at deploy time. Built
-to demonstrate that security gates can be automated, policy-driven, and
-auditable without slowing delivery.
+An educational DevSecOps project built around a Java API, a background
+worker, and PostgreSQL. The API stores submitted jobs, and the worker
+simulates processing by changing their status from pending to done.
 
-## Business Impact
+The repository includes workflows for automated tests, security scans,
+software inventory, and container publishing and signing. Coverage varies
+by workflow; checks for the earlier single-container application must be
+distinguished from checks for the API and worker stack.
 
-| Control | Threat Mitigated | Business Risk Reduced |
+A separate AI triage script uses Groq to review CodeQL findings and
+available source-code context. Its output is advisory and requires human
+review.
+
+## Validation Scope
+
+- Application code implements job submission, database storage, and a
+  worker that marks pending jobs done.
+- The current MultiServiceIntegrationTest checks database connectivity,
+  job insertion, and aggregate status counts.
+- That test does not call the HTTP API, execute the worker, or verify
+  completion of the specific submitted job.
+- Complete container-stack testing and separate security reports and
+  SBOMs for both images are Phase 2 objectives.
+- Historical scan results below apply only to their documented runs
+  and targets.
+- Financial savings, faster remediation, and reduced incident rates
+  have not been measured in this lab.
+
+## AI Data Sharing
+
+When findings are present and the script executes successfully, it sends
+up to 10 CodeQL findings and available surrounding source-code context
+to Groq. Results are posted to a pull request when a PR number is
+available; otherwise, they are printed to workflow output.
+
+A run with no findings does not validate AI classification accuracy.
+AI classifications do not automatically fix code or dismiss findings.
+
+## Feature Status
+
+**Implemented:** Code or configuration exists.
+**Tested — historical:** Results were recorded for a specific earlier run.
+**Planned:** Implementation or validation remains outstanding.
+
+| Capability | Status | Current coverage |
 |---|---|---|
-| Gitleaks (pre-merge) | Hardcoded credentials leaked to git history | Prevents breach costs ($4.5M avg, IBM 2024) |
-| CodeQL SAST | Injection, XSS, deserialization flaws | Shifts fix cost from prod (100x) to PR (1x) |
-| Trivy + 30-day policy | Known-exploited CVEs in runtime image | Blocks supply-chain compromise vector |
-| OWASP ZAP DAST | Runtime misconfig, missing security headers | Catches what SAST structurally cannot |
-| Cosign keyless signing | Image tampering between build and deploy | Proves provenance; enables admission control |
-| CycloneDX SBOM | Unknown transitive dependencies | Enables 24-hour CVE response (log4shell-class) |
-| OPA/Conftest policies | Policy drift across teams | Encodes compliance as code, not PDFs |
+| Java API and PostgreSQL storage | Implemented | Accepts jobs and returns aggregate status counts |
+| Background worker | Implemented | Simulates processing by marking pending jobs done |
+| API and worker image builds | Implemented | Both images have build steps in CI |
+| Database integration test | Implemented | Checks connectivity, insertion, and aggregate counts |
+| Earlier HTTP application tests | Tested — historical | Four passing tests documented for the earlier application |
+| Root-image Trivy scan | Implemented | Checks fixable HIGH/CRITICAL OS vulnerabilities |
+| AI-assisted CodeQL triage | Implemented | Advisory Groq integration; accuracy not established |
+| Full container-stack integration test | Planned | Submit through HTTP and verify the same job reaches done |
+| Security scans for both service images | Planned | OS and application dependency coverage |
+| Separate API and worker SBOMs | Planned | Inventory for each built image |
 
-## Try It in 60 Seconds
+Historical results apply to their original runs and targets. Financial
+savings, incident reduction, and faster remediation have not been measured.
 
-```bash
-git clone https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline.git
-cd AI-Assisted-DevSecOps-Security-Pipeline
-docker build -t devsecops-local .
-docker run -d -p 8081:8080 --read-only --cap-drop ALL \
-  --security-opt no-new-privileges:true devsecops-local
-curl http://localhost:8081/health
+## Run the Application Locally
+
+Prerequisites: Git, Docker Desktop with Linux containers, and PowerShell.
+
+From your existing project directory:
+
+```powershell
+docker compose up --build -d
+docker compose ps
 ```
+
+Once the API is ready, check its health:
+
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8081/health"
+```
+
+Submit a demonstration job:
+
+```powershell
+$job = Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8081/jobs" -ContentType "application/json" -Body '{"task":"portfolio-demo"}'
+$job
+```
+
+Inspect aggregate status counts and worker logs:
+
+```powershell
+Invoke-RestMethod -Uri "http://127.0.0.1:8081/jobs"
+docker compose logs --tail 30 worker
+```
+
+These commands support manual inspection. They are not an automated
+end-to-end test. Use non-sensitive lab data; the database credentials
+in Compose are development defaults.
+
+## Application Architecture
+
+```mermaid
+flowchart TD
+    Client["Local client"] -->|"Submit job / read counts"| API["Java API"]
+    API -->|"Insert jobs / query counts"| DB[("PostgreSQL: jobs")]
+    Worker["Java worker"] -->|"Select pending job / mark done"| DB
+```
+
+PostgreSQL coordinates the API and worker; there is no separate message
+broker. The worker updates job status and timestamps without transforming
+the payload. It waits two seconds when no job is processed.
+
+The API provides a static health response, job submission, and aggregate status counts. A dedicated per-job status endpoint is not implemented.
 
 ## Project Goals
 
@@ -86,7 +167,7 @@ Java 17, Maven, JUnit, Docker, GitHub Actions, CodeQL, Gitleaks, Dependabot, Tri
 
 ## Results and Evidence
 
-Results observed during the documented project runs:
+The following historical results were recorded in earlier project runs. They are not new measurements and do not establish equivalent coverage for both the API and worker images:
 
 - Maven: 4 automated HTTP tests passed, covering application status, health status, JSON content type, and security headers on both endpoints.
 - Trivy: zero fixable HIGH or CRITICAL operating-system vulnerabilities after remediation.
@@ -102,50 +183,84 @@ These results describe specific scans, not a guarantee that the application is f
 
 ## Automated Workflows
 
-Workflow files are stored in `.github/workflows/`.
+The repository contains nine workflow files in `.github/workflows/`.
 
-| Workflow | Purpose |
+| Workflow | Purpose and coverage |
 |---|---|
-| `ci.yml` | Build the Java application and run automated tests |
-| `codeql.yml` | Analyze source code for security weaknesses |
-| `gitleaks.yml` | Scan for exposed secrets |
-| `trivy.yml` | Scan the container image for vulnerabilities |
-| `zap.yml` | Run a ZAP baseline scan against the application |
-| `sbom.yml` | Generate and upload a CycloneDX SBOM |
-| `container-release.yml` | Scan, publish, sign, and verify the container image |
-| `policy.yml` | Run OPA/Conftest policy checks on Dockerfile and manifests |
+| `ci.yml` | Runs Maven tests, database integration tests, and API/worker image builds |
+| `codeql.yml` | Source-code security analysis |
+| `gitleaks.yml` | Secret-scanning workflow |
+| `trivy.yml` | Scans the image built from the root Dockerfile |
+| `zap.yml` | ZAP baseline workflow; full API coverage remains planned |
+| `sbom.yml` | Software inventory workflow; separate service-image SBOMs remain planned |
+| `container-release.yml` | Container publishing, signing, and verification workflow |
+| `policy.yml` | Runs Conftest against the root Dockerfile |
+| `ai-triage.yml` | Advisory triage of CodeQL findings using Groq |
 
-Dependabot configuration is stored in `.github/dependabot.yml`.
+Dependabot is configured separately in `.github/dependabot.yml`.
 
-These workflows run separately. The main-branch ruleset requires Build and Test, Detect Hardcoded Secrets, and Build and Scan Container. Other security workflows run but are not required merge checks.
+### CI coverage
 
-The Trivy gate blocks fixable HIGH or CRITICAL operating-system vulnerabilities. The container-release workflow independently repeats this vulnerability check before publishing.
+The multi-service CI job starts PostgreSQL, runs database integration
+tests, and builds the API and worker images. It does not start those
+application images or verify that an HTTP-submitted job reaches done.
+
+### Vulnerability coverage
+
+The reviewed Trivy workflow checks fixable HIGH and CRITICAL
+operating-system vulnerabilities in the root Dockerfile image.
+Its command excludes application dependency scanning and does not
+scan the separate API and worker images.
+
+### Policy coverage
+
+The reviewed Conftest command tests the root Dockerfile. Although
+Kubernetes file changes can trigger the workflow, its command does
+not test Kubernetes manifests.
+
+The reviewed workflows do not pass a Trivy report into
+`policy/trivy.rego`. A 30-day vulnerability-age rule is not established
+as an enforced control.
+
+### Action references and merge requirements
+
+Reviewed workflows use action version tags such as `@v4` and `@v5`;
+they are not uniformly pinned to full commit SHAs.
+
+Historical branch-protection evidence records three required checks:
+Build and Test, Detect Hardcoded Secrets, and Build and Scan Container.
+Current requirements must be confirmed in repository settings.
 
 ## Project Evidence
 
-### Multi-Service Architecture (Phase 1)
+### Local Application Evidence
 
-The API and Worker services, backed by Postgres, run as a hardened three-container stack:
+Historical local Compose evidence for the API, worker, and PostgreSQL stack:
 
-![docker compose ps](screenshots/phase1-multiservice/01-docker-compose-ps.png)
+![Local Docker Compose status](screenshots/phase1-multiservice/01-docker-compose-ps.png)
 
-End-to-end test — API health check, job enqueue, worker pickup:
+Historical local API inspection:
 
-![api curl test](screenshots/phase1-multiservice/02-api-curl-health.png)
+![Local API inspection](screenshots/phase1-multiservice/02-api-curl-health.png)
 
-Worker processing jobs from the queue:
+Historical worker logs showing simulated processing of database jobs:
 
-![worker logs](screenshots/phase1-multiservice/03-worker-logs.png)
+![Local worker logs](screenshots/phase1-multiservice/03-worker-logs.png)
 
-### CI Enforcement
+### CI Evidence
 
-All checks pass on the multi-service PR, including the new `multi-service-smoke` job:
+Historical checks recorded for the multi-service pull request:
 
-![PR checks green](screenshots/phase1-ci/01-pr-checks-green.png)
+![Historical pull request checks](screenshots/phase1-ci/01-pr-checks-green.png)
 
-The smoke test proves the whole stack works in CI — spins up Postgres, runs the integration test, and builds both images:
+The CI job starts PostgreSQL, tests database operations, and builds both
+application images. It does not run the API and worker containers or
+verify that an HTTP-submitted job reaches done.
 
-![multi-service smoke test](screenshots/phase1-ci/02-ci-multiservice-job.png)
+![Database tests and image builds](screenshots/phase1-ci/02-ci-multiservice-job.png)
+
+Full container-stack integration testing remains planned for Phase 2.
+
 
 ### Architecture Decision Records
 
@@ -165,24 +280,25 @@ Five ADRs document the key design choices (GitHub Actions, Cosign keyless, Trivy
 
 ## Container Hardening
 
-The Docker build uses:
+The reviewed Compose configuration applies these restrictions to the
+API and worker:
 
-- A multi-stage build separating build tools from the runtime image.
-- An Alpine-based Java runtime.
-- Updated operating-system packages.
-- A non-root application user.
-
-Both `Dockerfile.api` and `Dockerfile.worker` copy runtime dependencies (including the Postgres JDBC driver) into `lib/` and put them on the classpath, so the built images run without a Maven repository.
-
-The ZAP workflow and docker-compose start the application containers with additional runtime restrictions:
-
-- A read-only root filesystem.
-- Temporary writable storage at `/tmp` (noexec, nosuid).
+- Read-only root filesystem.
+- Temporary writable `/tmp` with `noexec` and `nosuid`.
 - All Linux capabilities dropped.
-- The `no-new-privileges` security option.
-- CPU and memory limits.
+- `no-new-privileges` enabled.
+- Startup dependency on PostgreSQL's health check.
 
-Runtime restrictions must be supplied when starting the container; pulling the published image does not automatically apply them.
+The API host port is bound to `127.0.0.1:8081`.
+PostgreSQL has no published host port.
+
+The same filesystem and capability restrictions are not configured
+for PostgreSQL. CPU and memory limits are not present in the reviewed
+Compose file.
+
+Image-level properties, including the runtime user and packaged
+dependencies, require separate verification of each service Dockerfile.
+Runtime restrictions must be supplied when starting containers.
 
 ## Lessons Learned
 

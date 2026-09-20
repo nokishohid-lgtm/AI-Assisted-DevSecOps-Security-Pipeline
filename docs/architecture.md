@@ -1,129 +1,244 @@
 ﻿# Architecture — AI-Assisted DevSecOps Security Pipeline
 
-## High-Level Flow
+## Purpose and Scope
 
-    Developer
-       |
-       v
-    [Git Push / PR]
-       |
-       v
-    +-------------------------------+
-    |   GitHub Actions Pipeline     |
-    |-------------------------------|
-    |  1. Build & Test (Maven)      |
-    |  2. CodeQL SAST               |
-    |  3. Gitleaks secret scan      |
-    |  4. Trivy container scan      |
-    |  5. SBOM (CycloneDX)          |
-    |  6. Docker build              |
-    |  7. Cosign keyless sign       |
-    |  8. Push to GHCR              |
-    |  9. ZAP DAST baseline         |
-    +-------------------------------+
-       |
-       v
-    [GitHub Container Registry (GHCR)]
-       |
-       v
-    [Render / Kubernetes Runtime]
-    [read-only rootfs, cap-drop ALL,
-     no-new-privileges, non-root]
+This educational application consists of a Java API, a background
+worker, and PostgreSQL. The worker simulates asynchronous processing
+by changing stored jobs from pending to done.
 
-## Multi-Service Architecture
+The repository also contains an earlier single-container HTTP
+application. Historical scans and release evidence for that application
+do not establish equivalent coverage for the API and worker images.
 
-As of Phase 1, the application runs as two cooperating services backed by
-a shared Postgres database.
+## Application Architecture
 
-    +--------------+        +--------------+
-    |  API Service |        |   Worker     |
-    |  (ApiMain)   |        |  (WorkerMain)|
-    |  :8080       |        |  poll loop   |
-    +-------+------+        +-------+------+
-            |                        |
-            |  INSERT jobs           |  UPDATE jobs SET status='done'
-            v                        v
-        +----------------------------------+
-        |           Postgres 16            |
-        |           jobs table             |
-        +----------------------------------+
+```mermaid
+flowchart TD
+    Client["Local client"] -->|"Submit job / read counts"| API["Java API"]
+    API -->|"Insert jobs / query counts"| DB[("PostgreSQL: jobs")]
+    Worker["Java worker"] -->|"Select pending job / mark done"| DB
+```
 
-### API Service (`src/main/java/.../api/ApiMain.java`)
-- `/health` — liveness probe, returns `{"status":"healthy","service":"api"}`
-- `POST /jobs` — inserts a pending job, returns `{"id":N,"status":"pending"}`
-- `GET /jobs` — returns job counts by status, e.g. `{"pending":0,"done":2}`
+PostgreSQL coordinates the services. There is no separate message broker
+in the current application.
 
-### Worker Service (`src/main/java/.../worker/WorkerMain.java`)
-- Polls `jobs` every 2 seconds for `status='pending'`
-- Uses `SELECT ... FOR UPDATE SKIP LOCKED` so multiple workers can coexist
-- Marks processed jobs as `status='done'`, records `picked_at` and `done_at`
-- Graceful shutdown via JVM shutdown hook
+### Components
 
-### Database (`db/init.sql`)
-- Single table `jobs` with status lifecycle: `pending → done`
-- Loaded automatically by the Postgres container on first start
+| Component | Source | Responsibility |
+|---|---|---|
+| API | `src/main/java/com/nokishohid/devsecops/api/ApiMain.java` | Accept jobs and return aggregate status counts |
+| Worker | `src/main/java/com/nokishohid/devsecops/worker/WorkerMain.java` | Select pending jobs and update their status |
+| Database helper | `src/main/java/com/nokishohid/devsecops/Database.java` | JDBC connections, schema creation, insertion, and counts |
+| Initial schema | `db/init.sql` | Define the jobs table and status index |
+| Local stack | `docker-compose.yml` | Configure PostgreSQL and build the two application services |
 
-### Runtime (`docker-compose.yml`)
-All three containers run with hardening applied:
-- `read_only: true` (api, worker)
-- `cap_drop: [ALL]`
-- `security_opt: [no-new-privileges:true]`
-- `tmpfs: /tmp` with `noexec,nosuid`
-- API port bound to `127.0.0.1:8081` only
+### Job Lifecycle
 
-### CI Enforcement
-The `multi-service-smoke` job in `.github/workflows/ci.yml`:
-- Spins up Postgres 16 as a GitHub service container
-- Runs `MultiServiceIntegrationTest` with `RUN_DB_TESTS=true`
-- Builds both `Dockerfile.api` and `Dockerfile.worker`
+1. A client submits a request to `POST /jobs`.
+2. The API stores its body as text in PostgreSQL.
+3. The API returns a job ID and pending status.
+4. The worker selects a pending job inside a database transaction.
+5. The worker marks it done and records processing timestamps.
+6. The worker commits the transaction.
 
-## Components
+The worker uses `FOR UPDATE SKIP LOCKED`. It waits two seconds when
+no job is processed. It does not transform or otherwise process the
+payload beyond updating status and timestamps.
 
-### Application (src/)
-- Java 17 REST service
-- Two endpoints: `/` (status) and `/health`
-- Security headers: CSP, X-Content-Type-Options, CORP, Cache-Control
-- Built with Maven, tested with JUnit (4 HTTP tests)
+Multiple-worker behavior has not been validated by the reviewed evidence.
 
-### Container (Dockerfile)
-- Multi-stage build (builder + runtime)
-- Alpine-based Java runtime
-- Non-root `appuser`
-- Minimal attack surface
+### API Behavior
 
-### CI/CD (.github/workflows/)
-- `ci.yml` — Maven build and unit tests
-- `codeql.yml` — SAST for Java
-- `gitleaks.yml` — secret detection
-- `trivy.yml` — container CVE scanning
-- `zap.yml` — DAST baseline
-- `sbom.yml` — CycloneDX generation
-- `container-release.yml` — sign + publish
+| Request | Current behavior |
+|---|---|
+| `GET /health` | Returns a static API health response |
+| `POST /jobs` | Stores the request body and returns an ID with pending status |
+| `GET /jobs` | Returns counts grouped by status |
 
-### Supply-Chain Security
-- Cosign keyless signing via GitHub OIDC
-- Rekor transparency log
-- CycloneDX SBOM as build artifact
-- Pinned action versions (full SHA)
+The health response does not check database readiness. Status groups
+without rows may be absent from the counts response.
 
-### Runtime Hardening
-- read-only root filesystem
-- tmpfs at /tmp with noexec,nosuid
-- all Linux capabilities dropped
-- no-new-privileges
-- CPU and memory limits
-- Local-only port binding
+There is no dedicated per-job status endpoint. The handler uses prefix
+routing without strict exact-path validation. Request bodies are not
+validated as JSON, and there is no explicit request-size limit.
 
-## Trust Boundaries
+### Database
 
-1. Developer workstation -> GitHub (TLS + auth)
-2. GitHub Actions -> Sigstore (OIDC + Fulcio + Rekor)
-3. GitHub Actions -> GHCR (GITHUB_TOKEN, scoped permissions)
-4. GHCR -> Runtime (image pull, signature verification at admission)
+The jobs table stores:
 
-## Data Flow
+- Job ID.
+- Payload text.
+- Status, initially pending.
+- Creation timestamp.
+- Pickup and completion timestamps.
 
-- No PII stored
-- No external API calls at runtime
-- All scanning data stays in GitHub Actions
-- SBOM retained as workflow artifact (90 days default)
+The PostgreSQL initialization script creates the schema for a new
+database. The API and worker also call the database helper's schema
+creation method during startup.
+
+## Local Runtime
+
+The Compose configuration defines three services on a shared bridge network.
+
+| Service | Build or image | Host exposure |
+|---|---|---|
+| API | `Dockerfile.api` | `127.0.0.1:8081` maps to container port 8080 |
+| Worker | `Dockerfile.worker` | No published port |
+| PostgreSQL | `postgres:16-alpine` | No published host port |
+
+Both application services wait for PostgreSQL's configured health check
+before startup. This does not establish ongoing application readiness.
+
+### Configured Restrictions
+
+The API and worker have:
+
+- Read-only root filesystems.
+- Temporary `/tmp` storage with `noexec` and `nosuid`.
+- All Linux capabilities dropped.
+- `no-new-privileges` enabled.
+
+These restrictions are not configured identically for PostgreSQL.
+CPU and memory limits are not present in the reviewed Compose file.
+
+The database credentials are development defaults. Use non-sensitive
+lab data. Durable database storage and recovery across container
+recreation require separate configuration and validation.
+
+## Continuous Integration
+
+The `ci.yml` workflow runs on pushes and pull requests to main,
+and supports manual execution.
+
+| Job | Configured actions | Coverage limit |
+|---|---|---|
+| Build and Test | Run Maven clean verify | Database test is skipped unless its environment guard is enabled |
+| Multi-service smoke test | Start PostgreSQL, enable database tests, build API and worker images | Does not start the application images |
+
+### Database Integration Test
+
+`MultiServiceIntegrationTest` runs when `RUN_DB_TESTS=true`.
+
+It checks:
+
+- Database connectivity.
+- Schema creation.
+- Job insertion and a positive returned ID.
+- Aggregate status counts.
+
+It does not call the API, execute the worker, or verify completion
+of the specific inserted job.
+
+Building both images is implemented. Full container-stack integration
+testing remains planned.
+
+## Security Workflow Coverage
+
+The repository contains separate workflows. They should not be
+represented as one sequential pipeline without verified dependencies.
+
+| Workflow | Role |
+|---|---|
+| `ci.yml` | Maven tests, database integration test, and application image builds |
+| `codeql.yml` | Source-code security analysis |
+| `gitleaks.yml` | Secret scanning |
+| `trivy.yml` | Root Dockerfile image vulnerability scan |
+| `zap.yml` | ZAP baseline scanning |
+| `sbom.yml` | Software inventory generation |
+| `container-release.yml` | Container release workflow |
+| `policy.yml` | Conftest command against the root Dockerfile |
+| `ai-triage.yml` | Advisory analysis of CodeQL findings |
+
+### Verified Configuration Boundaries
+
+- The reviewed Trivy command scans fixable HIGH/CRITICAL OS
+  vulnerabilities in the root Dockerfile image.
+- It excludes application dependency scanning.
+- It does not scan the separate API and worker images.
+- The reviewed Conftest command tests the root Dockerfile, even
+  though Kubernetes changes can trigger its workflow.
+- The reviewed workflows do not feed a Trivy report into
+  `policy/trivy.rego`.
+- A 30-day vulnerability-age rule is not established as enforced.
+- Reviewed action references use version tags rather than uniform
+  full commit-SHA pinning.
+
+Historical branch-protection evidence records three required checks.
+Current merge requirements must be confirmed in repository settings.
+
+## AI Triage and External Data Flow
+
+The AI triage workflow is configured to react to successful completion
+of a workflow named `CodeQL Security Scan`, or manual invocation.
+
+Its script reads a CodeQL SARIF artifact and, when findings are present,
+can send up to 10 findings and available surrounding source-code context
+to Groq.
+
+The script requests advisory classifications and fix suggestions.
+It posts a summary to a pull request when a PR number is available;
+otherwise, it prints the summary to workflow output.
+
+### Limitations
+
+- A no-findings run does not exercise the model request.
+- Classification accuracy requires independent evaluation.
+- The script does not automatically fix code or dismiss findings.
+- Source context must match the scanned commit; the workflow does
+  not explicitly select that commit for checkout.
+- The script does not implement general sensitive-data redaction
+  or repository-bound validation of SARIF file paths.
+- Manual execution requires a valid artifact source; the workflow's
+  run ID expression is derived from a workflow-run event.
+
+AI triage is separate from the API and worker runtime. The shared
+application code does not invoke an AI model.
+
+## Trust Boundaries and Data Handling
+
+| Boundary | Data or interaction |
+|---|---|
+| Client to API | Job payload submission and status-count requests |
+| API and worker to PostgreSQL | Payload storage and job status updates |
+| Repository to CI runner | Source checkout, builds, and tests |
+| AI triage to Groq | Finding details and available source-code context |
+| Release tooling to external services | Historical GHCR publishing and Sigstore signing interactions |
+
+The application accepts arbitrary payload text and does not prevent
+personal information from being stored. Scanning data does not all
+remain inside GitHub Actions because AI triage can send data to Groq.
+
+Artifact retention must be established from workflow configuration
+and repository settings. No project-wide retention period is assumed.
+
+## Deployment Evidence
+
+Render configuration and Kubernetes manifests exist in the repository.
+Their presence alone does not prove that the complete stack is deployed
+or that runtime admission policies are enforced.
+
+Historical container publishing and signing results must remain tied
+to their original image, commit, and workflow run. Signature verification
+during release does not establish verification at deployment admission.
+
+## Planned Phase 2 Architecture Validation
+
+- Build both service images and record their identities.
+- Scan both images for OS and application dependency vulnerabilities.
+- Start the API, worker, and PostgreSQL together in CI.
+- Submit a job through HTTP.
+- Verify that the same job reaches done within a bounded timeout.
+- Retain service logs and test results.
+- Run API-specific web security checks.
+- Generate a separate SBOM for each image.
+
+Completion requires passing evidence from the running stack and
+security reports tied to both service images.
+
+## Related Documentation
+
+- [Project README](../README.md)
+- [Project scope](../PROJECT-SCOPE.md)
+- [Policy documentation](POLICIES.md)
+- [Architecture decision records](adr/README.md)
+- [Historical CodeQL repair evidence](../screenshots/phase2-codeql-repair/README.md)
