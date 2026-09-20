@@ -4,5 +4,7 @@ resources:
   - default-deny.yaml
   - allow-dns.yaml
   - allow-api-ingress.yaml
+  - allow-api-egress.yaml
+  - allow-worker-egress.yaml
   - allow-postgres-ingress.yaml
   - allow-postgres-egress.yaml
