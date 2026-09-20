@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: worker
-          image: ai-assisted-devsecops-security-pipeline-worker:local
+          image: ai-assisted-devsecops-security-pipeline-worker:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_URL
