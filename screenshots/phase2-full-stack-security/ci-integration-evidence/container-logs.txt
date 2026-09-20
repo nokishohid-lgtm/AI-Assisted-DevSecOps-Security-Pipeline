@@ -1,0 +1,64 @@
+devsecops-worker  | worker: started, polling every 2s
+devsecops-worker  | worker: processed job 1
+devsecops-postgres  | The files belonging to this database system will be owned by user "postgres".
+devsecops-postgres  | This user must also own the server process.
+devsecops-postgres  | 
+devsecops-postgres  | The database cluster will be initialized with locale "en_US.utf8".
+devsecops-postgres  | The default database encoding has accordingly been set to "UTF8".
+devsecops-postgres  | The default text search configuration will be set to "english".
+devsecops-postgres  | 
+devsecops-postgres  | Data page checksums are disabled.
+devsecops-postgres  | 
+devsecops-postgres  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+devsecops-postgres  | creating subdirectories ... ok
+devsecops-postgres  | selecting dynamic shared memory implementation ... posix
+devsecops-postgres  | selecting default max_connections ... 100
+devsecops-postgres  | selecting default shared_buffers ... 128MB
+devsecops-postgres  | selecting default time zone ... UTC
+devsecops-postgres  | creating configuration files ... ok
+devsecops-postgres  | running bootstrap script ... ok
+devsecops-postgres  | sh: locale: not found
+devsecops-postgres  | 2026-09-20 11:02:18.641 UTC [35] WARNING:  no usable system locales were found
+devsecops-postgres  | performing post-bootstrap initialization ... ok
+devsecops-postgres  | syncing data to disk ... ok
+devsecops-postgres  | 
+devsecops-postgres  | 
+devsecops-postgres  | Success. You can now start the database server using:
+devsecops-postgres  | 
+devsecops-postgres  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+devsecops-postgres  | 
+devsecops-postgres  | initdb: warning: enabling "trust" authentication for local connections
+devsecops-postgres  | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+devsecops-postgres  | waiting for server to start....2026-09-20 11:02:19.300 UTC [41] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+devsecops-postgres  | 2026-09-20 11:02:19.301 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+devsecops-postgres  | 2026-09-20 11:02:19.303 UTC [44] LOG:  database system was shut down at 2026-09-20 11:02:18 UTC
+devsecops-postgres  | 2026-09-20 11:02:19.307 UTC [41] LOG:  database system is ready to accept connections
+devsecops-postgres  |  done
+devsecops-postgres  | server started
+devsecops-postgres  | CREATE DATABASE
+devsecops-postgres  | 
+devsecops-postgres  | 
+devsecops-postgres  | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/init.sql
+devsecops-postgres  | CREATE TABLE
+devsecops-postgres  | CREATE INDEX
+devsecops-postgres  | 
+devsecops-postgres  | 
+devsecops-postgres  | waiting for server to shut down...2026-09-20 11:02:19.460 UTC [41] LOG:  received fast shutdown request
+devsecops-postgres  | .2026-09-20 11:02:19.460 UTC [41] LOG:  aborting any active transactions
+devsecops-postgres  | 2026-09-20 11:02:19.462 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+devsecops-postgres  | 2026-09-20 11:02:19.463 UTC [42] LOG:  shutting down
+devsecops-postgres  | 2026-09-20 11:02:19.464 UTC [42] LOG:  checkpoint starting: shutdown immediate
+devsecops-postgres  | 2026-09-20 11:02:19.553 UTC [42] LOG:  checkpoint complete: wrote 933 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.063 s, sync=0.026 s, total=0.090 s; sync files=307, longest=0.010 s, average=0.001 s; distance=4307 kB, estimate=4307 kB; lsn=0/192BEF8, redo lsn=0/192BEF8
+devsecops-postgres  | 2026-09-20 11:02:19.559 UTC [41] LOG:  database system is shut down
+devsecops-postgres  |  done
+devsecops-postgres  | server stopped
+devsecops-postgres  | 
+devsecops-postgres  | PostgreSQL init process complete; ready for start up.
+devsecops-postgres  | 
+devsecops-postgres  | 2026-09-20 11:02:19.576 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+devsecops-postgres  | 2026-09-20 11:02:19.577 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+devsecops-postgres  | 2026-09-20 11:02:19.577 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+devsecops-postgres  | 2026-09-20 11:02:19.578 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+devsecops-postgres  | 2026-09-20 11:02:19.580 UTC [59] LOG:  database system was shut down at 2026-09-20 11:02:19 UTC
+devsecops-postgres  | 2026-09-20 11:02:19.583 UTC [1] LOG:  database system is ready to accept connections
+devsecops-api       | api listening on :8080

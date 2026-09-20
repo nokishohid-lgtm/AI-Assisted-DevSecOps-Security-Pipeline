@@ -1,0 +1,4 @@
+NAME                 IMAGE                                            COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+devsecops-api        ai-assisted-devsecops-security-pipeline-api      "java -cp classes:li…"   api        11 seconds ago   Up 4 seconds              127.0.0.1:8081->8080/tcp
+devsecops-postgres   postgres:16-alpine                               "docker-entrypoint.s…"   postgres   11 seconds ago   Up 10 seconds (healthy)   5432/tcp
+devsecops-worker     ai-assisted-devsecops-security-pipeline-worker   "java -cp classes:li…"   worker     11 seconds ago   Up 4 seconds              
