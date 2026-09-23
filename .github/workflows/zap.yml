@@ -13,63 +13,159 @@ permissions:
 jobs:
   zap-scan:
     name: Build, Run, and Scan Application
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+
+    env:
+      COMPOSE_PROJECT_NAME: zapci
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Build Docker image
-        run: docker build --pull -t devsecops-security-app:${{ github.sha }} .
-
-      - name: Start hardened application container
-        run: |
-          docker run -d \
-            --name devsecops-security-container \
-            --read-only \
-            --tmpfs /tmp:rw,noexec,nosuid,size=64m \
-            --cap-drop ALL \
-            --security-opt no-new-privileges:true \
-            --memory 256m \
-            --cpus 1.0 \
-            -p 8080:8080 \
-            devsecops-security-app:${{ github.sha }}
-
-      - name: Verify application health
-        run: |
-          for attempt in {1..30}; do
-            if curl --fail http://localhost:8080/health; then
-              exit 0
-            fi
-            sleep 2
-          done
-          docker logs devsecops-security-container
-          exit 1
-
-      - name: Create ZAP report directory
+      - name: Prepare report directory
         run: |
           mkdir -p zap-reports
           chmod 777 zap-reports
-      - name: Run OWASP ZAP baseline scan
-        run: |
-          docker run --rm \
-            --add-host host.docker.internal:host-gateway \
-            -v "${{ github.workspace }}/zap-reports:/zap/wrk/:rw" \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
-            -t http://host.docker.internal:8080 \
-            -r zap-baseline-report.html \
-            -I
+          git rev-parse HEAD > zap-reports/commit-sha.txt
+          cp security/openapi.yaml zap-reports/openapi.yaml
 
-      - name: Upload ZAP security report
+      - name: Build API and worker images
+        run: docker compose build --pull api worker
+
+      - name: Start application stack
+        run: docker compose up -d --no-build
+
+      - name: Verify API readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              --max-time 5 \
+              http://127.0.0.1:8081/health \
+              > zap-reports/health.json; then
+              if jq -e '
+                .status == "healthy" and .service == "api"
+              ' zap-reports/health.json > /dev/null; then
+                echo "API health verified."
+                exit 0
+              fi
+            fi
+            sleep 2
+          done
+
+          echo "::error::API did not become ready."
+          exit 1
+
+      - name: Verify GET and POST jobs endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          code=$(curl --silent --show-error \
+            --max-time 10 \
+            --output zap-reports/job-response.json \
+            --write-out '%{http_code}' \
+            --request POST \
+            --header 'Content-Type: application/json' \
+            --data '{"task":"zap-readiness-test"}' \
+            http://127.0.0.1:8081/jobs)
+
+          test "$code" = "201"
+          jq -e '
+            (.id | type == "number") and .status == "pending"
+          ' zap-reports/job-response.json > /dev/null
+
+          code=$(curl --silent --show-error \
+            --max-time 10 \
+            --output zap-reports/job-counts.json \
+            --write-out '%{http_code}' \
+            http://127.0.0.1:8081/jobs)
+
+          test "$code" = "200"
+          jq -e 'type == "object"' \
+            zap-reports/job-counts.json > /dev/null
+
+          echo "GET /health, GET /jobs, and POST /jobs verified." \
+            | tee zap-reports/endpoint-checks.txt
+
+      - name: Prepare ZAP scanner
+        run: |
+          docker pull ghcr.io/zaproxy/zaproxy:stable
+          docker image inspect ghcr.io/zaproxy/zaproxy:stable \
+            --format '{{json .RepoDigests}}' \
+            > zap-reports/zap-image-digest.txt
+
+      - name: Run ZAP API scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          scan_status=0
+
+          timeout 20m docker run --rm \
+            --name devsecops-zap-scanner \
+            --network zapci_devsecops \
+            -v "${{ github.workspace }}/security:/zap/spec:ro" \
+            -v "${{ github.workspace }}/zap-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-api-scan.py \
+            -t /zap/spec/openapi.yaml \
+            -f openapi \
+            -r zap-api-report.html \
+            -J zap-api-report.json \
+            -w zap-api-report.md \
+            -T 5 \
+            > zap-reports/zap-console.log 2>&1 \
+            || scan_status=$?
+
+          cat zap-reports/zap-console.log
+          echo "$scan_status" > zap-reports/zap-exit-code.txt
+
+          test -s zap-reports/zap-api-report.html
+          test -s zap-reports/zap-api-report.json
+          jq -e '
+            (.site | type == "array") and (.site | length > 0)
+          ' zap-reports/zap-api-report.json > /dev/null
+
+          case "$scan_status" in
+            0)
+              echo "ZAP scan completed without WARN or FAIL results."
+              ;;
+            1)
+              echo "::error::ZAP reported FAIL results. Review the reports."
+              ;;
+            2)
+              echo "::error::ZAP reported warnings requiring review."
+              ;;
+            *)
+              echo "::error::ZAP execution failed with exit code ${scan_status}."
+              ;;
+          esac
+
+          exit "$scan_status"
+
+      - name: Collect application diagnostics
+        if: always()
+        run: |
+          mkdir -p zap-reports
+          docker compose ps -a \
+            > zap-reports/container-status.txt 2>&1
+          docker compose logs --no-color \
+            > zap-reports/container-logs.txt 2>&1
+
+      - name: Upload API scan reports and evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: zap-security-report
-          path: zap-reports/zap-baseline-report.html
-          if-no-files-found: warn
+          name: zap-api-security-report
+          path: zap-reports/
+          if-no-files-found: error
+          retention-days: 30
 
-      - name: Stop application container
+      - name: Clean up CI containers
         if: always()
-        run: docker rm -f devsecops-security-container || true
+        run: |
+          docker rm -f devsecops-zap-scanner || true
+          docker compose down --volumes --remove-orphans

@@ -1,0 +1,85 @@
+openapi: 3.0.3
+
+info:
+  title: DevSecOps Lab API
+  version: 1.0.0
+  description: API definition for testing the isolated CI application stack.
+
+servers:
+  - url: http://api:8080
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Read API health
+      responses:
+        "200":
+          description: API health response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+              example:
+                status: healthy
+                service: api
+
+  /jobs:
+    get:
+      operationId: getJobCounts
+      summary: Read aggregate job counts by status
+      responses:
+        "200":
+          description: Counts for job statuses present in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+              example:
+                pending: 1
+                done: 2
+        "500":
+          description: Database or application error
+
+    post:
+      operationId: submitJob
+      summary: Submit a demonstration job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              properties:
+                task:
+                  type: string
+                  example: zap-ci-test
+            example:
+              task: zap-ci-test
+      responses:
+        "201":
+          description: Job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                  status:
+                    type: string
+              example:
+                id: 1
+                status: pending
+        "500":
+          description: Database or application error
