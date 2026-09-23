@@ -1,0 +1,2 @@
+api: 0 fixable HIGH/CRITICAL findings
+worker: 0 fixable HIGH/CRITICAL findings
