@@ -1,0 +1,6 @@
+# Reviewed false positives: public Git commit SHA in Trivy API image tags.
+# API report lines 9, 30, 32, and 215 contain image identifiers, not credentials.
+15ec014b596e5a710984b0ecd8a5c23d182b3968:screenshots/phase2-multiservice-security/trivy-reports/api-trivy.json:generic-api-key:9
+15ec014b596e5a710984b0ecd8a5c23d182b3968:screenshots/phase2-multiservice-security/trivy-reports/api-trivy.json:generic-api-key:30
+15ec014b596e5a710984b0ecd8a5c23d182b3968:screenshots/phase2-multiservice-security/trivy-reports/api-trivy.json:generic-api-key:32
+15ec014b596e5a710984b0ecd8a5c23d182b3968:screenshots/phase2-multiservice-security/trivy-reports/api-trivy.json:generic-api-key:215
