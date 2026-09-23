@@ -14,25 +14,147 @@ jobs:
   trivy-scan:
     name: Build and Scan Container
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Build Docker image
-        run: docker build --pull -t devsecops-security-app:${{ github.sha }} .
-
-      - name: Scan for HIGH and CRITICAL vulnerabilities
+      - name: Build API image
         run: |
-          docker run --rm \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            aquasec/trivy:latest image \
-            --scanners vuln \
-            --pkg-types os \
-            --timeout 15m \
-            --severity HIGH,CRITICAL \
-            --ignore-unfixed \
-            --exit-code 1 \
-            --format table \
-            devsecops-security-app:${{ github.sha }}
+          docker build --pull \
+            -f Dockerfile.api \
+            -t devsecops-api:${{ github.sha }} .
+
+      - name: Build worker image
+        run: |
+          docker build --pull \
+            -f Dockerfile.worker \
+            -t devsecops-worker:${{ github.sha }} .
+
+      - name: Prepare scanner and report directories
+        run: |
+          mkdir -p trivy-reports
+          docker pull aquasec/trivy:latest
+          docker run --rm aquasec/trivy:latest --version \
+            | tee trivy-reports/scanner-version.txt
+          git rev-parse HEAD > trivy-reports/commit-sha.txt
+
+      - name: Scan API and worker for OS and library vulnerabilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          overall_status=0
+
+          for service in api worker; do
+            echo "::group::Scan ${service}"
+
+            if docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v trivy-cache:/root/.cache/trivy \
+              -v "${{ github.workspace }}/trivy-reports:/reports" \
+              aquasec/trivy:latest image \
+              --image-src docker \
+              --scanners vuln \
+              --pkg-types os,library \
+              --timeout 15m \
+              --exit-code 0 \
+              --format json \
+              --output "/reports/${service}-trivy.json" \
+              "devsecops-${service}:${{ github.sha }}"; then
+
+              if jq -e '
+                .SchemaVersion != null
+                and (.Results | type == "array")
+                and (.Results | length > 0)
+              ' "trivy-reports/${service}-trivy.json" > /dev/null; then
+                echo "Report generated for ${service}."
+              else
+                echo "::error::Missing or invalid results for ${service}."
+                overall_status=1
+              fi
+            else
+              echo "::error::Trivy could not complete the ${service} scan."
+              overall_status=1
+            fi
+
+            echo "::endgroup::"
+          done
+
+          exit "$overall_status"
+
+      - name: Enforce vulnerability gate for both services
+        shell: bash
+        run: |
+          set -euo pipefail
+          overall_status=0
+
+          for service in api worker; do
+            report="trivy-reports/${service}-trivy.json"
+
+            count=$(jq '[
+              .Results[]?
+              | .Vulnerabilities[]?
+              | select(
+                  (.Severity == "HIGH" or .Severity == "CRITICAL")
+                  and ((.FixedVersion // "") != "")
+                )
+            ] | length' "$report")
+
+            echo "${service}: ${count} fixable HIGH/CRITICAL findings" \
+              | tee -a trivy-reports/gate-summary.txt
+
+            jq -r '
+              .Results[]?
+              | .Vulnerabilities[]?
+              | select(
+                  (.Severity == "HIGH" or .Severity == "CRITICAL")
+                  and ((.FixedVersion // "") != "")
+                )
+              | [
+                  .VulnerabilityID,
+                  .PkgName,
+                  .InstalledVersion,
+                  .FixedVersion,
+                  .Severity
+                ]
+              | @tsv
+            ' "$report"
+
+            if [ "$count" -gt 0 ]; then
+              echo "::error::${service} failed the vulnerability gate."
+              overall_status=1
+            fi
+          done
+
+          exit "$overall_status"
+
+      - name: Upload API vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-trivy-report
+          path: trivy-reports/api-trivy.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload worker vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-trivy-report
+          path: trivy-reports/worker-trivy.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload scan metadata and gate summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-scan-summary
+          path: |
+            trivy-reports/scanner-version.txt
+            trivy-reports/commit-sha.txt
+            trivy-reports/gate-summary.txt
+          if-no-files-found: error
+          retention-days: 30
