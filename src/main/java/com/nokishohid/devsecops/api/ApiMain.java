@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * API service: exposes /health, /jobs (POST), and /jobs/stats (GET).
+ * API service: exposes /health and /jobs.
  * Reuses the same hardening headers as SecurityApplication.
  */
 public final class ApiMain {
@@ -23,8 +23,13 @@ public final class ApiMain {
         DB.migrate();
 
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+
         server.createContext("/health", ApiMain::health);
         server.createContext("/jobs", ApiMain::jobs);
+
+        // Handles unknown paths with a consistent JSON 404 response.
+        server.createContext("/", ApiMain::notFound);
+
         server.setExecutor(null);
         server.start();
 
@@ -32,41 +37,119 @@ public final class ApiMain {
     }
 
     private static void health(HttpExchange ex) throws IOException {
-        respond(ex, 200, "{\"status\":\"healthy\",\"service\":\"api\"}");
+        respond(
+                ex,
+                200,
+                "{\"status\":\"healthy\",\"service\":\"api\"}"
+        );
     }
 
     private static void jobs(HttpExchange ex) throws IOException {
         try {
             if ("POST".equalsIgnoreCase(ex.getRequestMethod())) {
-                String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-                if (body.isBlank()) body = "{}";
+
+                String body = new String(
+                        ex.getRequestBody().readAllBytes(),
+                        StandardCharsets.UTF_8
+                );
+
+                if (body.isBlank()) {
+                    body = "{}";
+                }
+
                 long id = DB.enqueue(body);
-                respond(ex, 201, "{\"id\":" + id + ",\"status\":\"pending\"}");
+
+                respond(
+                        ex,
+                        201,
+                        "{\"id\":" + id + ",\"status\":\"pending\"}"
+                );
+
             } else if ("GET".equalsIgnoreCase(ex.getRequestMethod())) {
+
                 Map<String, Long> counts = DB.countsByStatus();
+
                 StringBuilder sb = new StringBuilder("{");
                 boolean first = true;
+
                 for (Map.Entry<String, Long> e : counts.entrySet()) {
-                    if (!first) sb.append(",");
-                    sb.append("\"").append(e.getKey()).append("\":").append(e.getValue());
+                    if (!first) {
+                        sb.append(",");
+                    }
+
+                    sb.append("\"")
+                            .append(e.getKey())
+                            .append("\":")
+                            .append(e.getValue());
+
                     first = false;
                 }
+
                 sb.append("}");
+
                 respond(ex, 200, sb.toString());
+
             } else {
-                respond(ex, 405, "{\"error\":\"method not allowed\"}");
+                respond(
+                        ex,
+                        405,
+                        "{\"error\":\"method not allowed\"}"
+                );
             }
+
         } catch (Exception e) {
-            respond(ex, 500, "{\"error\":\"" + e.getClass().getSimpleName() + "\"}");
+            respond(
+                    ex,
+                    500,
+                    "{\"error\":\"" + e.getClass().getSimpleName() + "\"}"
+            );
         }
     }
 
-    private static void respond(HttpExchange ex, int code, String body) throws IOException {
+    /**
+     * Returns a JSON response for URLs that are not defined by the API.
+     */
+    private static void notFound(HttpExchange ex) throws IOException {
+        respond(
+                ex,
+                404,
+                "{\"error\":\"not found\"}"
+        );
+    }
+
+    /**
+     * Sends a JSON response with common security headers.
+     */
+    private static void respond(
+            HttpExchange ex,
+            int code,
+            String body
+    ) throws IOException {
+
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        ex.getResponseHeaders().add("Content-Type", "application/json");
-        ex.getResponseHeaders().add("X-Content-Type-Options", "nosniff");
-        ex.getResponseHeaders().add("Cache-Control", "no-store");
+
+        ex.getResponseHeaders().add(
+                "Content-Type",
+                "application/json"
+        );
+
+        ex.getResponseHeaders().add(
+                "X-Content-Type-Options",
+                "nosniff"
+        );
+
+        ex.getResponseHeaders().add(
+                "Cross-Origin-Resource-Policy",
+                "same-origin"
+        );
+
+        ex.getResponseHeaders().add(
+                "Cache-Control",
+                "no-store"
+        );
+
         ex.sendResponseHeaders(code, bytes.length);
+
         try (OutputStream os = ex.getResponseBody()) {
             os.write(bytes);
         }
