@@ -14,11 +14,16 @@ public final class CodeQLCommandInjectionFixture {
     private CodeQLCommandInjectionFixture() {
     }
 
-    public static void executeControlledTest(String userControlledCommand)
-            throws IOException {
+    public static void executeControlledTest() throws IOException {
 
         // INTENTIONALLY VULNERABLE:
+        // Environment data represents an externally controlled source.
         // Used only to validate CodeQL command-injection detection.
-        Runtime.getRuntime().exec(userControlledCommand);
+        String userControlledCommand =
+                System.getenv("PHASE3_CODEQL_TEST_COMMAND");
+
+        if (userControlledCommand != null) {
+            Runtime.getRuntime().exec(userControlledCommand);
+        }
     }
 }
