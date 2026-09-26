@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[[rules]]
+id = "phase3-synthetic-secret"
+description = "Phase 3 synthetic secret used only to validate the Gitleaks security gate"
+regex = '''PHASE3_GITLEAKS_TEST_SECRET_[A-Z0-9]{16}'''
+keywords = ["PHASE3_GITLEAKS_TEST_SECRET_"]
