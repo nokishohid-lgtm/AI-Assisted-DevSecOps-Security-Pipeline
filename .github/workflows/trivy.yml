@@ -86,48 +86,21 @@ jobs:
       - name: Enforce vulnerability gate for both services
         shell: bash
         run: |
-          set -euo pipefail
-          overall_status=0
+          set -o pipefail
 
-          for service in api worker; do
-            report="trivy-reports/${service}-trivy.json"
+          bash security-tests/trivy/validate-gate.sh \
+            trivy-reports/api-trivy.json \
+            trivy-reports/worker-trivy.json \
+            | tee trivy-reports/gate-summary.txt
 
-            count=$(jq '[
-              .Results[]?
-              | .Vulnerabilities[]?
-              | select(
-                  (.Severity == "HIGH" or .Severity == "CRITICAL")
-                  and ((.FixedVersion // "") != "")
-                )
-            ] | length' "$report")
+      - name: Phase 3 controlled vulnerability gate validation
+        shell: bash
+        run: |
+          echo "Running Phase 3 controlled negative test."
+          echo "The following report contains synthetic test data only."
 
-            echo "${service}: ${count} fixable HIGH/CRITICAL findings" \
-              | tee -a trivy-reports/gate-summary.txt
-
-            jq -r '
-              .Results[]?
-              | .Vulnerabilities[]?
-              | select(
-                  (.Severity == "HIGH" or .Severity == "CRITICAL")
-                  and ((.FixedVersion // "") != "")
-                )
-              | [
-                  .VulnerabilityID,
-                  .PkgName,
-                  .InstalledVersion,
-                  .FixedVersion,
-                  .Severity
-                ]
-              | @tsv
-            ' "$report"
-
-            if [ "$count" -gt 0 ]; then
-              echo "::error::${service} failed the vulnerability gate."
-              overall_status=1
-            fi
-          done
-
-          exit "$overall_status"
+          bash security-tests/trivy/validate-gate.sh \
+            security-tests/trivy/synthetic-vulnerable-report.json
 
       - name: Upload API vulnerability report
         if: always()
