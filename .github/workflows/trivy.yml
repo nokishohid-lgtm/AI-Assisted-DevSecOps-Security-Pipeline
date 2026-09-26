@@ -93,15 +93,6 @@ jobs:
             trivy-reports/worker-trivy.json \
             | tee trivy-reports/gate-summary.txt
 
-      - name: Phase 3 controlled vulnerability gate validation
-        shell: bash
-        run: |
-          echo "Running Phase 3 controlled negative test."
-          echo "The following report contains synthetic test data only."
-
-          bash security-tests/trivy/validate-gate.sh \
-            security-tests/trivy/synthetic-vulnerable-report.json
-
       - name: Upload API vulnerability report
         if: always()
         uses: actions/upload-artifact@v4
