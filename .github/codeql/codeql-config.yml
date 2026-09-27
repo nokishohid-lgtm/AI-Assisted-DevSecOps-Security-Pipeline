@@ -1,5 +1,4 @@
-name: Phase 3 CodeQL Validation
+name: Phase 3 CodeQL Diagnostic Validation
 
-packs:
-  java:
-    - codeql/java-queries:Security/CWE/CWE-078/ExecTainted.ql
+queries:
+  - uses: ./.github/codeql/queries/FindRuntimeExec.ql
