@@ -1,4 +1,6 @@
-name: Phase 3 CodeQL Diagnostic Validation
+name: Phase 3 CodeQL Validation
+
+threat-models: local
 
 queries:
-  - uses: ./.github/codeql/queries/FindRuntimeExec.ql
+  - uses: security-extended
