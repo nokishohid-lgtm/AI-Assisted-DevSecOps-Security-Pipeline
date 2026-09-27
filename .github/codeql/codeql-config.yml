@@ -1,4 +1,5 @@
 name: Phase 3 CodeQL Validation
 
-queries:
-  - uses: codeql/java-queries:Security/CWE/CWE-078/ExecTainted.ql
+packs:
+  java:
+    - codeql/java-queries:Security/CWE/CWE-078/ExecTainted.ql
