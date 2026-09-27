@@ -1,13 +1,15 @@
 /**
- * @name Find any exec method call
- * @description Diagnostic query to confirm CodeQL extracts an exec method call.
+ * @name Find method calls in CodeQL validation fixture
+ * @description Diagnostic query to confirm CodeQL extracts calls from the controlled fixture.
  * @kind problem
  * @problem.severity warning
- * @id custom/find-any-exec
+ * @id custom/find-fixture-method-calls
  */
 
 import java
 
 from MethodAccess call
-where call.getMethod().getName() = "exec"
-select call, "CodeQL found a method call named exec."
+where
+  call.getEnclosingCallable().getDeclaringType().getName() =
+    "CodeQLCommandInjectionFixture"
+select call, "CodeQL found a method call inside CodeQLCommandInjectionFixture."
