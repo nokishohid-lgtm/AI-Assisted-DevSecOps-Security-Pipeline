@@ -14,7 +14,7 @@ public final class CodeQLCommandInjectionFixture {
     private CodeQLCommandInjectionFixture() {
     }
 
-    public static void executeControlledTest() throws IOException {
+    public static void main(String[] args) throws IOException {
         String script = System.getenv("SCRIPTNAME");
 
         if (script != null) {
