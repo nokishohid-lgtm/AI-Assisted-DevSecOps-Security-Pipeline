@@ -1,4 +1,4 @@
-﻿package com.nokishohid.devsecops.securitytest;
+package com.nokishohid.devsecops.securitytest;
 
 import java.io.IOException;
 
