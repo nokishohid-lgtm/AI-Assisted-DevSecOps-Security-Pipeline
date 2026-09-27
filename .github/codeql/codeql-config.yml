@@ -1,0 +1,6 @@
+name: CodeQL Security Configuration
+
+threat-models: local
+
+queries:
+  - uses: security-extended
