@@ -1,4 +1,4 @@
-name: Phase 3 CodeQL Validation
+name: CodeQL Security Configuration
 
 threat-models: local
 
