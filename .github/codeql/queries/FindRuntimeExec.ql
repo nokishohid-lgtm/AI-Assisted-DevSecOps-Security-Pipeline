@@ -1,15 +1,13 @@
 /**
- * @name Find Runtime.exec calls
- * @description Diagnostic query for Phase 3 CodeQL validation.
+ * @name Find any exec method call
+ * @description Diagnostic query to confirm CodeQL extracts an exec method call.
  * @kind problem
  * @problem.severity warning
- * @id custom/find-runtime-exec
+ * @id custom/find-any-exec
  */
 
 import java
 
 from MethodAccess call
-where
-  call.getMethod().getDeclaringType().hasQualifiedName("java.lang", "Runtime") and
-  call.getMethod().getName() = "exec"
-select call, "Runtime.exec call found by diagnostic CodeQL query."
+where call.getMethod().getName() = "exec"
+select call, "CodeQL found a method call named exec."
