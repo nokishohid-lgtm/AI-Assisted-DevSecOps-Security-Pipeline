@@ -134,11 +134,6 @@ public final class ApiMain {
         );
 
         ex.getResponseHeaders().add(
-                "X-Content-Type-Options",
-                "nosniff"
-        );
-
-        ex.getResponseHeaders().add(
                 "Cross-Origin-Resource-Policy",
                 "same-origin"
         );
