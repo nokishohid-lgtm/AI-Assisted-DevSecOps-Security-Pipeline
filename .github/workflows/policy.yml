@@ -25,4 +25,4 @@ jobs:
           sudo mv conftest /usr/local/bin/
 
       - name: Run policy tests on Dockerfile
-        run: conftest test --policy policy Dockerfile
+        run: conftest test --policy policy --namespace docker Dockerfile
