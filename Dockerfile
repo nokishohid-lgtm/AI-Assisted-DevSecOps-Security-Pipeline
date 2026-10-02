@@ -18,7 +18,7 @@ RUN apk upgrade --no-cache && \
 COPY --from=build --chown=appuser:appgroup \
     /workspace/target/classes ./classes
 
-USER root
+USER appuser
 
 EXPOSE 8080
 
