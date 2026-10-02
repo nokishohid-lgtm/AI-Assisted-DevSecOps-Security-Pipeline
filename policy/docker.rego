@@ -15,12 +15,13 @@ deny[msg] {
 
 # P-03: Non-root USER required
 deny[msg] {
-  not input.config.User
+  not input.user
   msg := "Dockerfile must set a non-root USER"
 }
 
 deny[msg] {
-  input.config.User == "root"
+  user := input.user[_]
+  lower(user.Value) == "root"
   msg := "Dockerfile must not run as root"
 }
 
