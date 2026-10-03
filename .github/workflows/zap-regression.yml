@@ -21,11 +21,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      - name: Prepare report directory
+        shell: bash
+        run: |
+          mkdir -p zap-regression-reports
+          chmod 777 zap-regression-reports
+          git rev-parse HEAD > zap-regression-reports/commit-sha.txt
+
       - name: Convert secure API to controlled vulnerable state
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path(
               "src/main/java/com/nokishohid/devsecops/api/ApiMain.java"
@@ -33,19 +41,20 @@ jobs:
 
           text = path.read_text()
 
-          secure_header = '''        ex.getResponseHeaders().add(
-                  "X-Content-Type-Options",
-                  "nosniff"
-          );
+          pattern = re.compile(
+              r'\s*ex\.getResponseHeaders\(\)\.add\(\s*'
+              r'"X-Content-Type-Options",\s*'
+              r'"nosniff"\s*'
+              r'\);\s*'
+          )
 
-          '''
+          text, count = pattern.subn("\n", text, count=1)
 
-          if secure_header not in text:
+          if count != 1:
               raise SystemExit(
                   "Expected X-Content-Type-Options security header block was not found."
               )
 
-          text = text.replace(secure_header, "", 1)
           path.write_text(text)
           PY
 
@@ -56,13 +65,6 @@ jobs:
           fi
 
           echo "PASS: Controlled vulnerable API state created."
-
-      - name: Prepare report directory
-        shell: bash
-        run: |
-          mkdir -p zap-regression-reports
-          chmod 777 zap-regression-reports
-          git rev-parse HEAD > zap-regression-reports/commit-sha.txt
 
       - name: Build API and worker images
         run: docker compose build --pull api worker
@@ -119,6 +121,7 @@ jobs:
             || scan_status=$?
 
           cat zap-regression-reports/zap-console.log
+
           echo "${scan_status}" \
             > zap-regression-reports/zap-exit-code.txt
 
