@@ -3,6 +3,10 @@ name: CodeQL Detection Regression
 "on":
   pull_request:
     branches: ["main"]
+    paths:
+      - ".github/workflows/codeql-regression.yml"
+      - ".github/codeql/**"
+      - "security-tests/codeql/**"
   workflow_dispatch:
 
 permissions:
