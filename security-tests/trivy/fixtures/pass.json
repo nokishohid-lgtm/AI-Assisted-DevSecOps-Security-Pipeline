@@ -1,0 +1,24 @@
+{
+  "SchemaVersion": 2,
+  "Results": [
+    {
+      "Target": "phase4-pass-fixture",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-PHASE4-LOW",
+          "PkgName": "demo-low",
+          "InstalledVersion": "1.0",
+          "FixedVersion": "1.1",
+          "Severity": "LOW"
+        },
+        {
+          "VulnerabilityID": "CVE-PHASE4-HIGH-NOFIX",
+          "PkgName": "demo-high",
+          "InstalledVersion": "1.0",
+          "FixedVersion": "",
+          "Severity": "HIGH"
+        }
+      ]
+    }
+  ]
+}
