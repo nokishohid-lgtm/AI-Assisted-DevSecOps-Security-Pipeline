@@ -21,21 +21,30 @@ jobs:
       - name: Generate runtime-only vulnerable fixture
         shell: bash
         run: |
-          mkdir -p src/main/java/com/nokishohid/devsecops/phase4
+          mkdir -p src/main/java/com/nokishohid/devsecops/securitytest
 
-          cat > src/main/java/com/nokishohid/devsecops/phase4/CodeQLRegressionFixture.java <<'EOF'
-          package com.nokishohid.devsecops.phase4;
+          cat > src/main/java/com/nokishohid/devsecops/securitytest/CodeQLCommandInjectionFixture.java <<'EOF'
+          package com.nokishohid.devsecops.securitytest;
 
-          public final class CodeQLRegressionFixture {
+          import java.io.IOException;
 
-              private CodeQLRegressionFixture() {
+          /**
+           * Phase 4 CodeQL regression validation fixture.
+           *
+           * TEST CODE ONLY.
+           * Generated only during CI execution.
+           * Never committed to the repository.
+           */
+          public final class CodeQLCommandInjectionFixture {
+
+              private CodeQLCommandInjectionFixture() {
               }
 
-              public static void main(String[] args) throws Exception {
-                  String command = System.getenv("PHASE4_CODEQL_COMMAND");
+              public static void main(String[] args) throws IOException {
+                  String script = System.getenv("SCRIPTNAME");
 
-                  if (command != null) {
-                      Runtime.getRuntime().exec(command);
+                  if (script != null) {
+                      Runtime.getRuntime().exec(script);
                   }
               }
           }
@@ -109,5 +118,5 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -f src/main/java/com/nokishohid/devsecops/phase4/CodeQLRegressionFixture.java
-          rmdir src/main/java/com/nokishohid/devsecops/phase4 2>/dev/null || true
+          rm -f src/main/java/com/nokishohid/devsecops/securitytest/CodeQLCommandInjectionFixture.java
+          rmdir src/main/java/com/nokishohid/devsecops/securitytest 2>/dev/null || true
