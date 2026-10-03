@@ -1,0 +1,175 @@
+name: ZAP Detection Regression
+
+"on":
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zap-regression:
+    name: Validate Missing Security Header Detection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+
+    env:
+      COMPOSE_PROJECT_NAME: zapregression
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Prepare report directory
+        shell: bash
+        run: |
+          mkdir -p zap-regression-reports
+          chmod 777 zap-regression-reports
+          git rev-parse HEAD > zap-regression-reports/commit-sha.txt
+
+      - name: Convert secure API to controlled vulnerable state
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path(
+              "src/main/java/com/nokishohid/devsecops/api/ApiMain.java"
+          )
+
+          text = path.read_text()
+
+          pattern = re.compile(
+              r'\s*ex\.getResponseHeaders\(\)\.add\(\s*'
+              r'"X-Content-Type-Options",\s*'
+              r'"nosniff"\s*'
+              r'\);\s*'
+          )
+
+          text, count = pattern.subn("\n", text, count=1)
+
+          if count != 1:
+              raise SystemExit(
+                  "Expected X-Content-Type-Options security header block was not found."
+              )
+
+          path.write_text(text)
+          PY
+
+          if grep -q '"X-Content-Type-Options"' \
+            src/main/java/com/nokishohid/devsecops/api/ApiMain.java; then
+            echo "::error::Controlled header removal failed."
+            exit 1
+          fi
+
+          echo "PASS: Controlled vulnerable API state created."
+
+      - name: Build API and worker images
+        run: docker compose build --pull api worker
+
+      - name: Start application stack
+        run: docker compose up -d --no-build
+
+      - name: Verify API readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              --max-time 5 \
+              http://127.0.0.1:8081/health \
+              > zap-regression-reports/health.json; then
+
+              echo "API ready."
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          echo "::error::API did not become ready."
+          exit 1
+
+      - name: Prepare ZAP scanner
+        run: |
+          docker pull ghcr.io/zaproxy/zaproxy:stable
+
+      - name: Run controlled ZAP regression scan
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          scan_status=0
+
+          timeout 20m docker run --rm \
+            --name devsecops-zap-regression \
+            --network zapregression_devsecops \
+            -v "${{ github.workspace }}/security:/zap/spec:ro" \
+            -v "${{ github.workspace }}/zap-regression-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-api-scan.py \
+            -t /zap/spec/openapi.yaml \
+            -f openapi \
+            -r zap-regression-report.html \
+            -J zap-regression-report.json \
+            -w zap-regression-report.md \
+            -T 5 \
+            > zap-regression-reports/zap-console.log 2>&1 \
+            || scan_status=$?
+
+          cat zap-regression-reports/zap-console.log
+
+          echo "${scan_status}" \
+            > zap-regression-reports/zap-exit-code.txt
+
+          test -s zap-regression-reports/zap-regression-report.json
+
+      - name: Assert missing security header detection
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          REPORT="zap-regression-reports/zap-regression-report.json"
+
+          MATCH_COUNT="$(jq '[
+            .. | objects
+            | select(
+                (.alert? // "")
+                | test("X-Content-Type-Options"; "i")
+              )
+          ] | length' "${REPORT}")"
+
+          echo "X-Content-Type-Options findings: ${MATCH_COUNT}"
+
+          if [ "${MATCH_COUNT}" -lt 1 ]; then
+            echo "::error::Expected missing X-Content-Type-Options finding was not detected."
+            exit 1
+          fi
+
+          echo "PASS: ZAP detected the controlled missing security header."
+
+      - name: Upload ZAP regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-regression-security-report
+          path: zap-regression-reports/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Restore secure API source
+        if: always()
+        shell: bash
+        run: |
+          git checkout -- \
+            src/main/java/com/nokishohid/devsecops/api/ApiMain.java
+
+      - name: Clean up regression containers
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f devsecops-zap-regression || true
+          docker compose down --volumes --remove-orphans

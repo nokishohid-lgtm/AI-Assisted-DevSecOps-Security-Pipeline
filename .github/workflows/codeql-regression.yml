@@ -1,8 +1,6 @@
 name: CodeQL Detection Regression
 
 "on":
-  pull_request:
-    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -49,7 +47,7 @@ jobs:
           languages: java-kotlin
           build-mode: manual
           config-file: ./.github/codeql/codeql-config.yml
-          
+
       - name: Set up Java 17
         uses: actions/setup-java@v5
         with:
