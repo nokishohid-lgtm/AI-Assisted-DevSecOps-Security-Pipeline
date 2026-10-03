@@ -18,37 +18,30 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Generate runtime-only vulnerable fixture
+      - name: Convert safe fixture to controlled vulnerable fixture
         shell: bash
         run: |
-          mkdir -p src/main/java/com/nokishohid/devsecops/securitytest
+          python3 - <<'PY'
+          from pathlib import Path
 
-          cat > src/main/java/com/nokishohid/devsecops/securitytest/CodeQLCommandInjectionFixture.java <<'EOF'
-          package com.nokishohid.devsecops.securitytest;
+          path = Path("security-tests/codeql/CodeQLCommandInjectionFixture.java")
+          text = path.read_text()
 
-          import java.io.IOException;
+          text = text.replace(
+              'String script = "codeql-regression-safe-value";',
+              'String script = System.getenv("SCRIPTNAME");'
+          )
 
-          /**
-           * Phase 4 CodeQL regression validation fixture.
-           *
-           * TEST CODE ONLY.
-           * Generated only during CI execution.
-           * Never committed to the repository.
-           */
-          public final class CodeQLCommandInjectionFixture {
+          text = text.replace(
+              'System.out.println(script);',
+              'Runtime.getRuntime().exec(script);'
+          )
 
-              private CodeQLCommandInjectionFixture() {
-              }
+          path.write_text(text)
+          PY
 
-              public static void main(String[] args) throws IOException {
-                  String script = System.getenv("SCRIPTNAME");
-
-                  if (script != null) {
-                      Runtime.getRuntime().exec(script);
-                  }
-              }
-          }
-          EOF
+          echo "Runtime regression fixture:"
+          cat security-tests/codeql/CodeQLCommandInjectionFixture.java
 
       - name: Initialize CodeQL regression database
         uses: github/codeql-action/init@v4
@@ -63,12 +56,14 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-          cache: maven
 
-      - name: Build application with runtime fixture
+      - name: Compile controlled regression fixture
         shell: bash
         run: |
-          mvn --batch-mode clean package
+          mkdir -p .tmp-codeql-regression
+          javac \
+            -d .tmp-codeql-regression \
+            security-tests/codeql/CodeQLCommandInjectionFixture.java
 
       - name: Analyze regression fixture without uploading
         uses: github/codeql-action/analyze@v4
@@ -114,9 +109,9 @@ jobs:
 
           echo "PASS: CodeQL detected the controlled command-injection fixture."
 
-      - name: Remove runtime fixture
+      - name: Restore safe regression fixture
         if: always()
         shell: bash
         run: |
-          rm -f src/main/java/com/nokishohid/devsecops/securitytest/CodeQLCommandInjectionFixture.java
-          rmdir src/main/java/com/nokishohid/devsecops/securitytest 2>/dev/null || true
+          git checkout -- security-tests/codeql/CodeQLCommandInjectionFixture.java
+          rm -rf .tmp-codeql-regression
