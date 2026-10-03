@@ -30,27 +30,35 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: maven
 
       - name: Generate runtime-only vulnerable fixture
         shell: bash
         run: |
-          mkdir -p .tmp-codeql-regression
+          mkdir -p src/main/java/com/nokishohid/devsecops/phase4
 
-          cat > .tmp-codeql-regression/CommandInjectionFixture.java <<'EOF'
-          public class CommandInjectionFixture {
-              public static void main(String[] args) throws Exception {
+          cat > src/main/java/com/nokishohid/devsecops/phase4/CodeQLRegressionFixture.java <<'EOF'
+          package com.nokishohid.devsecops.phase4;
+
+          public final class CodeQLRegressionFixture {
+
+              private CodeQLRegressionFixture() {
+              }
+
+              public static void executeEnvironmentCommand() throws Exception {
                   String command = System.getenv("PHASE4_CODEQL_COMMAND");
-                  if (command != null) {
+
+                  if (command != null && !command.isBlank()) {
                       Runtime.getRuntime().exec(command);
                   }
               }
           }
           EOF
 
-      - name: Compile runtime-only vulnerable fixture
+      - name: Build application with runtime fixture
         shell: bash
         run: |
-          javac .tmp-codeql-regression/CommandInjectionFixture.java
+          mvn --batch-mode clean package
 
       - name: Analyze regression fixture without uploading
         uses: github/codeql-action/analyze@v4
@@ -74,6 +82,13 @@ jobs:
 
           echo "Using SARIF file: ${SARIF_FILE}"
 
+          echo "Detected CodeQL rule IDs:"
+          jq -r '
+            .runs[]?
+            | .results[]?
+            | .ruleId
+          ' "${SARIF_FILE}" | sort -u
+
           MATCH_COUNT="$(jq '[
             .runs[]?
             | .results[]?
@@ -93,4 +108,5 @@ jobs:
         if: always()
         shell: bash
         run: |
-          rm -rf .tmp-codeql-regression
+          rm -f src/main/java/com/nokishohid/devsecops/phase4/CodeQLRegressionFixture.java
+          rmdir src/main/java/com/nokishohid/devsecops/phase4 2>/dev/null || true
