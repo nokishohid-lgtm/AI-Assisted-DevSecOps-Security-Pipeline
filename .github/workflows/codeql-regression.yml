@@ -1,4 +1,4 @@
-name: CodeQL Detection Regression
+name: Advanced CodeQL Detection Regression
 
 "on":
   workflow_dispatch:
@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   codeql-regression:
-    name: Validate Command Injection Detection
+    name: Validate Advanced SAST Detection
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -16,30 +16,75 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Convert safe fixture to controlled vulnerable fixture
+      - name: Convert safe fixtures to controlled vulnerable fixtures
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
+          cat > security-tests/codeql/CodeQLCommandInjectionFixture.java <<'JAVA'
+          import java.io.IOException;
 
-          path = Path("security-tests/codeql/CodeQLCommandInjectionFixture.java")
-          text = path.read_text()
+          /**
+           * CONTROLLED TEST CODE ONLY.
+           *
+           * Runtime-generated Phase 5 command-injection fixture.
+           * This vulnerable form is never committed to the repository.
+           */
+          public final class CodeQLCommandInjectionFixture {
 
-          text = text.replace(
-              'String script = "codeql-regression-safe-value";',
-              'String script = System.getenv("SCRIPTNAME");'
-          )
+              private CodeQLCommandInjectionFixture() {
+              }
 
-          text = text.replace(
-              'System.out.println(script);',
-              'Runtime.getRuntime().exec(script);'
-          )
+              public static void main(String[] args) throws IOException {
+                  String script = System.getenv("SCRIPTNAME");
 
-          path.write_text(text)
-          PY
+                  if (script != null) {
+                      Runtime.getRuntime().exec(script);
+                  }
+              }
+          }
+          JAVA
 
-          echo "Runtime regression fixture:"
+          cat > security-tests/codeql/CodeQLSqlInjectionFixture.java <<'JAVA'
+          import java.sql.Connection;
+          import java.sql.SQLException;
+          import java.sql.Statement;
+
+          /**
+           * CONTROLLED TEST CODE ONLY.
+           *
+           * Runtime-generated Phase 5 SQL-injection fixture.
+           * This vulnerable form is never committed to the repository.
+           */
+          public final class CodeQLSqlInjectionFixture {
+
+              private CodeQLSqlInjectionFixture() {
+              }
+
+              public static void runQuery(
+                      Connection connection
+              ) throws SQLException {
+
+                  String username = System.getenv("USERNAME");
+
+                  String sql =
+                          "SELECT id, username FROM users WHERE username = '"
+                                  + username
+                                  + "'";
+
+                  try (Statement statement =
+                               connection.createStatement()) {
+
+                      statement.executeQuery(sql);
+                  }
+              }
+          }
+          JAVA
+
+          echo "=== Command Injection Fixture ==="
           cat security-tests/codeql/CodeQLCommandInjectionFixture.java
+
+          echo
+          echo "=== SQL Injection Fixture ==="
+          cat security-tests/codeql/CodeQLSqlInjectionFixture.java
 
       - name: Initialize CodeQL regression database
         uses: github/codeql-action/init@v4
@@ -54,28 +99,35 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Compile controlled regression fixture
+      - name: Compile controlled SAST fixtures
         shell: bash
         run: |
           mkdir -p .tmp-codeql-regression
+
           javac \
             -d .tmp-codeql-regression \
-            security-tests/codeql/CodeQLCommandInjectionFixture.java
+            security-tests/codeql/CodeQLCommandInjectionFixture.java \
+            security-tests/codeql/CodeQLSqlInjectionFixture.java
 
-      - name: Analyze regression fixture without uploading
+      - name: Analyze controlled fixtures without uploading
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:java-kotlin/regression"
+          category: "/language:java-kotlin/advanced-sast-regression"
           output: codeql-regression-sarif
           upload: never
           upload-database: false
 
-      - name: Assert command injection finding
+      - name: Display detected CodeQL rules
         shell: bash
         run: |
           set -euo pipefail
 
-          SARIF_FILE="$(find codeql-regression-sarif -type f -name '*.sarif' | head -n 1)"
+          SARIF_FILE="$(
+            find codeql-regression-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
 
           if [ -z "${SARIF_FILE}" ]; then
             echo "::error::CodeQL regression SARIF file was not generated."
@@ -84,18 +136,36 @@ jobs:
 
           echo "Using SARIF file: ${SARIF_FILE}"
 
+          echo
           echo "Detected CodeQL rule IDs:"
+
           jq -r '
             .runs[]?
             | .results[]?
             | .ruleId
           ' "${SARIF_FILE}" | sort -u
 
-          MATCH_COUNT="$(jq '[
-            .runs[]?
-            | .results[]?
-            | select(.ruleId == "java/command-line-injection")
-          ] | length' "${SARIF_FILE}")"
+      - name: Assert command injection detection
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SARIF_FILE="$(
+            find codeql-regression-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
+
+          MATCH_COUNT="$(
+            jq '[
+              .runs[]?
+              | .results[]?
+              | select(
+                  .ruleId == "java/command-line-injection"
+                )
+            ] | length' "${SARIF_FILE}"
+          )"
 
           echo "java/command-line-injection findings: ${MATCH_COUNT}"
 
@@ -104,11 +174,45 @@ jobs:
             exit 1
           fi
 
-          echo "PASS: CodeQL detected the controlled command-injection fixture."
+          echo "PASS: CodeQL detected controlled command injection."
 
-      - name: Restore safe regression fixture
+      - name: Assert SQL injection detection
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SARIF_FILE="$(
+            find codeql-regression-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
+
+          MATCH_COUNT="$(
+            jq '[
+              .runs[]?
+              | .results[]?
+              | select(
+                  .ruleId == "java/sql-injection"
+                )
+            ] | length' "${SARIF_FILE}"
+          )"
+
+          echo "java/sql-injection findings: ${MATCH_COUNT}"
+
+          if [ "${MATCH_COUNT}" -lt 1 ]; then
+            echo "::error::Expected CodeQL SQL-injection finding was not detected."
+            exit 1
+          fi
+
+          echo "PASS: CodeQL detected controlled SQL injection."
+
+      - name: Restore safe regression fixtures
         if: always()
         shell: bash
         run: |
-          git checkout -- security-tests/codeql/CodeQLCommandInjectionFixture.java
+          git checkout -- \
+            security-tests/codeql/CodeQLCommandInjectionFixture.java \
+            security-tests/codeql/CodeQLSqlInjectionFixture.java
+
           rm -rf .tmp-codeql-regression
