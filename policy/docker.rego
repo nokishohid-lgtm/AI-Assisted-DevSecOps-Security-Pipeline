@@ -1,16 +1,23 @@
 package docker
 
-# P-01: No privileged containers
+# P-01: Dockerfile must not switch to root
 deny[msg] {
-  input.run[container].Privileged == true
-  msg := sprintf("Container '%s' must not run privileged", [container])
+  instruction := input[_]
+  instruction.Cmd == "user"
+  lower(instruction.Value[0]) == "root"
+  msg := "Dockerfile must not run as root"
 }
 
-# P-02: No :latest tag
+# P-02: Base image must not use :latest
 deny[msg] {
-  base := input.from[i]
-  endswith(base.Value, ":latest")
-  msg := sprintf("Base image '%s' must use a pinned tag, not :latest", [base.Value])
+  instruction := input[_]
+  instruction.Cmd == "from"
+  image := instruction.Value[0]
+  endswith(lower(image), ":latest")
+  msg := sprintf(
+    "Base image '%s' must use a pinned tag, not :latest",
+    [image]
+  )
 }
 
 # P-03: Non-root USER required
@@ -24,16 +31,25 @@ user_instruction_exists {
   instruction.Cmd == "user"
 }
 
+# P-04: No remote URLs in ADD instructions
 deny[msg] {
   instruction := input[_]
-  instruction.Cmd == "user"
-  lower(instruction.Value[0]) == "root"
-  msg := "Dockerfile must not run as root"
+  instruction.Cmd == "add"
+  value := instruction.Value[_]
+  startswith(lower(value), "http://")
+  msg := sprintf(
+    "Dockerfile must not ADD from remote URL: %s",
+    [value]
+  )
 }
 
-# P-04: No ADD from remote URLs
 deny[msg] {
-  cmd := input.add[i]
-  startswith(cmd.Value, "http")
-  msg := sprintf("Dockerfile must not ADD from remote URL: %s", [cmd.Value])
+  instruction := input[_]
+  instruction.Cmd == "add"
+  value := instruction.Value[_]
+  startswith(lower(value), "https://")
+  msg := sprintf(
+    "Dockerfile must not ADD from remote URL: %s",
+    [value]
+  )
 }
