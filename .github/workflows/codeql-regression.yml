@@ -25,8 +25,8 @@ jobs:
           /**
            * CONTROLLED TEST CODE ONLY.
            *
-           * Runtime-generated Phase 5 command-injection fixture.
-           * This vulnerable form is never committed to the repository.
+           * Runtime-generated command-injection fixture.
+           * This vulnerable version is never committed.
            */
           public final class CodeQLCommandInjectionFixture {
 
@@ -51,8 +51,8 @@ jobs:
           /**
            * CONTROLLED TEST CODE ONLY.
            *
-           * Runtime-generated Phase 5 SQL-injection fixture.
-           * This vulnerable form is never committed to the repository.
+           * Runtime-generated SQL-injection fixture.
+           * This vulnerable version is never committed.
            */
           public final class CodeQLSqlInjectionFixture {
 
@@ -79,12 +79,46 @@ jobs:
           }
           JAVA
 
+          cat > security-tests/codeql/CodeQLPathInjectionFixture.java <<'JAVA'
+          import java.io.IOException;
+          import java.nio.file.Files;
+          import java.nio.file.Path;
+
+          /**
+           * CONTROLLED TEST CODE ONLY.
+           *
+           * Runtime-generated path-injection fixture.
+           * This vulnerable version is never committed.
+           */
+          public final class CodeQLPathInjectionFixture {
+
+              private CodeQLPathInjectionFixture() {
+              }
+
+              public static String readFile() throws IOException {
+                  String filename = System.getenv("FILENAME");
+
+                  if (filename == null) {
+                      return "";
+                  }
+
+                  Path requestedFile = Path.of(filename);
+
+                  return Files.readString(requestedFile);
+              }
+          }
+          JAVA
+
           echo "=== Command Injection Fixture ==="
           cat security-tests/codeql/CodeQLCommandInjectionFixture.java
 
           echo
           echo "=== SQL Injection Fixture ==="
           cat security-tests/codeql/CodeQLSqlInjectionFixture.java
+
+          echo
+          echo "=== Path Injection Fixture ==="
+          cat security-tests/codeql/CodeQLPathInjectionFixture.java
 
       - name: Initialize CodeQL regression database
         uses: github/codeql-action/init@v4
@@ -107,7 +141,8 @@ jobs:
           javac \
             -d .tmp-codeql-regression \
             security-tests/codeql/CodeQLCommandInjectionFixture.java \
-            security-tests/codeql/CodeQLSqlInjectionFixture.java
+            security-tests/codeql/CodeQLSqlInjectionFixture.java \
+            security-tests/codeql/CodeQLPathInjectionFixture.java
 
       - name: Analyze controlled fixtures without uploading
         uses: github/codeql-action/analyze@v4
@@ -207,12 +242,44 @@ jobs:
 
           echo "PASS: CodeQL detected controlled SQL injection."
 
+      - name: Assert path injection detection
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SARIF_FILE="$(
+            find codeql-regression-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
+
+          MATCH_COUNT="$(
+            jq '[
+              .runs[]?
+              | .results[]?
+              | select(
+                  .ruleId == "java/path-injection"
+                )
+            ] | length' "${SARIF_FILE}"
+          )"
+
+          echo "java/path-injection findings: ${MATCH_COUNT}"
+
+          if [ "${MATCH_COUNT}" -lt 1 ]; then
+            echo "::error::Expected CodeQL path-injection finding was not detected."
+            exit 1
+          fi
+
+          echo "PASS: CodeQL detected controlled path injection."
+
       - name: Restore safe regression fixtures
         if: always()
         shell: bash
         run: |
           git checkout -- \
             security-tests/codeql/CodeQLCommandInjectionFixture.java \
-            security-tests/codeql/CodeQLSqlInjectionFixture.java
+            security-tests/codeql/CodeQLSqlInjectionFixture.java \
+            security-tests/codeql/CodeQLPathInjectionFixture.java
 
           rm -rf .tmp-codeql-regression
