@@ -109,6 +109,35 @@ jobs:
           }
           JAVA
 
+          cat > security-tests/codeql/CodeQLLogInjectionFixture.java <<'JAVA'
+          import java.util.logging.Logger;
+
+          /**
+           * CONTROLLED TEST CODE ONLY.
+           *
+           * Runtime-generated log-injection fixture.
+           * This vulnerable version is never committed.
+           */
+          public final class CodeQLLogInjectionFixture {
+
+              private static final Logger LOGGER =
+                      Logger.getLogger(
+                              CodeQLLogInjectionFixture.class.getName()
+                      );
+
+              private CodeQLLogInjectionFixture() {
+              }
+
+              public static void logUsername() {
+                  String username = System.getenv("USERNAME");
+
+                  if (username != null) {
+                      LOGGER.info("User login: " + username);
+                  }
+              }
+          }
+          JAVA
+
           echo "=== Command Injection Fixture ==="
           cat security-tests/codeql/CodeQLCommandInjectionFixture.java
 
@@ -119,6 +148,10 @@ jobs:
           echo
           echo "=== Path Injection Fixture ==="
           cat security-tests/codeql/CodeQLPathInjectionFixture.java
+
+          echo
+          echo "=== Log Injection Fixture ==="
+          cat security-tests/codeql/CodeQLLogInjectionFixture.java
 
       - name: Initialize CodeQL regression database
         uses: github/codeql-action/init@v4
@@ -142,7 +175,8 @@ jobs:
             -d .tmp-codeql-regression \
             security-tests/codeql/CodeQLCommandInjectionFixture.java \
             security-tests/codeql/CodeQLSqlInjectionFixture.java \
-            security-tests/codeql/CodeQLPathInjectionFixture.java
+            security-tests/codeql/CodeQLPathInjectionFixture.java \
+            security-tests/codeql/CodeQLLogInjectionFixture.java
 
       - name: Analyze controlled fixtures without uploading
         uses: github/codeql-action/analyze@v4
@@ -273,6 +307,37 @@ jobs:
 
           echo "PASS: CodeQL detected controlled path injection."
 
+      - name: Assert log injection detection
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SARIF_FILE="$(
+            find codeql-regression-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
+
+          MATCH_COUNT="$(
+            jq '[
+              .runs[]?
+              | .results[]?
+              | select(
+                  .ruleId == "java/log-injection"
+                )
+            ] | length' "${SARIF_FILE}"
+          )"
+
+          echo "java/log-injection findings: ${MATCH_COUNT}"
+
+          if [ "${MATCH_COUNT}" -lt 1 ]; then
+            echo "::error::Expected CodeQL log-injection finding was not detected."
+            exit 1
+          fi
+
+          echo "PASS: CodeQL detected controlled log injection."
+
       - name: Restore safe regression fixtures
         if: always()
         shell: bash
@@ -280,6 +345,7 @@ jobs:
           git checkout -- \
             security-tests/codeql/CodeQLCommandInjectionFixture.java \
             security-tests/codeql/CodeQLSqlInjectionFixture.java \
-            security-tests/codeql/CodeQLPathInjectionFixture.java
+            security-tests/codeql/CodeQLPathInjectionFixture.java \
+            security-tests/codeql/CodeQLLogInjectionFixture.java
 
           rm -rf .tmp-codeql-regression
