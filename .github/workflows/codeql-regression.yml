@@ -7,8 +7,8 @@ permissions:
   contents: read
 
 jobs:
-  codeql-regression:
-    name: Validate Advanced SAST Detection
+  vulnerable-regression:
+    name: Validate Controlled Vulnerable SAST Fixtures
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -153,7 +153,7 @@ jobs:
           echo "=== Log Injection Fixture ==="
           cat security-tests/codeql/CodeQLLogInjectionFixture.java
 
-      - name: Initialize CodeQL regression database
+      - name: Initialize vulnerable CodeQL database
         uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
@@ -166,40 +166,40 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      - name: Compile controlled SAST fixtures
+      - name: Compile controlled vulnerable fixtures
         shell: bash
         run: |
-          mkdir -p .tmp-codeql-regression
+          mkdir -p .tmp-codeql-vulnerable
 
           javac \
-            -d .tmp-codeql-regression \
+            -d .tmp-codeql-vulnerable \
             security-tests/codeql/CodeQLCommandInjectionFixture.java \
             security-tests/codeql/CodeQLSqlInjectionFixture.java \
             security-tests/codeql/CodeQLPathInjectionFixture.java \
             security-tests/codeql/CodeQLLogInjectionFixture.java
 
-      - name: Analyze controlled fixtures without uploading
+      - name: Analyze controlled vulnerable fixtures
         uses: github/codeql-action/analyze@v4
         with:
-          category: "/language:java-kotlin/advanced-sast-regression"
-          output: codeql-regression-sarif
+          category: "/language:java-kotlin/advanced-sast-vulnerable"
+          output: codeql-vulnerable-sarif
           upload: never
           upload-database: false
 
-      - name: Validate all expected SARIF findings
+      - name: Validate all expected vulnerable SARIF findings
         shell: bash
         run: |
           set -euo pipefail
 
           SARIF_FILE="$(
-            find codeql-regression-sarif \
+            find codeql-vulnerable-sarif \
               -type f \
               -name '*.sarif' \
               | head -n 1
           )"
 
           if [ -z "${SARIF_FILE}" ]; then
-            echo "::error::CodeQL regression SARIF file was not generated."
+            echo "::error::Vulnerable-state SARIF file was not generated."
             exit 1
           fi
 
@@ -217,4 +217,91 @@ jobs:
             security-tests/codeql/CodeQLPathInjectionFixture.java \
             security-tests/codeql/CodeQLLogInjectionFixture.java
 
-          rm -rf .tmp-codeql-regression
+          rm -rf .tmp-codeql-vulnerable
+
+  remediated-regression:
+    name: Validate Remediated Safe SAST Fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Display committed safe fixtures
+        shell: bash
+        run: |
+          echo "=== Safe Command Injection Fixture ==="
+          cat security-tests/codeql/CodeQLCommandInjectionFixture.java
+
+          echo
+          echo "=== Safe SQL Injection Fixture ==="
+          cat security-tests/codeql/CodeQLSqlInjectionFixture.java
+
+          echo
+          echo "=== Safe Path Injection Fixture ==="
+          cat security-tests/codeql/CodeQLPathInjectionFixture.java
+
+          echo
+          echo "=== Safe Log Injection Fixture ==="
+          cat security-tests/codeql/CodeQLLogInjectionFixture.java
+
+      - name: Initialize remediated CodeQL database
+        uses: github/codeql-action/init@v4
+        with:
+          languages: java-kotlin
+          build-mode: manual
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Compile committed safe fixtures
+        shell: bash
+        run: |
+          mkdir -p .tmp-codeql-remediated
+
+          javac \
+            -d .tmp-codeql-remediated \
+            security-tests/codeql/CodeQLCommandInjectionFixture.java \
+            security-tests/codeql/CodeQLSqlInjectionFixture.java \
+            security-tests/codeql/CodeQLPathInjectionFixture.java \
+            security-tests/codeql/CodeQLLogInjectionFixture.java
+
+      - name: Analyze committed safe fixtures
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:java-kotlin/advanced-sast-remediated"
+          output: codeql-remediated-sarif
+          upload: never
+          upload-database: false
+
+      - name: Validate remediated SARIF contains no protected findings
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SARIF_FILE="$(
+            find codeql-remediated-sarif \
+              -type f \
+              -name '*.sarif' \
+              | head -n 1
+          )"
+
+          if [ -z "${SARIF_FILE}" ]; then
+            echo "::error::Remediated-state SARIF file was not generated."
+            exit 1
+          fi
+
+          bash security-tests/codeql/assert-remediated-sarif.sh \
+            "${SARIF_FILE}" \
+            security-tests/codeql/expected-sarif-rules.txt
+
+      - name: Clean remediation validation workspace
+        if: always()
+        shell: bash
+        run: |
+          rm -rf .tmp-codeql-remediated
