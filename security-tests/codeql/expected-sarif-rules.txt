@@ -1,0 +1,7 @@
+# Phase 5 Advanced SAST expected CodeQL findings.
+# Each rule listed here must appear at least once in the generated SARIF.
+
+java/command-line-injection
+java/sql-injection
+java/path-injection
+java/log-injection

@@ -186,7 +186,7 @@ jobs:
           upload: never
           upload-database: false
 
-      - name: Display detected CodeQL rules
+      - name: Validate all expected SARIF findings
         shell: bash
         run: |
           set -euo pipefail
@@ -203,140 +203,9 @@ jobs:
             exit 1
           fi
 
-          echo "Using SARIF file: ${SARIF_FILE}"
-
-          echo
-          echo "Detected CodeQL rule IDs:"
-
-          jq -r '
-            .runs[]?
-            | .results[]?
-            | .ruleId
-          ' "${SARIF_FILE}" | sort -u
-
-      - name: Assert command injection detection
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          SARIF_FILE="$(
-            find codeql-regression-sarif \
-              -type f \
-              -name '*.sarif' \
-              | head -n 1
-          )"
-
-          MATCH_COUNT="$(
-            jq '[
-              .runs[]?
-              | .results[]?
-              | select(
-                  .ruleId == "java/command-line-injection"
-                )
-            ] | length' "${SARIF_FILE}"
-          )"
-
-          echo "java/command-line-injection findings: ${MATCH_COUNT}"
-
-          if [ "${MATCH_COUNT}" -lt 1 ]; then
-            echo "::error::Expected CodeQL command-injection finding was not detected."
-            exit 1
-          fi
-
-          echo "PASS: CodeQL detected controlled command injection."
-
-      - name: Assert SQL injection detection
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          SARIF_FILE="$(
-            find codeql-regression-sarif \
-              -type f \
-              -name '*.sarif' \
-              | head -n 1
-          )"
-
-          MATCH_COUNT="$(
-            jq '[
-              .runs[]?
-              | .results[]?
-              | select(
-                  .ruleId == "java/sql-injection"
-                )
-            ] | length' "${SARIF_FILE}"
-          )"
-
-          echo "java/sql-injection findings: ${MATCH_COUNT}"
-
-          if [ "${MATCH_COUNT}" -lt 1 ]; then
-            echo "::error::Expected CodeQL SQL-injection finding was not detected."
-            exit 1
-          fi
-
-          echo "PASS: CodeQL detected controlled SQL injection."
-
-      - name: Assert path injection detection
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          SARIF_FILE="$(
-            find codeql-regression-sarif \
-              -type f \
-              -name '*.sarif' \
-              | head -n 1
-          )"
-
-          MATCH_COUNT="$(
-            jq '[
-              .runs[]?
-              | .results[]?
-              | select(
-                  .ruleId == "java/path-injection"
-                )
-            ] | length' "${SARIF_FILE}"
-          )"
-
-          echo "java/path-injection findings: ${MATCH_COUNT}"
-
-          if [ "${MATCH_COUNT}" -lt 1 ]; then
-            echo "::error::Expected CodeQL path-injection finding was not detected."
-            exit 1
-          fi
-
-          echo "PASS: CodeQL detected controlled path injection."
-
-      - name: Assert log injection detection
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          SARIF_FILE="$(
-            find codeql-regression-sarif \
-              -type f \
-              -name '*.sarif' \
-              | head -n 1
-          )"
-
-          MATCH_COUNT="$(
-            jq '[
-              .runs[]?
-              | .results[]?
-              | select(
-                  .ruleId == "java/log-injection"
-                )
-            ] | length' "${SARIF_FILE}"
-          )"
-
-          echo "java/log-injection findings: ${MATCH_COUNT}"
-
-          if [ "${MATCH_COUNT}" -lt 1 ]; then
-            echo "::error::Expected CodeQL log-injection finding was not detected."
-            exit 1
-          fi
-
-          echo "PASS: CodeQL detected controlled log injection."
+          bash security-tests/codeql/assert-sarif-rules.sh \
+            "${SARIF_FILE}" \
+            security-tests/codeql/expected-sarif-rules.txt
 
       - name: Restore safe regression fixtures
         if: always()
