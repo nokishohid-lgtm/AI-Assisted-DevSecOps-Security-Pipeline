@@ -1,8 +1,47 @@
+title = "AI-Assisted DevSecOps Security Pipeline Gitleaks Configuration"
+
 [extend]
 useDefault = true
+
+[allowlist]
+description = "Ignore verified generated, encrypted, and controlled security-test artifacts"
+paths = [
+  '''(^|/)screenshots/phase2-multiservice-security/trivy-reports/api-trivy\.json$''',
+  '''(^|/)security-tests/gitleaks/synthetic-secret\.txt$''',
+  '''(^|/)k8s/base/postgres/sealedsecret\.yaml$'''
+]
 
 [[rules]]
 id = "phase3-synthetic-secret"
 description = "Phase 3 synthetic secret used only to validate the Gitleaks security gate"
 regex = '''PHASE3_GITLEAKS_TEST_SECRET_[A-Z0-9]{16}'''
 keywords = ["PHASE3_GITLEAKS_TEST_SECRET_"]
+tags = ["test", "regression", "synthetic"]
+
+[[rules]]
+id = "project-generic-app-secret"
+description = "Detect project-specific generic application secrets"
+regex = '''PROJECT_APP_SECRET_[A-Z0-9]{24}'''
+keywords = ["PROJECT_APP_SECRET_"]
+tags = ["secret", "application", "custom"]
+
+[[rules]]
+id = "project-database-password"
+description = "Detect project-specific database password test values"
+regex = '''PROJECT_DB_PASSWORD_[A-Za-z0-9]{20}'''
+keywords = ["PROJECT_DB_PASSWORD_"]
+tags = ["secret", "database", "custom"]
+
+[[rules]]
+id = "project-cloud-access-token"
+description = "Detect project-specific cloud access token test values"
+regex = '''PROJECT_CLOUD_TOKEN_[A-Z0-9]{28}'''
+keywords = ["PROJECT_CLOUD_TOKEN_"]
+tags = ["secret", "cloud", "custom"]
+
+[[rules]]
+id = "project-api-token"
+description = "Detect project-specific API token test values"
+regex = '''PROJECT_API_TOKEN_[A-Za-z0-9]{32}'''
+keywords = ["PROJECT_API_TOKEN_"]
+tags = ["secret", "api", "custom"]
