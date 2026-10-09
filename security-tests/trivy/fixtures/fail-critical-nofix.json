@@ -1,0 +1,17 @@
+{
+  "SchemaVersion": 2,
+  "Results": [
+    {
+      "Target": "phase6-3-critical-nofix",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-PHASE6-CRITICAL-NOFIX",
+          "PkgName": "demo-critical",
+          "InstalledVersion": "1.0",
+          "FixedVersion": "",
+          "Severity": "CRITICAL"
+        }
+      ]
+    }
+  ]
+}
