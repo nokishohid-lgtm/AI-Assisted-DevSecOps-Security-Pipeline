@@ -10,6 +10,9 @@ name: Trivy Container Security Scan
 permissions:
   contents: read
 
+env:
+  TRIVY_IMAGE: aquasec/trivy:0.75.0
+
 jobs:
   trivy-scan:
     name: Build and Scan Container
@@ -19,31 +22,41 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
-      - name: Run Trivy gate regression tests
+      - name: Install JSON tooling
         shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y jq
+          jq --version
+
+      - name: Run Trivy gate regression tests
+        shell: bash
+        run: |
           bash security-tests/trivy/test-gate-regression.sh
 
       - name: Build API image
+        shell: bash
         run: |
           docker build --pull \
             -f Dockerfile.api \
             -t devsecops-api:${{ github.sha }} .
 
       - name: Build worker image
+        shell: bash
         run: |
           docker build --pull \
             -f Dockerfile.worker \
             -t devsecops-worker:${{ github.sha }} .
 
-      - name: Prepare scanner and report directories
+      - name: Prepare pinned Trivy scanner and report directories
+        shell: bash
         run: |
           mkdir -p trivy-reports
-          docker pull aquasec/trivy:latest
-          docker run --rm aquasec/trivy:latest --version \
+          docker pull "${TRIVY_IMAGE}"
+          docker run --rm "${TRIVY_IMAGE}" --version \
             | tee trivy-reports/scanner-version.txt
           git rev-parse HEAD > trivy-reports/commit-sha.txt
 
@@ -51,6 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
           overall_status=0
 
           for service in api worker; do
@@ -60,7 +74,7 @@ jobs:
               -v /var/run/docker.sock:/var/run/docker.sock \
               -v trivy-cache:/root/.cache/trivy \
               -v "${{ github.workspace }}/trivy-reports:/reports" \
-              aquasec/trivy:latest image \
+              "${TRIVY_IMAGE}" image \
               --image-src docker \
               --scanners vuln \
               --pkg-types os,library \
@@ -73,7 +87,6 @@ jobs:
               if jq -e '
                 .SchemaVersion != null
                 and (.Results | type == "array")
-                and (.Results | length > 0)
               ' "trivy-reports/${service}-trivy.json" > /dev/null; then
                 echo "Report generated for ${service}."
               else
