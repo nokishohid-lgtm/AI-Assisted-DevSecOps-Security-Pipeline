@@ -1,13 +1,25 @@
 name: Policy Enforcement
 
-on:
-  pull_request:
+"on":
+  push:
+    branches: ["main"]
     paths:
-      - 'Dockerfile'
-      - 'policy/**'
-      - 'k8s/**'
-      - 'security-tests/policy/**'
-      - '.github/workflows/policy.yml'
+      - "Dockerfile"
+      - "policy/**"
+      - "k8s/**"
+      - "security-tests/policy/**"
+      - ".github/workflows/policy.yml"
+
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "Dockerfile"
+      - "policy/**"
+      - "k8s/**"
+      - "security-tests/policy/**"
+      - ".github/workflows/policy.yml"
+
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,22 +28,29 @@ jobs:
   conftest:
     name: Conftest policy check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
-      - name: Install Conftest
+      - name: Show pinned Conftest version
+        shell: bash
         run: |
-          wget https://github.com/open-policy-agent/conftest/releases/download/v0.55.0/conftest_0.55.0_Linux_x86_64.tar.gz
-          tar xzf conftest_0.55.0_Linux_x86_64.tar.gz
-          sudo mv conftest /usr/local/bin/
-          conftest --version
+          docker run --rm \
+            openpolicyagent/conftest:v0.55.0 \
+            --version
 
       - name: Validate secure project Dockerfile
         shell: bash
         run: |
-          conftest test \
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
             --policy policy \
             --namespace docker \
             Dockerfile
@@ -39,4 +58,9 @@ jobs:
       - name: Run Docker policy regression tests
         shell: bash
         run: |
-          bash security-tests/policy/test-docker-policy-regression.sh
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            --entrypoint sh \
+            openpolicyagent/conftest:v0.55.0 \
+            security-tests/policy/test-docker-policy-regression.sh
