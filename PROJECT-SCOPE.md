@@ -78,39 +78,46 @@ The multi-service smoke-test job:
 The database integration test checks connectivity, schema creation,
 insertion, and aggregate counts.
 
-It does not call the HTTP API, execute the worker, or verify that
-the specific submitted job reaches done. The CI job does not start
-the API and worker images.
+The current multi-service CI validation starts PostgreSQL, the API, and the
+worker, verifies application readiness, submits a job through HTTP, and confirms
+that the running stack processes the job successfully.
 
 ## Security Workflow Scope
 
-The repository contains nine workflow files:
+The repository contains security and CI workflows that provide application,
+container, secret-detection, policy, dynamic-testing, software-inventory,
+release, and AI-assisted analysis capabilities.
 
-| Workflow | Purpose and limitation |
+| Workflow | Purpose and current scope |
 |---|---|
-| `ci.yml` | Tests and image builds; full running-stack validation remains planned |
-| `codeql.yml` | Source-code security analysis |
-| `gitleaks.yml` | Secret scanning |
-| `trivy.yml` | Root-image scan for fixable HIGH/CRITICAL OS vulnerabilities |
-| `zap.yml` | Baseline web security scanning; complete API coverage is not established |
-| `sbom.yml` | Software inventory generation; separate service-image SBOMs remain planned |
-| `container-release.yml` | Container release workflow with historical publishing/signing evidence |
-| `policy.yml` | Conftest command against the root Dockerfile |
-| `ai-triage.yml` | Advisory analysis of CodeQL findings |
+| `ci.yml` | Builds and tests the application and performs multi-service integration validation |
+| `codeql.yml` | Performs Java source-code security analysis |
+| `gitleaks.yml` | Runs deterministic secret regression testing and repository secret scanning |
+| `trivy.yml` | Builds and scans API and worker service images and validates vulnerability gating |
+| `zap.yml` | Starts the Compose stack and performs active OWASP ZAP API testing using OpenAPI |
+| `sbom.yml` | Generates separate CycloneDX SBOMs for the API and worker service images |
+| `container-release.yml` | Performs container publishing, signing, and verification workflow operations |
+| `policy.yml` | Performs Conftest Policy-as-Code validation |
+| `ai-triage.yml` | Provides advisory AI-assisted analysis of CodeQL findings |
 
 Dependabot configuration is separate from these workflows.
 
 ### Vulnerability and Policy Boundaries
 
-- The reviewed Trivy command excludes application dependency scanning.
-- It does not scan the separate API and worker images.
-- The reviewed Conftest command does not test Kubernetes manifests.
-- The reviewed workflows do not evaluate a Trivy report using
-  `policy/trivy.rego`.
-- The documented 30-day vulnerability-age example is not established
-  as an enforced control.
-- Reviewed action references use version tags rather than uniform
-  full commit-SHA pinning.
+- Trivy scans the API and worker service images separately.
+- Vulnerability findings describe the image state and vulnerability data
+  available at scan time.
+- Scanner success does not prove that an image is free from every vulnerability.
+- Conftest policy validation remains separate from Trivy vulnerability scanning.
+- Kubernetes policy coverage is evaluated separately from Dockerfile policy
+  validation.
+- SBOM generation inventories software components but does not determine whether
+  those components are vulnerable.
+- Regression testing validates specific controlled failure conditions and should
+  not be interpreted as exhaustive security testing.
+- Gitleaks regression testing uses controlled synthetic values rather than real
+  production credentials.
+- GitHub Actions references are not uniformly pinned to full commit SHAs.
 
 ## Runtime Restrictions
 
@@ -150,6 +157,31 @@ documentation update. See the README and linked evidence for context.
 
 A failing HTTP assertion demonstrates test enforcement; it does not
 demonstrate detection of a real vulnerability or exposed secret.
+
+## Current Security Validation
+
+The repository now includes validated controls beyond the earlier historical
+baseline.
+
+Current validated capabilities include:
+
+- Full API, PostgreSQL, and worker integration testing.
+- Separate CycloneDX SBOM generation for API and worker images.
+- Separate Trivy scanning for API and worker images.
+- Active OWASP ZAP API testing using the OpenAPI definition.
+- Repeatable Trivy regression testing.
+- Repeatable Gitleaks regression testing.
+- CodeQL detection and remediation regression coverage.
+- OWASP ZAP security-header regression validation.
+- Conftest Policy-as-Code regression validation.
+- Advanced CodeQL coverage for command injection, SQL injection, path injection,
+  and log injection.
+- Secrets-security validation covering multiple controlled secret classes,
+  allowlist handling, remediation, regression testing, and CI enforcement.
+
+These controls provide evidence of tested security behavior. They do not
+establish production readiness or guarantee the absence of vulnerabilities.
+
 
 ## Merge and Release Claims
 
@@ -206,30 +238,38 @@ No project-wide retention period is assumed.
 - A successful scan does not prove the absence of vulnerabilities.
 - An SBOM inventories components; signing does not establish safety.
 
-## Phase 2 Objectives
+## Phase 2 Completion
 
-- Build both application images and record their identities.
-- Scan both images for OS and application dependency vulnerabilities.
-- Start the actual API, worker, and PostgreSQL containers in CI.
-- Submit a job through HTTP and verify that the same job reaches done.
-- Use a bounded timeout and retain failure logs.
-- Run API-specific web security checks.
-- Generate and retain a separate SBOM for each image.
+Phase 2 completed the planned multi-service security coverage.
 
-Completion requires reports for both service images and a passing
-integration test against the running stack.
+Completed capabilities include:
+
+- Building both application service images.
+- Starting the API, worker, and PostgreSQL containers in CI.
+- Submitting a job through HTTP and verifying successful processing.
+- Using bounded validation and retaining failure diagnostics.
+- Running API-specific OWASP ZAP security testing.
+- Scanning API and worker service images separately with Trivy.
+- Generating and retaining separate CycloneDX SBOMs for both service images.
+
+Phase 2 completion is supported by service-specific reports, integration
+validation, remediation evidence, CI execution, and pull-request evidence.
 
 ## Additional Deferred Objectives
 
-The following are not claimed as completed:
+The following remain outside the completed Phase 1–6 scope:
 
 - Dedicated Checkov infrastructure scanning.
-- Controlled secret-detection exercise.
-- AI recommendation validation case study.
-- Formal risk assessment and remediation case study.
+- AI recommendation accuracy validation case study.
+- Formal project-wide risk assessment and remediation case study.
 - Standalone technical report and executive summary.
+- Expanded trusted-release and rollback validation where not already covered by
+  existing release evidence.
 - Runtime image-signature admission enforcement.
 - Automated policy-exception expiry.
+
+Controlled secret-detection testing is no longer deferred. It was completed and
+expanded during Phase 6 — Secrets Security Hardening.
 
 ## Evidence Standard
 

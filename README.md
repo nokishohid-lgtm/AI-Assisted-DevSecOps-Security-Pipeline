@@ -45,7 +45,7 @@ The current project validates the following areas:
 | Trivy coverage | Scans API and worker container images separately |
 | ZAP coverage | Performs active API security testing against the running Compose stack |
 | CodeQL | Performs static source-code security analysis |
-| Gitleaks | Detects potential hardcoded secrets |
+| Gitleaks | Detects hardcoded secrets and validates project-specific secret classes through deterministic regression testing |
 | AI triage | Advisory review of CodeQL findings; accuracy validation remains separate work |
 
 Security scan results describe specific builds and test runs. They are not a
@@ -75,7 +75,7 @@ planned.
 | API and worker Trivy scans | Implemented and tested | Service images are scanned separately and reports are retained |
 | OWASP ZAP API scan | Implemented and tested | Active scan runs against the Compose API using an OpenAPI specification |
 | CodeQL SAST | Implemented and tested | Source-code security analysis runs in GitHub Actions |
-| Gitleaks secret scanning | Implemented and tested | Secret scanning runs as a CI security control |
+| Gitleaks secret scanning | Implemented and tested | Pinned Gitleaks scanning, project-specific rules, allowlist handling, remediation validation, and a six-test regression suite run as CI security controls |
 | AI-assisted CodeQL triage | Implemented | Advisory Groq integration; accuracy validation remains outstanding |
 | Earlier single-container security testing | Historical | Retained as earlier project evidence |
 | Expanded trusted release validation | Planned | Dual-service release identity, inventory, and rollback validation remain future work |
@@ -372,7 +372,7 @@ The repository contains the following GitHub Actions workflows:
 |---|---|
 | `ci.yml` | Builds and tests the application and performs multi-service CI validation |
 | `codeql.yml` | Performs Java source-code security analysis |
-| `gitleaks.yml` | Detects potential hardcoded secrets |
+| `gitleaks.yml` | Runs deterministic Gitleaks regression tests and scans repository history for potential hardcoded secrets |
 | `trivy.yml` | Builds and scans API and worker service images |
 | `zap.yml` | Starts the Compose stack and performs an OWASP ZAP API scan using OpenAPI |
 | `sbom.yml` | Generates separate API and worker CycloneDX SBOMs |
@@ -442,6 +442,41 @@ the project.
 
 The repository should only claim enforcement for policies that are actually
 connected to the current workflow commands.
+
+## Secrets Security Coverage
+
+Phase 6 expanded secret scanning from a basic repository check into a
+repeatable secrets-security validation framework.
+
+Gitleaks execution is pinned to:
+
+```text
+zricethezav/gitleaks:v8.24.3
+```
+
+The project extends the default Gitleaks rules with controlled project-specific
+secret patterns and validates six deterministic regression cases:
+
+1. Clean content passes.
+2. The Phase 3 synthetic secret is detected.
+3. The application-secret pattern is detected.
+4. The database-password pattern is detected.
+5. The cloud-access-token pattern is detected.
+6. The API-token pattern is detected.
+
+Regression validation checks the expected Gitleaks RuleID for each controlled
+secret class. Temporary fixtures and reports are removed after execution.
+
+Allowlist entries are narrowly scoped to known test or evidence paths rather
+than disabling secret detection globally.
+
+Supporting documentation:
+
+- `docs/SECRET-REMEDIATION-WORKFLOW.md`
+- `docs/SECRET-REMEDIATION-RECORD.md`
+- `docs/SECRET-REGRESSION-MATRIX.md`
+- `docs/PHASE6-SECRETS-SECURITY-CLOSURE.md`
+
 
 ## Action References and Merge Requirements
 
@@ -642,38 +677,117 @@ Organized Phase 2 evidence
 
 ### Phase 3 — Security Gate Validation
 
-Status: **Next**
+Status: **Completed**
 
-The next phase will intentionally exercise security gates using controlled,
-harmless test conditions.
+Phase 3 validated security-gate behavior using controlled and harmless test
+conditions.
 
-The objective is to demonstrate:
+The validation cycle demonstrated:
 
 ```text
-Expected failure
-      ↓
+Controlled security condition
+        ↓
 Security control detects condition
-      ↓
-Merge is blocked
-      ↓
+        ↓
+Security gate fails as expected
+        ↓
 Condition is remediated
-      ↓
+        ↓
 Security control passes
 ```
 
-### Phase 4 — Trusted Releases
+This phase demonstrated expected failure, detection, remediation, and
+successful revalidation without intentionally using real credentials or
+production secrets.
 
-Status: **Planned**
+### Phase 4 — Detection Remediation and Regression
 
-Future work will validate image identity, digests, SBOM association, signature
-verification, and rollback procedures for released service images.
+Status: **Completed**
 
-### Phase 5 — AI-Assisted Triage Validation
+Phase 4 converted previously validated security controls into repeatable
+regression tests.
 
-Status: **Planned**
+Validated controls include:
 
-AI recommendations will be evaluated using representative findings and human
-review rather than assuming successful execution proves accuracy.
+```text
+Trivy vulnerability gating
+Gitleaks secret detection
+CodeQL command-injection detection
+OWASP ZAP security-header validation
+Conftest Policy-as-Code validation
+```
+
+See:
+
+- `PHASE4-REGRESSION.md`
+
+### Phase 5 — Advanced SAST / CodeQL Hardening
+
+Status: **Completed**
+
+Phase 5 expanded static application security testing into a repeatable
+multi-rule CodeQL detection and remediation framework.
+
+Validated CodeQL rules include:
+
+```text
+java/command-line-injection
+java/sql-injection
+java/path-injection
+java/log-injection
+```
+
+Controlled vulnerable states must produce the required findings, while
+committed remediated states must produce zero findings for the protected rules.
+
+See:
+
+- `PHASE5-SAST-COVERAGE.md`
+- `PHASE5-CLOSURE.md`
+
+### Phase 6 — Secrets Security Hardening
+
+Status: **Completed — Formally Closed**
+
+Phase 6 expanded Gitleaks from basic repository secret scanning into a
+repeatable secrets-security detection, remediation, allowlist, and regression
+framework.
+
+Completed capabilities include:
+
+```text
+Pinned Gitleaks v8.24.3 execution
+Default Gitleaks rules plus project-specific rules
+Multiple controlled synthetic secret classes
+Narrowly scoped allowlist and false-positive handling
+Secret remediation validation
+Six-test deterministic regression suite
+Exact RuleID validation
+CI regression execution
+Full repository secret scanning
+Evidence-backed formal closure
+```
+
+The regression suite validates:
+
+```text
+Clean repository content passes
+Phase 3 synthetic secret is detected
+Application secret is detected
+Database password is detected
+Cloud access token is detected
+API token is detected
+```
+
+Synthetic values are used for regression testing. Real production credentials
+are not intentionally stored for these tests.
+
+See:
+
+- `docs/SECRET-REMEDIATION-WORKFLOW.md`
+- `docs/SECRET-REMEDIATION-RECORD.md`
+- `docs/SECRET-REGRESSION-MATRIX.md`
+- `docs/PHASE6-SECRETS-SECURITY-CLOSURE.md`
 
 ### SOC / Splunk Work
 
