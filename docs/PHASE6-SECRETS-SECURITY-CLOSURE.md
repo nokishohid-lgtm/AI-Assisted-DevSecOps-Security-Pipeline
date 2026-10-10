@@ -372,6 +372,41 @@ COMPLETE
 
 ---
 
+## Phase 6.7 — Evidence and Phase 6 Closure
+
+### Objective
+
+Consolidate Phase 6 controls and evidence, validate the completed security
+work, and formally close the Secrets Security Hardening phase.
+
+### Closure Artifact
+
+```text
+docs/PHASE6-SECRETS-SECURITY-CLOSURE.md
+```
+
+### Validation Completed
+
+Phase 6.7 completed:
+
+- closure-document validation
+- local six-test Gitleaks regression validation
+- temporary artifact cleanup validation
+- `git diff --check`
+- pull request validation
+- Gitleaks CI validation
+- all required repository checks
+- merge into `main`
+- final post-merge regression validation on `main`
+
+### Status
+
+```text
+COMPLETE
+```
+
+---
+
 ## Regression Test Architecture
 
 The deterministic secret regression suite is located at:
@@ -419,7 +454,8 @@ Temporary report pattern:
 
 Temporary fixtures and reports are removed after test execution.
 
-Final validation confirms that no matching `.tmp-gitleaks*` artifacts remain.
+Final validation confirmed that no matching `.tmp-gitleaks*` artifacts
+remained after regression execution.
 
 ---
 
@@ -442,12 +478,15 @@ The successful CI path includes:
 The Phase 6.6 pull request passed Gitleaks CI and all required repository
 checks before merge.
 
+The Phase 6.7 closure pull request also passed Gitleaks CI and all required
+repository checks before merge.
+
 ---
 
-## Final Local Validation
+## Final Local and Post-Merge Validation
 
-After Phase 6.6 was merged into `main`, the regression suite was executed
-again.
+After the Phase 6.7 closure pull request was merged into `main`, the complete
+Gitleaks regression suite was executed again.
 
 Final result:
 
@@ -464,6 +503,9 @@ Final process exit code:
 Temporary artifact validation produced no `.tmp-gitleaks*` output.
 
 `git diff --check` completed without reporting whitespace errors.
+
+This confirms that the documented Phase 6 secret-security controls remained
+operational after the final closure merge.
 
 ---
 
@@ -490,7 +532,8 @@ Temporary artifact validation produced no `.tmp-gitleaks*` output.
 | Regression suite executes locally | PASS |
 | Regression suite executes in CI | PASS |
 | Full repository scan executes in CI | PASS |
-| Post-merge regression validation passes | PASS |
+| Phase 6.7 closure checks passed | PASS |
+| Final post-merge regression validation passes | PASS |
 
 ---
 
@@ -520,12 +563,42 @@ Evidence directory:
 screenshots/phase6-6-secret-regression-matrix/
 ```
 
+Evidence files:
+
+```text
+01-phase6-6-baseline.png
+02-secret-regression-matrix-created.png
+03-secret-regression-matrix-validation-pass.png
+04-phase6-6-commit-success.png
+05-phase6-6-push-success.png
+06-phase6-6-pull-request.png
+07-gitleaks-ci-pass.png
+08-all-pr-checks-pass.png
+09-phase6-6-pr-merged.png
+10-main-post-merge-validation.png
+```
+
 ### Phase 6.7 — Closure Evidence
 
 Evidence directory:
 
 ```text
 screenshots/phase6-7-secrets-security-closure/
+```
+
+Evidence files:
+
+```text
+01-phase6-7-baseline.png
+02-phase6-closure-document-created.png
+03-phase6-7-final-local-validation.png
+04-phase6-7-commit-success.png
+05-phase6-7-push-success.png
+06-phase6-7-pull-request.png
+07-phase6-7-gitleaks-ci-pass.png
+08-phase6-7-all-pr-checks-pass.png
+09-phase6-7-pr-merged.png
+10-phase6-final-post-merge-validation.png
 ```
 
 ---
@@ -580,22 +653,18 @@ is considered fully covered.
 | 6.4 | Allowlist / false-positive handling | COMPLETE |
 | 6.5 | Secret remediation workflow | COMPLETE |
 | 6.6 | Secret regression matrix | COMPLETE |
-| 6.7 | Evidence and Phase 6 closure | IN PROGRESS |
+| 6.7 | Evidence and Phase 6 closure | COMPLETE |
 
-Phase 6.7 changes to `COMPLETE` only after:
+All Phase 6 security-hardening objectives have been completed and validated.
 
-- closure documentation is validated
-- final local regression validation passes
-- CI validation passes
-- required pull request checks pass
-- the Phase 6.7 pull request is merged
-- final post-merge validation on `main` passes
+Phase 6.7 completed local validation, CI validation, required pull request
+checks, merge, and final post-merge validation on `main`.
 
 ---
 
 ## Phase 6 Closure Criteria
 
-Phase 6 is formally closed when:
+Phase 6 is formally closed because all of the following are complete:
 
 - Gitleaks configuration hardening is documented.
 - Upstream Gitleaks default rules remain enabled.
@@ -632,12 +701,13 @@ Phase 6 is formally closed when:
 ## Current Closure Status
 
 ```text
-PHASE 6.7 — IN PROGRESS
-PHASE 6 — NOT YET FORMALLY CLOSED
+PHASE 6.7 — COMPLETE
+PHASE 6 — FORMALLY CLOSED
 ```
 
-The technical controls through Phase 6.6 are complete and validated.
+The technical controls through Phase 6.7 are complete and validated.
 
-Phase 6 becomes formally closed only after the Phase 6.7 closure artifact
-passes local validation, CI validation, pull request checks, merge, and final
-post-merge validation.
+Phase 6.7 successfully completed local validation, CI validation, required
+pull request checks, merge, and final post-merge validation.
+
+Phase 6 — Secrets Security Hardening is formally closed.
