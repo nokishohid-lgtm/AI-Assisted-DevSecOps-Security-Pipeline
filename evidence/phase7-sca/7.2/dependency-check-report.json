@@ -1,0 +1,3929 @@
+{
+  "reportSchema" : "1.1",
+  "scanInfo" : {
+    "engineVersion" : "13.0.0",
+    "dataSource" : [ {
+      "name" : "NVD API Last Checked",
+      "timestamp" : "2026-10-11T03:23:24-04"
+    }, {
+      "name" : "NVD API Last Modified",
+      "timestamp" : "2026-10-11T07:17:29Z"
+    } ]
+  },
+  "projectInfo" : {
+    "name" : "AI-Assisted DevSecOps Security Application",
+    "groupID" : "com.nokishohid",
+    "artifactID" : "devsecops-security-app",
+    "version" : "1.0.0",
+    "reportDate" : "2026-10-11T07:24:07.315242Z",
+    "credits" : {
+      "NVD" : "This product uses the NVD API but is not endorsed or certified by the NVD. This report contains data retrieved from the National Vulnerability Database: https://nvd.nist.gov",
+      "CISA" : "This report may contain data retrieved from the CISA Known Exploited Vulnerability Catalog: https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "NPM" : "This report may contain data retrieved from the Github Advisory Database (via NPM Audit API): https://github.com/advisories/",
+      "RETIREJS" : "This report may contain data retrieved from the RetireJS community: https://retirejs.github.io/retire.js/",
+      "OSSINDEX" : "This report may contain data retrieved from the Sonatype Guide OSS Index API: https://www.sonatype.com/products/sonatype-guide/oss-index-users"
+    }
+  },
+  "dependencies" : [ {
+    "isVirtual" : false,
+    "fileName" : "apiguardian-api-1.1.2.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\apiguardian\\apiguardian-api\\1.1.2\\apiguardian-api-1.1.2.jar",
+    "md5" : "8c7de3f82037fa4a2e8be2a2f13092af",
+    "sha1" : "a231e0d844d2721b0fa1b238006d15c6ded6842a",
+    "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+    "description" : "@API Guardian",
+    "license" : "The Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "apiguardian"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2021-06-27"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "aa952a1b9d5b4e9cc0af853e2c140c2455b397be"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:53:10.089+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://github.com/apiguardian-team/apiguardian"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.apiguardian.api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "apiguardian.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "apiguardian.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "team@apiguardian.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "apiguardian"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "@API Guardian Team"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.apiguardian"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "org.apiguardian:apiguardian-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "apiguardian-team/apiguardian"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "apiguardian"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2021-06-27"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "aa952a1b9d5b4e9cc0af853e2c140c2455b397be"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:53:10.089+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://github.com/apiguardian-team/apiguardian"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.apiguardian.api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "team@apiguardian.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "apiguardian"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "@API Guardian Team"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.apiguardian"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "org.apiguardian:apiguardian-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "apiguardian-team/apiguardian"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "1.1.2"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "1.1.2"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "1.1.2"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "1.1.2"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.apiguardian/apiguardian-api@1.1.2",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "jspecify-1.0.0.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\jspecify\\jspecify\\1.0.0\\jspecify-1.0.0.jar",
+    "md5" : "9133aba420d0ca3b001dbb6ae9992cf6",
+    "sha1" : "7425a601c1c7ec76645a78d22b8c6a627edee507",
+    "sha256" : "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+    "description" : "An artifact of well-named and well-specified annotations to power static analysis checks",
+    "license" : "The Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0.txt",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "annotations"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://jspecify.dev/docs/start-here"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.jspecify.jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "multi-release",
+        "value" : "true"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "kevinb9n@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "kevinb9n"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Kevin Bourrillion"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.jspecify"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JSpecify annotations"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "http://jspecify.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "jspecify"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "annotations"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jspecify"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://jspecify.dev/docs/start-here"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JSpecify annotations"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.jspecify.jspecify"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "multi-release",
+        "value" : "true"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "jspecify"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "kevinb9n@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "kevinb9n"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Kevin Bourrillion"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.jspecify"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JSpecify annotations"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "http://jspecify.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "1.0.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "1.0.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "1.0.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "1.0.0"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.jspecify/jspecify@1.0.0",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "junit-jupiter-6.1.3.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter\\6.1.3\\junit-jupiter-6.1.3.jar",
+    "md5" : "ce9a15168b49704e731f11120d5dc1b9",
+    "sha1" : "cd72619e9eb4cf64e30a87615a4f9b50a80ce103",
+    "sha256" : "6b0a14075c74221de53047e363860b7d19fce802bebc152df2c35c4089c6c379",
+    "description" : "Module \"junit-jupiter\" of JUnit",
+    "license" : "Eclipse Public License v2.0: https://www.eclipse.org/legal/epl-v20.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/com.nokishohid/devsecops-security-app@1.0.0"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter (Aggregator)"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JUnit Jupiter (Aggregator)"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter (Aggregator)"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "6.1.3"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "junit-jupiter-api-6.1.3.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-api\\6.1.3\\junit-jupiter-api-6.1.3.jar",
+    "md5" : "662a5b10a1bbb2e3192790351d67d269",
+    "sha1" : "6a57f0ce4d6bfe9784d103077055ba39f3e6f638",
+    "sha256" : "555d6cf20fa1710884dd01b86cc5785397ba73e21ada2d4b784f5f1a14dcafc4",
+    "description" : "Module \"junit-jupiter-api\" of JUnit",
+    "license" : "Eclipse Public License v2.0: https://www.eclipse.org/legal/epl-v20.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter API"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JUnit Jupiter API"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-api"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter API"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "6.1.3"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.junit.jupiter/junit-jupiter-api@6.1.3",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "junit-jupiter-engine-6.1.3.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-engine\\6.1.3\\junit-jupiter-engine-6.1.3.jar",
+    "md5" : "ecb46f02088bb27be8ae3a7f51eded39",
+    "sha1" : "3778a548f15693db463c3d090b419c64b486b848",
+    "sha256" : "414559e78bbfa3bdb2eab009ac3ab1e22369ac31117c270a0bd666da115c5c6c",
+    "description" : "Module \"junit-jupiter-engine\" of JUnit",
+    "license" : "Eclipse Public License v2.0: https://www.eclipse.org/legal/epl-v20.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "provide-capability",
+        "value" : "org.junit.platform.engine;org.junit.platform.engine=junit-jupiter;version:Version=\"6.1.3\""
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter Engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JUnit Jupiter Engine"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "provide-capability",
+        "value" : "org.junit.platform.engine;org.junit.platform.engine=junit-jupiter;version:Version=\"6.1.3\""
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter Engine"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "6.1.3"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.junit.jupiter/junit-jupiter-engine@6.1.3",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "junit-jupiter-params-6.1.3.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\jupiter\\junit-jupiter-params\\6.1.3\\junit-jupiter-params-6.1.3.jar",
+    "md5" : "e0b4bd2b6ae43ccb74acccc2b007cf6e",
+    "sha1" : "435fa4ec654c11fb82e666a47d9baefcee3f8df6",
+    "sha256" : "05c51cedba2c06a9770707391e006cee825876937dea580b94a265ce145d4939",
+    "description" : "Module \"junit-jupiter-params\" of JUnit",
+    "license" : "Eclipse Public License v2.0: https://www.eclipse.org/legal/epl-v20.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter Params"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "params"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JUnit Jupiter Params"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-jupiter-params"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.jupiter"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Jupiter Params"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "6.1.3"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.junit.jupiter/junit-jupiter-params@6.1.3",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "junit-platform-engine-6.1.3.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\platform\\junit-platform-engine\\6.1.3\\junit-platform-engine-6.1.3.jar",
+    "md5" : "a8f3d8fb44590fdee64b1b56b004f45a",
+    "sha1" : "e48a6061b576ebe36eac3b518dc917c23d119a91",
+    "sha256" : "21ad7ad3a35beda16387979317be1833a72a71d812f9a66ee4b9a7bafb56334c",
+    "description" : "Module \"junit-platform-engine\" of JUnit",
+    "license" : "Eclipse Public License v2.0: https://www.eclipse.org/legal/epl-v20.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "relatedDependencies" : [ {
+      "isVirtual" : false,
+      "fileName" : "junit-platform-commons-6.1.3.jar",
+      "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\junit\\platform\\junit-platform-commons\\6.1.3\\junit-platform-commons-6.1.3.jar",
+      "sha256" : "a4774ae923c109544034aeae7c762cf017fbcdd1342403ba90e0921984b608c3",
+      "sha1" : "acb99d3482ea51fcbcc4f6ea8672761e2b3d5bb7",
+      "md5" : "481a56275fe36dc163df005113a39f44",
+      "packageIds" : [ {
+        "id" : "pkg:maven/org.junit.platform/junit-platform-commons@6.1.3"
+      } ]
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "platform"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.platform"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Platform Engine API"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "junit"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "platform"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2026-08-07"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "f59f60d2cebdf2224235d81f781b1f310cbc8138"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:13.673+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "JUnit Platform Engine API"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "junit-platform-engine"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "derancourt.juliette@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mpkorstanje@junit.org"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sormuras@gmail.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "juliette-derancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mpkorstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sormuras"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Christian Stein"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Juliette de Rancourt"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "M.P. Korstanje"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.junit.platform"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "JUnit Platform Engine API"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://junit.org/"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "6.1.3"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "6.1.3"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.junit.platform/junit-platform-engine@6.1.3",
+      "confidence" : "HIGH"
+    } ],
+    "vulnerabilityIds" : [ {
+      "id" : "cpe:2.3:a:fan_platform_project:fan_platform:6.1.3:*:*:*:*:*:*:*",
+      "confidence" : "LOW"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "opentest4j-1.3.0.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\opentest4j\\opentest4j\\1.3.0\\opentest4j-1.3.0.jar",
+    "md5" : "03c404f727531f3fd3b4c73997899327",
+    "sha1" : "152ea56b3a72f655d4fd677fc0ef2596c3dd5e6e",
+    "sha256" : "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
+    "description" : "Open Test Alliance for the JVM",
+    "license" : "The Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0.txt",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:test" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/org.junit.jupiter/junit-jupiter@6.1.3"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2023-07-06"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "214973bfa4e7e9be7d04e623202cc4147c7036d2"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:06.116+0200"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "opentest4j.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "opentest4j.org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "org.opentest4j:opentest4j"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "ota4j-team/opentest4j"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-date",
+        "value" : "2023-07-06"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-revision",
+        "value" : "214973bfa4e7e9be7d04e623202cc4147c7036d2"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "build-time",
+        "value" : "14:25:06.116+0200"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "business@johanneslink.net"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "mail@marcphilipp.de"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "matthias.merdes@heidelpay.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "sam@sambrannen.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer email",
+        "value" : "stefan.bechtold@me.com"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bechte"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jlink"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "marcphilipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "mmerdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sbrannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Johannes Link"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Marc Philipp"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Matthias Merdes"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sam Brannen"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Stefan Bechtold"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "org.opentest4j:opentest4j"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "ota4j-team/opentest4j"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "1.3.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "1.3.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "1.3.0"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "1.3.0"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.opentest4j/opentest4j@1.3.0",
+      "confidence" : "HIGH"
+    } ]
+  }, {
+    "isVirtual" : false,
+    "fileName" : "postgresql-42.7.12.jar",
+    "filePath" : "C:\\Users\\munam\\.m2\\repository\\org\\postgresql\\postgresql\\42.7.12\\postgresql-42.7.12.jar",
+    "md5" : "bf3dd29ad502aeff677c4920bc6d6c9a",
+    "sha1" : "9d30cb5aaf509e58b05da3b8ef98b6f9cc93d7af",
+    "sha256" : "31fbf6f06b2217fb51d5100cee51b22625cc81640da0679b47914e54c1e6377c",
+    "description" : "PostgreSQL JDBC Driver Postgresql",
+    "license" : "BSD-2-Clause: https://jdbc.postgresql.org/about/license.html",
+    "projectReferences" : [ "AI-Assisted DevSecOps Security Application:compile" ],
+    "includedBy" : [ {
+      "reference" : "pkg:maven/com.nokishohid/devsecops-security-app@1.0.0"
+    } ],
+    "evidenceCollected" : {
+      "vendorEvidence" : [ {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "driver"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jdbc"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "org"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "automatic-module-name",
+        "value" : "org.postgresql.jdbc"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-copyright",
+        "value" : "Copyright (c) 2003-2024, PostgreSQL Global Development Group"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://jdbc.postgresql.org/"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.postgresql.jdbc"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor",
+        "value" : "PostgreSQL Global Development Group"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Implementation-Vendor-Id",
+        "value" : "org.postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "multi-release",
+        "value" : "true"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "provide-capability",
+        "value" : "osgi.service;objectClass=\"org.osgi.service.jdbc.DataSourceFactory\";osgi.jdbc.driver.class=\"org.postgresql.Driver\";osgi.jdbc.driver.name=\"PostgreSQL JDBC Driver\";effective:=active"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "specification-vendor",
+        "value" : "Oracle Corporation"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bokken"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "davecramer"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jurka"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "oliver"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "ringerc"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sehrope"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "vlsi"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Brett Okken"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Craig Ringer"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Dave Cramer"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Kris Jurka"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Oliver Jowett"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sehrope Sarkuni"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Vladimir Sitnikov"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.postgresql"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "PostgreSQL JDBC Driver"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "organization name",
+        "value" : "PostgreSQL Global Development Group"
+      }, {
+        "type" : "vendor",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "organization url",
+        "value" : "https://jdbc.postgresql.org/"
+      }, {
+        "type" : "vendor",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://jdbc.postgresql.org"
+      } ],
+      "productEvidence" : [ {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "name",
+        "value" : "postgresql"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "hint analyzer",
+        "name" : "product",
+        "value" : "pgjdbc"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "hint analyzer",
+        "name" : "product",
+        "value" : "postgresql_jdbc_driver"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "driver"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "jdbc"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "org"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "osgi"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "jar",
+        "name" : "package name",
+        "value" : "postgresql"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "automatic-module-name",
+        "value" : "org.postgresql.jdbc"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-copyright",
+        "value" : "Copyright (c) 2003-2024, PostgreSQL Global Development Group"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "bundle-docurl",
+        "value" : "https://jdbc.postgresql.org/"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "Bundle-Name",
+        "value" : "PostgreSQL JDBC Driver"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "bundle-symbolicname",
+        "value" : "org.postgresql.jdbc"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Title",
+        "value" : "PostgreSQL JDBC Driver"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "multi-release",
+        "value" : "true"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "Manifest",
+        "name" : "provide-capability",
+        "value" : "osgi.service;objectClass=\"org.osgi.service.jdbc.DataSourceFactory\";osgi.jdbc.driver.class=\"org.postgresql.Driver\";osgi.jdbc.driver.name=\"PostgreSQL JDBC Driver\";effective:=active"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "Manifest",
+        "name" : "specification-title",
+        "value" : "JDBC"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "artifactid",
+        "value" : "postgresql"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "bokken"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "davecramer"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "jurka"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "oliver"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "ringerc"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "sehrope"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer id",
+        "value" : "vlsi"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Brett Okken"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Craig Ringer"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Dave Cramer"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Kris Jurka"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Oliver Jowett"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Sehrope Sarkuni"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "developer name",
+        "value" : "Vladimir Sitnikov"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "groupid",
+        "value" : "org.postgresql"
+      }, {
+        "type" : "product",
+        "confidence" : "HIGH",
+        "source" : "pom",
+        "name" : "name",
+        "value" : "PostgreSQL JDBC Driver"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "organization name",
+        "value" : "PostgreSQL Global Development Group"
+      }, {
+        "type" : "product",
+        "confidence" : "LOW",
+        "source" : "pom",
+        "name" : "organization url",
+        "value" : "https://jdbc.postgresql.org/"
+      }, {
+        "type" : "product",
+        "confidence" : "MEDIUM",
+        "source" : "pom",
+        "name" : "url",
+        "value" : "https://jdbc.postgresql.org"
+      } ],
+      "versionEvidence" : [ {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "file",
+        "name" : "version",
+        "value" : "42.7.12"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Bundle-Version",
+        "value" : "42.7.12"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGH",
+        "source" : "Manifest",
+        "name" : "Implementation-Version",
+        "value" : "42.7.12"
+      }, {
+        "type" : "version",
+        "confidence" : "HIGHEST",
+        "source" : "pom",
+        "name" : "version",
+        "value" : "42.7.12"
+      } ]
+    },
+    "packages" : [ {
+      "id" : "pkg:maven/org.postgresql/postgresql@42.7.12",
+      "confidence" : "HIGH"
+    } ],
+    "vulnerabilityIds" : [ {
+      "id" : "cpe:2.3:a:postgresql:postgresql_jdbc_driver:42.7.12:*:*:*:*:*:*:*",
+      "confidence" : "LOW"
+    } ]
+  } ]
+}
