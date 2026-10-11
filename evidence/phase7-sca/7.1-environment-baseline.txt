@@ -1,0 +1,19 @@
+# Phase 7.1 - Dependency Inventory
+
+Generated: 2026-10-11T02:26:38-04:00
+
+## Git State
+
+Branch:
+phase7/sca-vulnerability-management
+
+Latest Commit:
+84a8395 Merge pull request #100 from nokishohid-lgtm/docs/phase6-roadmap-sync
+
+## Java Version
+
+openjdk version "17.0.20.1" 2026-08-18 OpenJDK Runtime Environment Temurin-17.0.20.1+1 (build 17.0.20.1+1) OpenJDK 64-Bit Server VM Temurin-17.0.20.1+1 (build 17.0.20.1+1, mixed mode, sharing)
+
+## Maven Version
+
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5) Maven home: C:\Maven\apache-maven-3.9.16 Java version: 17.0.20.1, vendor: Eclipse Adoptium, runtime: C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot Default locale: en_US, platform encoding: Cp1252 OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"

@@ -1,0 +1,62 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "0.75.0"
+  },
+  "ReportID": "01a12a02-b907-7719-8225-95ed0713d872",
+  "CreatedAt": "2026-10-11T04:09:43.9434653-04:00",
+  "ArtifactID": "sha256:79e28ccbce63b52250f5612727d910910b589ff812ffb5b6da1e5dc986a1bf97",
+  "ArtifactName": ".",
+  "ArtifactType": "repository",
+  "Metadata": {
+    "RepoURL": "https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline.git",
+    "Branch": "phase7/sca-vulnerability-management",
+    "Commit": "558551c8c696b70b48a460e5673353d36da35d68",
+    "CommitMsg": "feat: enforce Phase 7.3 high critical dependency gate",
+    "Author": "nokishohid-lgtm \u003cnoki.shohid@csuglobal.edu\u003e",
+    "Committer": "nokishohid-lgtm \u003cnoki.shohid@csuglobal.edu\u003e"
+  },
+  "Results": [
+    {
+      "Target": "pom.xml",
+      "Class": "lang-pkgs",
+      "Type": "pom",
+      "Packages": [
+        {
+          "ID": "com.nokishohid:devsecops-security-app:1.0.0::c8a9de40",
+          "Name": "com.nokishohid:devsecops-security-app",
+          "Identifier": {
+            "PURL": "pkg:maven/com.nokishohid/devsecops-security-app@1.0.0",
+            "UID": "10b08e05c4325568"
+          },
+          "Version": "1.0.0",
+          "Relationship": "root",
+          "DependsOn": [
+            "org.postgresql:postgresql:42.7.12::5b853d23"
+          ],
+          "AnalyzedBy": "pom"
+        },
+        {
+          "ID": "org.postgresql:postgresql:42.7.12::5b853d23",
+          "Name": "org.postgresql:postgresql",
+          "Identifier": {
+            "PURL": "pkg:maven/org.postgresql/postgresql@42.7.12",
+            "UID": "eae969b0e09e32c1"
+          },
+          "Version": "42.7.12",
+          "Licenses": [
+            "BSD-2-Clause"
+          ],
+          "Relationship": "direct",
+          "Locations": [
+            {
+              "StartLine": 32,
+              "EndLine": 36
+            }
+          ],
+          "AnalyzedBy": "pom"
+        }
+      ]
+    }
+  ]
+}

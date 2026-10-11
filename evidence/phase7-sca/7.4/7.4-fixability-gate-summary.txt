@@ -1,0 +1,20 @@
+Phase 7.4 - Dependency Fixability Gate
+======================================
+
+Scanner: Trivy 0.75.0
+Scope: Maven dependency vulnerability scan
+
+Gate Policy:
+- Detect HIGH and CRITICAL vulnerabilities
+- Check whether a FixedVersion is available
+- Fail when a HIGH/CRITICAL vulnerability has a known fix
+- Pass when no fixable HIGH/CRITICAL vulnerabilities are present
+
+Current Baseline:
+- Total vulnerabilities: 0
+- HIGH/CRITICAL vulnerabilities: 0
+- Fixable HIGH/CRITICAL vulnerabilities: 0
+- Gate result: PASS
+
+Conclusion:
+The project now includes a fixability-aware SCA gate that distinguishes detected vulnerabilities from remediable HIGH/CRITICAL findings.
