@@ -1,0 +1,23 @@
+Phase 7.8 - SCA Regression Test
+===============================
+
+Regression Coverage:
+- Clean dependency baseline
+- Fixable HIGH vulnerability
+- Invalid Trivy report structure
+
+Expected Results:
+- Clean baseline: PASS
+- Fixable HIGH vulnerability: BLOCKED
+- Invalid report: BLOCKED
+
+Observed Exit Codes:
+- Clean baseline: 0
+- Fixable vulnerability: 1
+- Invalid report: 2
+
+Validation Result:
+PASS
+
+Conclusion:
+The SCA regression suite confirms that the dependency security controls pass valid clean input, block fixable HIGH/CRITICAL vulnerabilities, and fail closed when scanner report structure is invalid.
