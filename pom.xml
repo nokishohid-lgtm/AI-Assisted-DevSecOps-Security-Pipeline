@@ -16,6 +16,7 @@
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <junit.version>6.1.3</junit.version>
         <dependency-check.version>13.0.0</dependency-check.version>
     </properties>
@@ -50,11 +51,19 @@
 
                 <configuration>
                     <format>ALL</format>
-                    <outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
-                    <failBuildOnCVSS>11</failBuildOnCVSS>
+
+                    <outputDirectory>
+                        ${project.build.directory}/dependency-check
+                    </outputDirectory>
+
+                    <failBuildOnCVSS>7.0</failBuildOnCVSS>
+
                     <skipTestScope>false</skipTestScope>
+
                     <prettyPrint>true</prettyPrint>
+
                     <centralAnalyzerEnabled>true</centralAnalyzerEnabled>
+
                     <nvdApiKeyEnvironmentVariable>NVD_API_KEY</nvdApiKeyEnvironmentVariable>
                 </configuration>
             </plugin>

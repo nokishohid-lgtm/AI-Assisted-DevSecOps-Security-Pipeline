@@ -1,0 +1,17 @@
+Phase 7.3 - Severity Gate
+=========================
+
+Gate Type: OWASP Dependency-Check severity enforcement
+Threshold: failBuildOnCVSS = 7.0
+Policy Meaning: HIGH / CRITICAL vulnerabilities fail the build
+
+Validation Result:
+The severity gate executed successfully against the current baseline.
+
+Current Baseline:
+- Dependency scan completed successfully
+- No detected vulnerable dependencies
+- Build result: PASS
+
+Conclusion:
+The project now enforces a severity-based SCA gate and currently passes because no dependencies were detected with CVSS 7.0 or higher.
