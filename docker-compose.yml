@@ -14,7 +14,8 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - devsecops
+      - api-db
+      - worker-db
 
   api:
     build:
@@ -38,7 +39,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - devsecops
+      - api-db
 
   worker:
     build:
@@ -60,9 +61,12 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - devsecops
+      - worker-db
 
 networks:
-  devsecops:
+  api-db:
     driver: bridge
-    
+
+  worker-db:
+    driver: bridge
+    internal: true

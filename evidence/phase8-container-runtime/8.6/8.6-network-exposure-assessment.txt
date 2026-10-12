@@ -1,0 +1,42 @@
+﻿Phase 8.6 - Network Exposure and Segmentation
+=============================================
+
+Status: PASS
+
+Objective
+---------
+Reduce unnecessary network exposure and isolate application services while preserving required database connectivity.
+
+Changes Implemented
+-------------------
+- Replaced the single shared bridge network with separate api-db and worker-db networks.
+- API is attached only to api-db.
+- Worker is attached only to worker-db.
+- PostgreSQL is attached to both networks because both services require database access.
+- Worker network is configured as internal.
+- API remains published only to 127.0.0.1:8081.
+- PostgreSQL remains unexposed to the host.
+- Worker remains unexposed to the host.
+
+Validation
+----------
+PASS - API health endpoint remains healthy.
+PASS - API can reach PostgreSQL on port 5432.
+PASS - Worker can reach PostgreSQL on port 5432.
+PASS - API cannot directly resolve Worker.
+PASS - Worker cannot directly resolve API.
+PASS - API host exposure is restricted to localhost.
+PASS - PostgreSQL has no host-published port.
+PASS - Worker has no host-published port.
+
+Security Impact
+---------------
+The segmentation reduces unnecessary east-west visibility between the API and worker services while preserving required access to PostgreSQL.
+
+The API remains the only externally published service, and its host binding is limited to the loopback interface.
+
+Conclusion
+----------
+Phase 8.6 successfully reduces host and inter-service network exposure while preserving application functionality.
+
+Final Result: PASS
