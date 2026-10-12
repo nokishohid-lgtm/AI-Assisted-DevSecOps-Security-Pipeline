@@ -18,6 +18,7 @@ jobs:
 
     env:
       COMPOSE_PROJECT_NAME: zapci
+      POSTGRES_PASSWORD: "ci-${{ github.run_id }}-${{ github.run_attempt }}"
 
     steps:
       - name: Check out repository
@@ -53,6 +54,7 @@ jobs:
                 exit 0
               fi
             fi
+
             sleep 2
           done
 
@@ -106,7 +108,7 @@ jobs:
 
           timeout 20m docker run --rm \
             --name devsecops-zap-scanner \
-            --network zapci_devsecops \
+            --network zapci_api-db \
             -v "${{ github.workspace }}/security:/zap/spec:ro" \
             -v "${{ github.workspace }}/zap-reports:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
