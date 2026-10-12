@@ -1,0 +1,35 @@
+﻿Phase 8.5 - Read-Only Filesystem
+================================
+
+Status: PASS
+
+Objective
+---------
+Reduce container filesystem mutability while preserving explicitly required writable runtime paths.
+
+Validated Controls
+------------------
+PASS - API root filesystem is configured read-only.
+PASS - Worker root filesystem is configured read-only.
+PASS - Writes to /app are blocked for API.
+PASS - Writes to /app are blocked for worker.
+PASS - API /tmp remains writable through tmpfs.
+PASS - Worker /tmp remains writable through tmpfs.
+PASS - PostgreSQL data storage remains writable as required for database operation.
+PASS - PostgreSQL root filesystem behavior was reviewed separately from stateless application services.
+
+Security Design
+---------------
+The API and worker services use read-only root filesystems.
+
+Temporary runtime writes are isolated to /tmp through tmpfs with noexec and nosuid restrictions.
+
+PostgreSQL is stateful and requires write access to its data directory. Forcing its entire filesystem into the same stateless read-only model was not applied because the database must persist and modify runtime data.
+
+The database writable path is therefore treated as an intentional functional exception rather than a failed control.
+
+Conclusion
+----------
+Phase 8.5 confirms that stateless application containers operate with read-only root filesystems while writable storage is limited to explicitly required runtime locations.
+
+Final Result: PASS
