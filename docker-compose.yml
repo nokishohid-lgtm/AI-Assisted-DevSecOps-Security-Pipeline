@@ -3,18 +3,19 @@ services:
     image: postgres:16-alpine
     container_name: devsecops-postgres
     environment:
-      POSTGRES_USER: devsecops
-      POSTGRES_PASSWORD: devsecops
-      POSTGRES_DB: devsecops
+      POSTGRES_USER: ${POSTGRES_USER:-devsecops}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-devsecops}
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U devsecops"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devsecops}"]
       interval: 5s
       timeout: 3s
       retries: 10
     networks:
-      - devsecops
+      - api-db
+      - worker-db
 
   api:
     build:
@@ -22,9 +23,9 @@ services:
       dockerfile: Dockerfile.api
     container_name: devsecops-api
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/devsecops
-      DB_USER: devsecops
-      DB_PASSWORD: devsecops
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devsecops}
+      DB_USER: ${POSTGRES_USER:-devsecops}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,7 +39,7 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - devsecops
+      - api-db
 
   worker:
     build:
@@ -46,9 +47,9 @@ services:
       dockerfile: Dockerfile.worker
     container_name: devsecops-worker
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/devsecops
-      DB_USER: devsecops
-      DB_PASSWORD: devsecops
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devsecops}
+      DB_USER: ${POSTGRES_USER:-devsecops}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
     depends_on:
       postgres:
         condition: service_healthy
@@ -60,9 +61,12 @@ services:
     security_opt:
       - no-new-privileges:true
     networks:
-      - devsecops
+      - worker-db
 
 networks:
-  devsecops:
+  api-db:
     driver: bridge
-    
+
+  worker-db:
+    driver: bridge
+    internal: true

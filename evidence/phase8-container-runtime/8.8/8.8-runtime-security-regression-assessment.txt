@@ -1,0 +1,56 @@
+﻿Phase 8.8 - Runtime Security Regression
+=======================================
+
+Status: PASS
+
+Objective
+---------
+Create and execute a repeatable regression gate that verifies the major container and runtime security controls implemented throughout Phase 8.
+
+Regression Coverage
+-------------------
+PASS - API container is running.
+PASS - Worker container is running.
+PASS - PostgreSQL container is running.
+PASS - API health endpoint reports healthy.
+PASS - API runs as non-root.
+PASS - Worker runs as non-root.
+PASS - PostgreSQL server process runs as non-root UID 70.
+PASS - API root filesystem is read-only.
+PASS - Worker root filesystem is read-only.
+PASS - API protected filesystem write is blocked.
+PASS - Worker protected filesystem write is blocked.
+PASS - API temporary filesystem remains writable.
+PASS - Worker temporary filesystem remains writable.
+PASS - API drops all Linux capabilities.
+PASS - Worker drops all Linux capabilities.
+PASS - API privileged mode is disabled.
+PASS - Worker privileged mode is disabled.
+PASS - API no-new-privileges is enabled.
+PASS - Worker no-new-privileges is enabled.
+PASS - API host exposure is restricted to localhost.
+PASS - PostgreSQL is not published to the host.
+PASS - Worker is not published to the host.
+PASS - API can reach PostgreSQL.
+PASS - Worker can reach PostgreSQL.
+PASS - API cannot resolve Worker.
+PASS - Worker cannot resolve API.
+
+Regression Harness
+------------------
+A reusable PowerShell regression script was created at:
+
+security-tests/runtime/phase8-runtime-regression.ps1
+
+The script returns a non-zero exit code if any security control fails and returns exit code 0 only when all validation checks pass.
+
+Result
+------
+FINAL RESULT: PASS
+Exit Code: 0
+
+Conclusion
+----------
+The Phase 8 runtime hardening controls remain active and can now be revalidated through a repeatable security regression gate.
+
+Final Result: PASS

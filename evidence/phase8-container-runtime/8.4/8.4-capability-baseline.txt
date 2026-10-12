@@ -1,0 +1,38 @@
+﻿=== API Docker policy ===
+CapDrop=["ALL"] CapAdd=null Privileged=false
+
+=== API effective capabilities ===
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	0000000000000000
+CapAmb:	0000000000000000
+
+=== Worker Docker policy ===
+CapDrop=["ALL"] CapAdd=null Privileged=false
+
+=== Worker effective capabilities ===
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	0000000000000000
+CapAmb:	0000000000000000
+
+=== PostgreSQL Docker policy ===
+CapDrop=null CapAdd=null Privileged=false
+
+=== PostgreSQL effective capabilities ===
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	00000000a80425fb
+CapAmb:	0000000000000000
+
+=== PostgreSQL runtime identity ===
+PID                 USER                COMMAND
+32161               70                  postgres
+32224               70                  postgres: checkpointer
+32225               70                  postgres: background writer
+32227               70                  postgres: walwriter
+32228               70                  postgres: autovacuum launcher
+32229               70                  postgres: logical replication launcher

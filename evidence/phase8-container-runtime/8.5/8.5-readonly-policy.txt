@@ -1,0 +1,3 @@
+﻿API ReadOnlyRootFS=true
+Worker ReadOnlyRootFS=true
+Postgres ReadOnlyRootFS=false

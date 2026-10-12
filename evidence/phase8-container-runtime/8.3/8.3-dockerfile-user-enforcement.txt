@@ -1,0 +1,7 @@
+﻿
+Dockerfile:21:USER appuser
+Dockerfile.api:28:USER appuser
+Dockerfile.worker:28:USER appuser
+
+
+

@@ -1,0 +1,68 @@
+﻿Phase 8.1 - Dockerfile and Runtime Baseline Review
+==================================================
+
+Status: PASS WITH HARDENING OPPORTUNITIES
+
+Scope
+-----
+Reviewed:
+- Dockerfile
+- Dockerfile.api
+- Dockerfile.worker
+- docker-compose.yml
+- .dockerignore
+- API runtime
+- Worker runtime
+- PostgreSQL runtime
+- Container networking
+- Filesystem restrictions
+- Linux capability configuration
+
+Validated Controls
+------------------
+PASS - API image builds successfully
+PASS - Worker image builds successfully
+PASS - PostgreSQL reaches healthy state
+PASS - API health endpoint returns healthy
+PASS - API runs as non-root appuser
+PASS - Worker runs as non-root appuser
+PASS - PostgreSQL server processes run as non-root UID 70
+PASS - API root filesystem is read-only
+PASS - Worker root filesystem is read-only
+PASS - /tmp is provided as controlled writable tmpfs
+PASS - API drops all Linux capabilities
+PASS - Worker drops all Linux capabilities
+PASS - API uses no-new-privileges
+PASS - Worker uses no-new-privileges
+PASS - Privileged mode is disabled
+PASS - API host exposure is restricted to 127.0.0.1:8081
+PASS - PostgreSQL is not published to the host
+PASS - Worker is not published to the host
+PASS - Multi-stage Java builds are already implemented
+
+Baseline Findings
+-----------------
+1. Runtime base images use mutable tags rather than immutable digest references.
+2. Runtime Dockerfiles execute apk upgrade during image construction.
+3. PostgreSQL does not currently use the same capability and security_opt hardening as API and worker.
+4. PostgreSQL root filesystem remains writable because database persistence requires controlled writable storage.
+5. Database credentials are currently defined directly in docker-compose.yml.
+6. API, worker, and database currently share a single bridge network.
+7. API and worker runtime images can be reviewed for further minimization.
+8. Docker build context can be reduced further through .dockerignore improvements.
+
+Important PostgreSQL Observation
+--------------------------------
+docker compose exec postgres id opened an administrative shell as root.
+
+However, inspection of the actual running database processes with docker top showed the PostgreSQL server and supporting processes running as UID 70.
+
+Therefore, the database server itself is operating as a non-root runtime process.
+
+Conclusion
+----------
+The Phase 8.1 baseline is operational and already contains several strong runtime controls.
+
+The environment is suitable for continued hardening in Phase 8.2 through Phase 8.8.
+
+Final Result: PASS

@@ -16,6 +16,7 @@ jobs:
 
     env:
       COMPOSE_PROJECT_NAME: zapregression
+      POSTGRES_PASSWORD: "ci-${{ github.run_id }}-${{ github.run_attempt }}"
 
     steps:
       - name: Check out repository
@@ -106,7 +107,7 @@ jobs:
 
           timeout 20m docker run --rm \
             --name devsecops-zap-regression \
-            --network zapregression_devsecops \
+            --network zapregression_api-db \
             -v "${{ github.workspace }}/security:/zap/spec:ro" \
             -v "${{ github.workspace }}/zap-regression-reports:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \

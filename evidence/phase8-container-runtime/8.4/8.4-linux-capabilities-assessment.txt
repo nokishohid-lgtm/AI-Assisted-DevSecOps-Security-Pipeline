@@ -1,0 +1,49 @@
+﻿Phase 8.4 - Linux Capabilities
+===============================
+
+Status: PASS
+
+Objective
+---------
+Validate that the application services operate without unnecessary Linux capabilities and confirm whether the database server retains any effective runtime capabilities.
+
+Validated Controls
+------------------
+PASS - API container is not privileged.
+PASS - Worker container is not privileged.
+PASS - PostgreSQL container is not privileged.
+PASS - API container explicitly drops all Linux capabilities.
+PASS - Worker container explicitly drops all Linux capabilities.
+PASS - API effective capability set is zero.
+PASS - Worker effective capability set is zero.
+PASS - PostgreSQL effective capability set is zero.
+PASS - PostgreSQL server processes run as UID 70 rather than root.
+
+Findings
+--------
+API:
+- Docker policy: CapDrop=["ALL"], CapAdd=null, Privileged=false
+- Runtime effective capabilities: CapEff=0000000000000000
+
+Worker:
+- Docker policy: CapDrop=["ALL"], CapAdd=null, Privileged=false
+- Runtime effective capabilities: CapEff=0000000000000000
+
+PostgreSQL:
+- Docker policy: CapDrop not explicitly configured
+- Runtime effective capabilities: CapEff=0000000000000000
+- Runtime identity: PostgreSQL server processes operate as UID 70
+
+Security Interpretation
+-----------------------
+The API and worker services already enforce the strongest practical capability posture by explicitly dropping all Linux capabilities.
+
+Although PostgreSQL does not currently declare CapDrop=["ALL"] in Docker Compose, runtime inspection shows that its effective capability set is zero during normal operation.
+
+Because the official PostgreSQL image manages its own startup and privilege transitions, no Compose-level capability override was applied at this stage.
+
+Conclusion
+----------
+All three services were verified to operate without effective runtime Linux capabilities during normal execution. API and worker also explicitly enforce capability dropping through Docker Compose.
+
+Final Result: PASS

@@ -1,0 +1,75 @@
+﻿Phase 8.9 - Evidence and Closure Assessment
+===========================================
+
+Status: PASS
+
+Objective
+---------
+Perform final validation of the Phase 8 container and runtime security controls, close identified runtime credential exposure, verify regression coverage, and document remaining security considerations.
+
+Phase 8 Security Outcomes
+-------------------------
+PASS - Container runtime baseline was reviewed and documented.
+PASS - API and Worker runtime images were minimized.
+PASS - API and Worker execute as non-root users.
+PASS - PostgreSQL server processes execute as non-root UID 70.
+PASS - API and Worker drop all Linux capabilities.
+PASS - Privileged mode is disabled.
+PASS - no-new-privileges is enabled for API and Worker.
+PASS - API and Worker root filesystems are read-only.
+PASS - Writable temporary storage is restricted to tmpfs.
+PASS - API host exposure is restricted to 127.0.0.1:8081.
+PASS - PostgreSQL is not published to the host.
+PASS - Worker is not published to the host.
+PASS - API and Worker are segmented onto separate application networks.
+PASS - Required API-to-PostgreSQL connectivity is preserved.
+PASS - Required Worker-to-PostgreSQL connectivity is preserved.
+PASS - API and Worker cannot directly resolve each other.
+PASS - End-to-end API, database, and worker processing remains functional.
+PASS - Repeatable runtime security regression testing is implemented.
+PASS - Hard-coded database password was removed from docker-compose.yml.
+PASS - Runtime database password is injected through a local ignored .env file.
+PASS - Safe .env.example configuration template is provided.
+
+Runtime Secret Handling
+-----------------------
+The runtime database password is no longer stored directly in docker-compose.yml.
+
+The local .env file contains the runtime credential and is excluded from Git through .gitignore.
+
+A safe .env.example file documents the required variables without containing a real credential.
+
+Residual Security Considerations
+--------------------------------
+Container image references currently use mutable tags:
+
+- maven:3.9-eclipse-temurin-17-alpine
+- eclipse-temurin:17-jre-alpine
+- postgres:16-alpine
+
+Digest pinning is not implemented during this phase.
+
+This is documented as a residual supply-chain hardening opportunity rather than being represented as a completed control. Future work may pin approved images to immutable digests and implement a controlled digest-update process.
+
+PostgreSQL retains the runtime behavior required by the official image. The database was not forced into additional user or filesystem restrictions that could interfere with initialization or persistent storage.
+
+Regression Validation
+---------------------
+The reusable regression harness is located at:
+
+security-tests/runtime/phase8-runtime-regression.ps1
+
+The final regression run completed successfully.
+
+FINAL RESULT: PASS
+Exit Code: 0
+
+Conclusion
+----------
+Phase 8 successfully hardened the project's container and runtime environment while preserving application functionality.
+
+The phase implemented and validated non-root execution, capability reduction, read-only application filesystems, restricted temporary storage, network segmentation, reduced host exposure, runtime health validation, end-to-end functional testing, secret externalization, and repeatable runtime security regression testing.
+
+The remaining mutable image-tag consideration is explicitly documented and does not invalidate the runtime controls completed in this phase.
+
+Final Result: PASS

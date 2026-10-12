@@ -1,0 +1,6 @@
+﻿=== API PORTS ===
+8080/tcp -> 127.0.0.1:8081
+
+=== POSTGRESQL PORTS ===
+
+=== WORKER PORTS ===

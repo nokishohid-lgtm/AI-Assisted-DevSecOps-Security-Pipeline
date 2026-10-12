@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    env:
+      POSTGRES_PASSWORD: "ci-${{ github.run_id }}-${{ github.run_attempt }}"
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -41,6 +44,7 @@ jobs:
                 exit 0
               fi
             fi
+
             sleep 2
           done
 
@@ -87,6 +91,7 @@ jobs:
               completed=true
               break
             fi
+
             sleep 2
           done
 

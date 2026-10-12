@@ -1,0 +1,55 @@
+﻿Phase 8.7 - Runtime Health and Security Validation
+==================================================
+
+Status: PASS
+
+Objective
+---------
+Validate that the hardened container environment remains fully functional after image, privilege, filesystem, capability, and network hardening.
+
+Runtime Validation
+------------------
+PASS - API container is running.
+PASS - Worker container is running.
+PASS - PostgreSQL container is healthy.
+PASS - API health endpoint returns healthy.
+
+Security Validation
+-------------------
+PASS - API runs as non-root appuser.
+PASS - Worker runs as non-root appuser.
+PASS - API root filesystem remains read-only.
+PASS - Worker root filesystem remains read-only.
+PASS - API drops all Linux capabilities.
+PASS - Worker drops all Linux capabilities.
+PASS - Privileged mode remains disabled.
+PASS - API host exposure remains restricted to 127.0.0.1:8081.
+PASS - PostgreSQL remains unexposed to the host.
+PASS - Worker remains unexposed to the host.
+PASS - API can reach PostgreSQL.
+PASS - Worker can reach PostgreSQL.
+PASS - API and Worker remain network-isolated from each other.
+
+End-to-End Application Validation
+---------------------------------
+A Phase 8 runtime validation job was submitted through the API.
+
+Job ID: 1
+Initial status: pending
+Final status: done
+
+The completed database record confirmed:
+- Job creation succeeded.
+- PostgreSQL stored the job.
+- Worker retrieved the job.
+- Worker completed the job.
+- picked_at was populated.
+- done_at was populated.
+
+Conclusion
+----------
+The hardened container environment remains fully operational.
+
+All major security controls implemented during Phase 8.2 through Phase 8.6 remain active while the application continues to process jobs successfully end-to-end.
+
+Final Result: PASS
