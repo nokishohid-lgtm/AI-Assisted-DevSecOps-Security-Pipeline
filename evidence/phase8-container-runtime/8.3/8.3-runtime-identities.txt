@@ -1,0 +1,14 @@
+﻿=== API ===
+uid=100(appuser) gid=101(appgroup) groups=101(appgroup)
+
+=== WORKER ===
+uid=100(appuser) gid=101(appgroup) groups=101(appgroup)
+
+=== POSTGRESQL PROCESSES ===
+PID                 USER                COMMAND
+32161               70                  postgres
+32224               70                  postgres: checkpointer
+32225               70                  postgres: background writer
+32227               70                  postgres: walwriter
+32228               70                  postgres: autovacuum launcher
+32229               70                  postgres: logical replication launcher

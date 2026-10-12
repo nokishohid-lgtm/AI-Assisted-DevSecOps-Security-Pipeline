@@ -1,0 +1,43 @@
+﻿Phase 8.3 - Non-Root Enforcement
+================================
+
+Status: PASS
+
+Objective
+---------
+Validate that application and database workloads execute without root privileges and confirm that non-root execution is explicitly enforced where appropriate.
+
+Validated Controls
+------------------
+PASS - API runtime executes as appuser.
+PASS - Worker runtime executes as appuser.
+PASS - API runtime UID is non-zero.
+PASS - Worker runtime UID is non-zero.
+PASS - Dockerfile explicitly defines USER appuser.
+PASS - Dockerfile.api explicitly defines USER appuser.
+PASS - Dockerfile.worker explicitly defines USER appuser.
+PASS - Docker image configuration reports appuser for API.
+PASS - Docker image configuration reports appuser for worker.
+PASS - PostgreSQL server processes execute as UID 70 rather than root.
+
+PostgreSQL Design Note
+----------------------
+The PostgreSQL image does not define Config.User at the image level.
+
+The container entrypoint may begin with elevated privileges so that initialization and filesystem preparation can occur safely. The PostgreSQL database server then operates using the dedicated PostgreSQL account.
+
+Runtime process inspection confirmed that the PostgreSQL server, checkpointer, background writer, WAL writer, autovacuum launcher, and logical replication launcher execute as UID 70.
+
+Forcing the entire PostgreSQL container to an arbitrary user through Docker Compose was not applied because doing so could interfere with supported initialization behavior.
+
+Security Decision
+-----------------
+API and worker non-root execution is explicitly enforced through USER appuser in their Dockerfiles.
+
+PostgreSQL non-root execution is validated at the actual server-process level.
+
+Conclusion
+----------
+All application workloads and database server processes have been verified to operate without root privileges during normal runtime operation.
+
+Final Result: PASS
