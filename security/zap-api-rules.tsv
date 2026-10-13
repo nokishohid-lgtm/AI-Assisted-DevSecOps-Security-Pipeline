@@ -1,0 +1,65 @@
+# ZAP API Scan rule configuration
+# Phase 9.6 - API Security & DAST Hardening
+#
+# FAIL   = security gate must fail when the finding is detected
+# WARN   = finding requires review but is not an immediate gate failure
+# IGNORE = finding is intentionally accepted for this lab architecture
+#
+# High-value API security findings are promoted to FAIL.
+# Local HTTP/TLS-boundary findings and known synthetic probe noise are
+# explicitly documented and ignored.
+
+10021	FAIL	X-Content-Type-Options Header Missing
+10023	FAIL	Information Disclosure - Debug Error Messages
+10024	FAIL	Information Disclosure - Sensitive Information in URL
+10025	FAIL	Information Disclosure - Sensitive Information in HTTP Referrer Header
+10038	FAIL	Content Security Policy Header Not Set
+10039	FAIL	X-Backend-Server Header Information Leak
+10056	FAIL	X-Debug-Token Information Leak
+10062	FAIL	PII Disclosure
+10098	FAIL	Cross-Domain Misconfiguration
+10099	FAIL	Source Code Disclosure
+
+20018	FAIL	Remote Code Execution
+20019	FAIL	External Redirect
+
+30001	FAIL	Buffer Overflow
+30002	FAIL	Format String Error
+
+40003	FAIL	CRLF Injection
+40008	FAIL	Parameter Tampering
+40009	FAIL	Server Side Include
+40018	FAIL	SQL Injection
+40019	FAIL	SQL Injection MySQL Time Based
+40020	FAIL	SQL Injection Hypersonic SQL Time Based
+40021	FAIL	SQL Injection Oracle Time Based
+40022	FAIL	SQL Injection PostgreSQL Time Based
+40027	FAIL	SQL Injection MsSQL Time Based
+40043	FAIL	Log4Shell
+40044	FAIL	Exponential Entity Expansion
+40045	FAIL	Spring4Shell
+40048	FAIL	Remote Code Execution
+
+6	FAIL	Path Traversal
+7	FAIL	Remote File Inclusion
+
+90017	FAIL	XSLT Injection
+90019	FAIL	Server Side Code Injection
+90020	FAIL	Remote OS Command Injection
+90021	FAIL	XPath Injection
+90022	FAIL	Application Error Disclosure
+90023	FAIL	XML External Entity Attack
+90024	FAIL	Generic Padding Oracle
+90029	FAIL	SOAP XML Injection
+90034	FAIL	Cloud Metadata Potentially Exposed
+90035	FAIL	Server Side Template Injection
+90036	FAIL	Server Side Template Injection Blind
+90037	FAIL	Remote OS Command Injection Time Based
+
+10015	WARN	Cache-Control Review
+10035	WARN	Strict-Transport-Security Header
+10036	WARN	HTTP Server Response Header
+10063	WARN	Permissions Policy Header Not Set
+
+100001	IGNORE	Unexpected Content-Type on synthetic out-of-contract probe
+10106	IGNORE	HTTP Only Site - local Docker and CI lab uses HTTP by design
