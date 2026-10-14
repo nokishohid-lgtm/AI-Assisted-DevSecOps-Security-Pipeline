@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   zap-regression:
-    name: Validate Missing Security Header Detection
+    name: Validate ZAP Security Policy Failure
     runs-on: ubuntu-24.04
     timeout-minutes: 35
 
@@ -22,16 +22,33 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Prepare report directory
+      - name: Prepare regression evidence directory
         shell: bash
         run: |
+          set -euo pipefail
+
           mkdir -p zap-regression-reports
           chmod 777 zap-regression-reports
-          git rev-parse HEAD > zap-regression-reports/commit-sha.txt
+
+          git rev-parse HEAD \
+            > zap-regression-reports/commit-sha.txt
+
+          cp security/openapi.yaml \
+            zap-regression-reports/openapi.yaml
+
+          cp security/zap-api-rules.tsv \
+            zap-regression-reports/zap-api-rules.tsv
+
+          test -s security/openapi.yaml
+          test -s security/zap-api-rules.tsv
+
+          echo "Regression evidence directory prepared."
 
       - name: Convert secure API to controlled vulnerable state
         shell: bash
         run: |
+          set -euo pipefail
+
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -43,20 +60,29 @@ jobs:
           text = path.read_text()
 
           pattern = re.compile(
-              r'\s*ex\.getResponseHeaders\(\)\.add\(\s*'
+              r'\s*exchange\.getResponseHeaders\(\)\.set\(\s*'
               r'"X-Content-Type-Options",\s*'
               r'"nosniff"\s*'
               r'\);\s*'
           )
 
-          text, count = pattern.subn("\n", text, count=1)
+          updated, count = pattern.subn(
+              "\n",
+              text,
+              count=1
+          )
 
           if count != 1:
               raise SystemExit(
-                  "Expected X-Content-Type-Options security header block was not found."
+                  "Expected X-Content-Type-Options security header block "
+                  "was not found exactly once."
               )
 
-          path.write_text(text)
+          path.write_text(updated)
+
+          print(
+              "PASS: Controlled X-Content-Type-Options weakness created."
+          )
           PY
 
           if grep -q '"X-Content-Type-Options"' \
@@ -65,9 +91,14 @@ jobs:
             exit 1
           fi
 
-          echo "PASS: Controlled vulnerable API state created."
+          git diff -- \
+            src/main/java/com/nokishohid/devsecops/api/ApiMain.java \
+            > zap-regression-reports/controlled-source-diff.txt
 
-      - name: Build API and worker images
+          test -s \
+            zap-regression-reports/controlled-source-diff.txt
+
+      - name: Build controlled vulnerable application
         run: docker compose build --pull api worker
 
       - name: Start application stack
@@ -84,8 +115,13 @@ jobs:
               http://127.0.0.1:8081/health \
               > zap-regression-reports/health.json; then
 
-              echo "API ready."
-              exit 0
+              if jq -e '
+                .status == "healthy" and
+                .service == "api"
+              ' zap-regression-reports/health.json > /dev/null; then
+                echo "API health verified."
+                exit 0
+              fi
             fi
 
             sleep 2
@@ -94,11 +130,40 @@ jobs:
           echo "::error::API did not become ready."
           exit 1
 
-      - name: Prepare ZAP scanner
+      - name: Verify controlled header is missing
+        shell: bash
         run: |
+          set -euo pipefail
+
+          curl --silent \
+            --show-error \
+            --dump-header \
+              zap-regression-reports/controlled-health-headers.txt \
+            --output \
+              zap-regression-reports/controlled-health-body.json \
+            http://127.0.0.1:8081/health
+
+          if grep -qi '^X-Content-Type-Options:' \
+            zap-regression-reports/controlled-health-headers.txt; then
+            echo "::error::Controlled vulnerable state was not created."
+            exit 1
+          fi
+
+          echo "PASS: X-Content-Type-Options is absent at runtime."
+
+      - name: Prepare ZAP scanner
+        shell: bash
+        run: |
+          set -euo pipefail
+
           docker pull ghcr.io/zaproxy/zaproxy:stable
 
-      - name: Run controlled ZAP regression scan
+          docker image inspect \
+            ghcr.io/zaproxy/zaproxy:stable \
+            --format '{{json .RepoDigests}}' \
+            > zap-regression-reports/zap-image-digest.txt
+
+      - name: Run policy-enforced controlled ZAP scan
         shell: bash
         run: |
           set -uo pipefail
@@ -114,9 +179,11 @@ jobs:
             zap-api-scan.py \
             -t /zap/spec/openapi.yaml \
             -f openapi \
+            -c /zap/spec/zap-api-rules.tsv \
             -r zap-regression-report.html \
             -J zap-regression-report.json \
             -w zap-regression-report.md \
+            -I \
             -T 5 \
             > zap-regression-reports/zap-console.log 2>&1 \
             || scan_status=$?
@@ -126,7 +193,23 @@ jobs:
           echo "${scan_status}" \
             > zap-regression-reports/zap-exit-code.txt
 
-          test -s zap-regression-reports/zap-regression-report.json
+          test -s \
+            zap-regression-reports/zap-regression-report.html
+
+          test -s \
+            zap-regression-reports/zap-regression-report.json
+
+          test -s \
+            zap-regression-reports/zap-regression-report.md
+
+          # The controlled vulnerability is expected to trigger
+          # the policy-enforced ZAP FAIL state.
+          if [ "${scan_status}" -ne 1 ]; then
+            echo "::error::Expected ZAP exit code 1, got ${scan_status}."
+            exit 1
+          fi
+
+          echo "PASS: ZAP security policy returned expected exit code 1."
 
       - name: Assert missing security header detection
         shell: bash
@@ -138,19 +221,43 @@ jobs:
           MATCH_COUNT="$(jq '[
             .. | objects
             | select(
-                (.alert? // "")
-                | test("X-Content-Type-Options"; "i")
+                ((.alert? // "")
+                | test("X-Content-Type-Options"; "i"))
+                and
+                ((.pluginid? // .pluginId? // "") | tostring == "10021")
               )
           ] | length' "${REPORT}")"
 
-          echo "X-Content-Type-Options findings: ${MATCH_COUNT}"
+          echo "Rule 10021 findings: ${MATCH_COUNT}"
 
           if [ "${MATCH_COUNT}" -lt 1 ]; then
-            echo "::error::Expected missing X-Content-Type-Options finding was not detected."
+            echo "::error::Expected ZAP rule 10021 was not detected."
             exit 1
           fi
 
-          echo "PASS: ZAP detected the controlled missing security header."
+          grep -q \
+            'X-Content-Type-Options Header Missing' \
+            zap-regression-reports/zap-console.log
+
+          echo "PASS: ZAP detected controlled rule 10021 failure."
+
+      - name: Confirm regression test outcome
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          EXIT_CODE="$(
+            cat zap-regression-reports/zap-exit-code.txt
+          )"
+
+          test "${EXIT_CODE}" = "1"
+
+          echo "=============================================="
+          echo "PASS: Controlled DAST regression succeeded."
+          echo "Expected vulnerable state: detected"
+          echo "Expected ZAP policy exit code: 1"
+          echo "Expected rule: 10021"
+          echo "=============================================="
 
       - name: Upload ZAP regression evidence
         if: always()
@@ -165,10 +272,18 @@ jobs:
         if: always()
         shell: bash
         run: |
-          git checkout -- \
+          git restore \
             src/main/java/com/nokishohid/devsecops/api/ApiMain.java
 
-      - name: Clean up regression containers
+          if ! grep -q '"X-Content-Type-Options"' \
+            src/main/java/com/nokishohid/devsecops/api/ApiMain.java; then
+            echo "::error::Secure API source restoration failed."
+            exit 1
+          fi
+
+          echo "PASS: Secure API source restored."
+
+      - name: Clean up regression environment
         if: always()
         shell: bash
         run: |
