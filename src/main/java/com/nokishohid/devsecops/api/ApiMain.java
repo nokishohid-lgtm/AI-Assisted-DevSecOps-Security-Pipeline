@@ -24,8 +24,9 @@ import java.util.Set;
  * - GET /jobs
  * - POST /jobs
  *
- * Includes request validation, bounded request-body handling,
- * consistent error responses, and defensive HTTP headers.
+ * Includes exact-path routing, request validation,
+ * bounded request-body handling, consistent error responses,
+ * and defensive HTTP headers.
  */
 public final class ApiMain {
 
@@ -46,12 +47,15 @@ public final class ApiMain {
     public static void main(String[] args) throws Exception {
         DB.migrate();
 
-        HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        HttpServer server = HttpServer.create(
+                new InetSocketAddress(PORT),
+                0
+        );
 
         server.createContext("/health", ApiMain::health);
         server.createContext("/jobs", ApiMain::jobs);
 
-        // Handles unknown paths with a consistent JSON 404 response.
+        // Handles URLs that do not match a registered API context.
         server.createContext("/", ApiMain::notFound);
 
         server.setExecutor(null);
@@ -60,7 +64,14 @@ public final class ApiMain {
         System.out.println("api listening on :" + PORT);
     }
 
-    private static void health(HttpExchange exchange) throws IOException {
+    private static void health(HttpExchange exchange)
+            throws IOException {
+
+        if (!hasExactPath(exchange, "/health")) {
+            notFound(exchange);
+            return;
+        }
+
         if (!"GET".equalsIgnoreCase(exchange.getRequestMethod())) {
             methodNotAllowed(exchange, "GET");
             return;
@@ -73,7 +84,14 @@ public final class ApiMain {
         );
     }
 
-    private static void jobs(HttpExchange exchange) throws IOException {
+    private static void jobs(HttpExchange exchange)
+            throws IOException {
+
+        if (!hasExactPath(exchange, "/jobs")) {
+            notFound(exchange);
+            return;
+        }
+
         try {
             String method = exchange.getRequestMethod();
 
@@ -103,7 +121,22 @@ public final class ApiMain {
         }
     }
 
-    private static void createJob(HttpExchange exchange) throws IOException {
+    /**
+     * Verifies that a request reached the handler using the exact
+     * intended API path rather than HttpServer prefix matching.
+     */
+    private static boolean hasExactPath(
+            HttpExchange exchange,
+            String expectedPath
+    ) {
+        return expectedPath.equals(
+                exchange.getRequestURI().getPath()
+        );
+    }
+
+    private static void createJob(HttpExchange exchange)
+            throws IOException {
+
         String contentType = exchange.getRequestHeaders()
                 .getFirst("Content-Type");
 
@@ -126,6 +159,7 @@ public final class ApiMain {
                     exchange.getRequestBody(),
                     MAX_REQUEST_BODY_BYTES
             );
+
         } catch (RequestBodyTooLargeException exception) {
             respond(
                     exchange,
@@ -153,6 +187,7 @@ public final class ApiMain {
 
         try {
             root = OBJECT_MAPPER.readTree(body);
+
         } catch (Exception exception) {
             respond(
                     exchange,
@@ -223,6 +258,7 @@ public final class ApiMain {
             normalizedPayload = OBJECT_MAPPER.writeValueAsString(
                     Map.of("task", task)
             );
+
         } catch (Exception exception) {
             respond(
                     exchange,
@@ -261,7 +297,9 @@ public final class ApiMain {
         try {
             Map<String, Long> counts = DB.countsByStatus();
 
-            String body = OBJECT_MAPPER.writeValueAsString(counts);
+            String body = OBJECT_MAPPER.writeValueAsString(
+                    counts
+            );
 
             respond(
                     exchange,
@@ -304,7 +342,11 @@ public final class ApiMain {
                 throw new RequestBodyTooLargeException();
             }
 
-            output.write(buffer, 0, read);
+            output.write(
+                    buffer,
+                    0,
+                    read
+            );
         }
 
         return output.toByteArray();
