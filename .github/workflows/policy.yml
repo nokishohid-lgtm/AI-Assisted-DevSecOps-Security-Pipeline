@@ -5,6 +5,8 @@ name: Policy Enforcement
     branches: ["main"]
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
@@ -14,6 +16,8 @@ name: Policy Enforcement
     branches: ["main"]
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
@@ -43,7 +47,7 @@ jobs:
             openpolicyagent/conftest:v0.55.0 \
             --version
 
-      - name: Validate secure project Dockerfile
+      - name: Validate main Dockerfile
         shell: bash
         run: |
           docker run --rm \
@@ -54,6 +58,30 @@ jobs:
             --policy policy \
             --namespace docker \
             Dockerfile
+
+      - name: Validate API Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.api
+
+      - name: Validate worker Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.worker
 
       - name: Run Docker policy regression tests
         shell: bash
