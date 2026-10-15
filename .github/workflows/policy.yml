@@ -92,3 +92,87 @@ jobs:
             --entrypoint sh \
             openpolicyagent/conftest:v0.55.0 \
             security-tests/policy/test-docker-policy-regression.sh
+
+      - name: Validate Kubernetes API Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/api/deployment.yaml
+
+      - name: Validate Kubernetes worker Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/worker/deployment.yaml
+
+      - name: Validate Kubernetes PostgreSQL StatefulSet
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/postgres/statefulset.yaml
+
+      - name: Validate Kubernetes secure policy fixture
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            security-tests/policy/kubernetes/fixtures/pass-deployment.yaml
+
+      - name: Validate Kubernetes missing-namespace rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-missing-namespace.yaml \
+              2>&1
+          )"
+
+          status=$?
+
+          set -e
+
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing-namespace Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must explicitly declare metadata.namespace"; then
+            echo "::error::Expected missing-namespace policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing-namespace Kubernetes fixture was correctly blocked."

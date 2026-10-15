@@ -1,0 +1,17 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: insecure-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: insecure-test
+  template:
+    metadata:
+      labels:
+        app: insecure-test
+    spec:
+      containers:
+        - name: app
+          image: example/app:1.0.0
