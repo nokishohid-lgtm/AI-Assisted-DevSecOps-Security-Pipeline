@@ -248,3 +248,39 @@ jobs:
           fi
 
           echo "PASS: Untagged-image Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes privileged-container rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-privileged-container.yaml \
+              2>&1
+          )"
+
+          status=$?
+
+          set -e
+
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Privileged-container Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must not run with privileged: true"; then
+            echo "::error::Expected privileged-container policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Privileged-container Kubernetes fixture was correctly blocked."
