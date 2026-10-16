@@ -139,7 +139,7 @@ jobs:
             test \
             --policy policy/kubernetes \
             --namespace kubernetes \
-            security-tests/policy/kubernetes/fixtures/pass-deployment.yaml
+            security-tests/policy/kubernetes/fixtures/pass-security-context.yaml
 
       - name: Validate Kubernetes missing-namespace rejection
         shell: bash
@@ -159,9 +159,7 @@ jobs:
           )"
 
           status=$?
-
           set -e
-
           echo "${output}"
 
           if [ "${status}" -eq 0 ]; then
@@ -195,9 +193,7 @@ jobs:
           )"
 
           status=$?
-
           set -e
-
           echo "${output}"
 
           if [ "${status}" -eq 0 ]; then
@@ -231,9 +227,7 @@ jobs:
           )"
 
           status=$?
-
           set -e
-
           echo "${output}"
 
           if [ "${status}" -eq 0 ]; then
@@ -267,9 +261,7 @@ jobs:
           )"
 
           status=$?
-
           set -e
-
           echo "${output}"
 
           if [ "${status}" -eq 0 ]; then
@@ -284,3 +276,139 @@ jobs:
           fi
 
           echo "PASS: Privileged-container Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes runAsNonRoot rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-run-as-non-root.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing runAsNonRoot fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must set spec.template.spec.securityContext.runAsNonRoot to true"; then
+            echo "::error::Expected runAsNonRoot policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing runAsNonRoot fixture was correctly blocked."
+
+      - name: Validate Kubernetes privilege-escalation rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-privilege-escalation.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Privilege-escalation fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must set allowPrivilegeEscalation to false"; then
+            echo "::error::Expected privilege-escalation policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Privilege-escalation fixture was correctly blocked."
+
+      - name: Validate Kubernetes capabilities rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-capabilities-not-dropped.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Capabilities fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must drop ALL Linux capabilities"; then
+            echo "::error::Expected capabilities policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Capabilities fixture was correctly blocked."
+
+      - name: Validate Kubernetes seccomp rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-seccomp.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing-seccomp fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must use seccompProfile.type RuntimeDefault"; then
+            echo "::error::Expected seccomp policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing-seccomp fixture was correctly blocked."
