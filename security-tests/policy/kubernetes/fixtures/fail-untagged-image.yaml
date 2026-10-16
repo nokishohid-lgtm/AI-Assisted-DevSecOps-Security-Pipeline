@@ -1,0 +1,18 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: untagged-image-test
+  namespace: devsecops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: untagged-image-test
+  template:
+    metadata:
+      labels:
+        app: untagged-image-test
+    spec:
+      containers:
+        - name: app
+          image: example/app

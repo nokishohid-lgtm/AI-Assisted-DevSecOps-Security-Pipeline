@@ -176,3 +176,75 @@ jobs:
           fi
 
           echo "PASS: Missing-namespace Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes latest-image rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-latest-image.yaml \
+              2>&1
+          )"
+
+          status=$?
+
+          set -e
+
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Latest-image Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must not use image tag :latest"; then
+            echo "::error::Expected latest-image policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Latest-image Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes untagged-image rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-untagged-image.yaml \
+              2>&1
+          )"
+
+          status=$?
+
+          set -e
+
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Untagged-image Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must use an explicit image tag or digest"; then
+            echo "::error::Expected untagged-image policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Untagged-image Kubernetes fixture was correctly blocked."
