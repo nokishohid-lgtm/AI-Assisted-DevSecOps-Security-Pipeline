@@ -34,7 +34,7 @@ coordinates the services without a separate message broker.
 ## Environment
 
 - Windows 11 and PowerShell.
-- Java 17 and Maven.
+- Java 25 (LTS) and Maven.
 - Git and GitHub.
 - GitHub Actions.
 - Visual Studio Code.
