@@ -5,6 +5,8 @@ name: Policy Enforcement
     branches: ["main"]
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
@@ -14,6 +16,8 @@ name: Policy Enforcement
     branches: ["main"]
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
@@ -43,7 +47,7 @@ jobs:
             openpolicyagent/conftest:v0.55.0 \
             --version
 
-      - name: Validate secure project Dockerfile
+      - name: Validate main Dockerfile
         shell: bash
         run: |
           docker run --rm \
@@ -55,6 +59,30 @@ jobs:
             --namespace docker \
             Dockerfile
 
+      - name: Validate API Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.api
+
+      - name: Validate worker Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.worker
+
       - name: Run Docker policy regression tests
         shell: bash
         run: |
@@ -64,3 +92,323 @@ jobs:
             --entrypoint sh \
             openpolicyagent/conftest:v0.55.0 \
             security-tests/policy/test-docker-policy-regression.sh
+
+      - name: Validate Kubernetes API Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/api/deployment.yaml
+
+      - name: Validate Kubernetes worker Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/worker/deployment.yaml
+
+      - name: Validate Kubernetes PostgreSQL StatefulSet
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/postgres/statefulset.yaml
+
+      - name: Validate Kubernetes secure policy fixture
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            security-tests/policy/kubernetes/fixtures/pass-security-context.yaml
+
+      - name: Validate Kubernetes missing-namespace rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-missing-namespace.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing-namespace Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must explicitly declare metadata.namespace"; then
+            echo "::error::Expected missing-namespace policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing-namespace Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes latest-image rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-latest-image.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Latest-image Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must not use image tag :latest"; then
+            echo "::error::Expected latest-image policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Latest-image Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes untagged-image rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-untagged-image.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Untagged-image Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must use an explicit image tag or digest"; then
+            echo "::error::Expected untagged-image policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Untagged-image Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes privileged-container rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-privileged-container.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Privileged-container Kubernetes fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must not run with privileged: true"; then
+            echo "::error::Expected privileged-container policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Privileged-container Kubernetes fixture was correctly blocked."
+
+      - name: Validate Kubernetes runAsNonRoot rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-run-as-non-root.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing runAsNonRoot fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must set spec.template.spec.securityContext.runAsNonRoot to true"; then
+            echo "::error::Expected runAsNonRoot policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing runAsNonRoot fixture was correctly blocked."
+
+      - name: Validate Kubernetes privilege-escalation rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-privilege-escalation.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Privilege-escalation fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must set allowPrivilegeEscalation to false"; then
+            echo "::error::Expected privilege-escalation policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Privilege-escalation fixture was correctly blocked."
+
+      - name: Validate Kubernetes capabilities rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-capabilities-not-dropped.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Capabilities fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must drop ALL Linux capabilities"; then
+            echo "::error::Expected capabilities policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Capabilities fixture was correctly blocked."
+
+      - name: Validate Kubernetes seccomp rejection
+        shell: bash
+        run: |
+          set +e
+
+          output="$(
+            docker run --rm \
+              -v "${{ github.workspace }}:/project" \
+              -w /project \
+              openpolicyagent/conftest:v0.55.0 \
+              test \
+              --policy policy/kubernetes \
+              --namespace kubernetes \
+              security-tests/policy/kubernetes/fixtures/fail-seccomp.yaml \
+              2>&1
+          )"
+
+          status=$?
+          set -e
+          echo "${output}"
+
+          if [ "${status}" -eq 0 ]; then
+            echo "::error::Missing-seccomp fixture was incorrectly accepted."
+            exit 1
+          fi
+
+          if ! printf '%s\n' "${output}" | grep -Fq \
+            "must use seccompProfile.type RuntimeDefault"; then
+            echo "::error::Expected seccomp policy message was not found."
+            exit 1
+          fi
+
+          echo "PASS: Missing-seccomp fixture was correctly blocked."

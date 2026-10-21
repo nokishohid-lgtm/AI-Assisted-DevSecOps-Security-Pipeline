@@ -69,17 +69,27 @@ image_is_pinned(image) {
   regex.match(`(^|/)[^/@:]+:[^/]+$`, image)
 }
 
-# P-04: Dockerfile must define a USER instruction.
+# P-04: Final runtime stage must explicitly define a non-root USER.
 deny[msg] {
-  not user_instruction_exists
+  not final_stage_user_exists
 
-  msg := "Dockerfile must set a non-root USER"
+  msg := "Final Dockerfile stage must set a non-root USER"
 }
 
-user_instruction_exists {
+final_stage_user_exists {
   instruction := input[_]
+  instruction.Stage == final_stage
   instruction.Cmd == "user"
+
+  user_value := lower(instruction.Value[0])
+
+  not root_user(user_value)
 }
+
+final_stage := max([
+  instruction.Stage |
+  instruction := input[_]
+])
 
 # P-05: Remote URLs must not be used with ADD.
 deny[msg] {

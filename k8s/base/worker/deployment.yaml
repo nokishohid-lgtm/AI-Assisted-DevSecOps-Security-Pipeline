@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: worker
@@ -17,11 +17,12 @@ spec:
         app.kubernetes.io/name: worker
     spec:
       securityContext:
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: worker
-          image: ai-assisted-devsecops-security-pipeline-worker:latest
+          image: ai-assisted-devsecops-security-pipeline-worker:1.0.0
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_URL

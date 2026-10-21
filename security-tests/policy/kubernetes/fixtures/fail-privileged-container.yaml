@@ -1,0 +1,20 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privileged-container-test
+  namespace: devsecops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: privileged-container-test
+  template:
+    metadata:
+      labels:
+        app: privileged-container-test
+    spec:
+      containers:
+        - name: app
+          image: example/app:1.0.0
+          securityContext:
+            privileged: true

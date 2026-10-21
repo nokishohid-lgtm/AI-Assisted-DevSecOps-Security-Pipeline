@@ -1,0 +1,28 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privilege-escalation-test
+  namespace: devsecops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: privilege-escalation-test
+  template:
+    metadata:
+      labels:
+        app: privilege-escalation-test
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: example/app:1.0.0
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: true
+            capabilities:
+              drop:
+                - ALL

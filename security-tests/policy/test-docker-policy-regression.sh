@@ -7,7 +7,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 POLICY_DIR="${REPO_ROOT}/policy"
 
-echo "=== Phase 6.2 Docker Policy Hardening Regression Tests ==="
+echo "=== Phase 10.1 Docker Policy Expansion Regression Tests ==="
 
 echo
 echo "[TEST 1] Secure fixture must PASS"
@@ -83,14 +83,19 @@ run_expected_failure \
 run_expected_failure \
   "7" \
   "fail-missing-user.Dockerfile" \
-  "Dockerfile must set a non-root USER"
+  "Final Dockerfile stage must set a non-root USER"
 
 run_expected_failure \
   "8" \
   "fail-remote-add.Dockerfile" \
   "Dockerfile must not ADD from remote URL"
 
+run_expected_failure \
+  "9" \
+  "fail-final-stage-missing-user.Dockerfile" \
+  "Final Dockerfile stage must set a non-root USER"
+
 echo
 echo "=================================================="
-echo "PASS: All Phase 6.2 Docker policy regression tests passed."
+echo "PASS: All Phase 10.1 Docker policy regression tests passed."
 echo "=================================================="
