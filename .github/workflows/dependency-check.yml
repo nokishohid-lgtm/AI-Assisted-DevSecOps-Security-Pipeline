@@ -19,6 +19,7 @@ jobs:
   dependency-security-gate:
     name: OWASP Dependency-Check
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -37,11 +38,67 @@ jobs:
       - name: Run unit tests
         run: mvn -B test
 
+      - name: Set vulnerability database cache key
+        id: cache-key
+        shell: bash
+        run: |
+          echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore Dependency-Check database cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/dependency-check-data
+          key: dependency-check-v13-${{ runner.os }}-${{ steps.cache-key.outputs.week }}
+          restore-keys: |
+            dependency-check-v13-${{ runner.os }}-
+
       - name: Run OWASP Dependency-Check severity gate
+        shell: bash
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          mvn -B org.owasp:dependency-check-maven:13.0.0:check
+          set -uo pipefail
+
+          mkdir -p "${RUNNER_TEMP}/dependency-check-data"
+          mkdir -p target/dependency-check
+
+          if [ -z "${NVD_API_KEY:-}" ]; then
+            echo "::warning::NVD_API_KEY is not configured. NVD rate limits may affect this scan."
+          fi
+
+          for attempt in 1 2; do
+            echo "Dependency-Check attempt ${attempt} of 2"
+
+            set +e
+            timeout 18m mvn -B \
+              org.owasp:dependency-check-maven:13.0.0:check \
+              -DdataDirectory="${RUNNER_TEMP}/dependency-check-data" \
+              2>&1 | tee "target/dependency-check/scan-attempt-${attempt}.log"
+
+            result=${PIPESTATUS[0]}
+            set -e
+
+            if [ "${result}" -eq 0 ]; then
+              echo "PASS: Dependency-Check severity gate completed."
+              exit 0
+            fi
+
+            if grep -Eqi \
+              "NvdApiException|NVD Returned Status Code: (429|500|502|503|504)|Error updating the NVD Data|timed out|rate limit" \
+              "target/dependency-check/scan-attempt-${attempt}.log"; then
+
+              if [ "${attempt}" -lt 2 ]; then
+                echo "::warning::Temporary NVD update issue. Retrying after 60 seconds."
+                sleep 60
+                continue
+              fi
+            fi
+
+            echo "::error::Dependency-Check failed. Review the logs and reports."
+            exit 1
+          done
+
+          exit 1
 
       - name: Upload Dependency-Check reports
         if: always()
