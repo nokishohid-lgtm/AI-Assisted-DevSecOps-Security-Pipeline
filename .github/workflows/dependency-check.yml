@@ -1,3 +1,4 @@
+
 name: Dependency SCA Security Gate
 
 on:
@@ -19,7 +20,7 @@ jobs:
   dependency-security-gate:
     name: OWASP Dependency-Check
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
 
     steps:
       - name: Checkout repository
@@ -57,44 +58,38 @@ jobs:
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
-          set -uo pipefail
+          set -euo pipefail
 
           mkdir -p "${RUNNER_TEMP}/dependency-check-data"
           mkdir -p target/dependency-check
 
           if [ -z "${NVD_API_KEY:-}" ]; then
-            echo "::warning::NVD_API_KEY is not configured. NVD rate limits may affect this scan."
+            echo "::warning::NVD_API_KEY is not configured. NVD updates may be slow."
           fi
 
           for attempt in 1 2; do
             echo "Dependency-Check attempt ${attempt} of 2"
 
-            set +e
-            timeout 18m mvn -B \
+            if mvn -B -ntp \
               org.owasp:dependency-check-maven:13.0.0:check \
               -DdataDirectory="${RUNNER_TEMP}/dependency-check-data" \
-              2>&1 | tee "target/dependency-check/scan-attempt-${attempt}.log"
+              2>&1 | tee "target/dependency-check/scan-attempt-${attempt}.log"; then
 
-            result=${PIPESTATUS[0]}
-            set -e
-
-            if [ "${result}" -eq 0 ]; then
               echo "PASS: Dependency-Check severity gate completed."
               exit 0
             fi
 
-            if grep -Eqi \
-              "NvdApiException|NVD Returned Status Code: (429|500|502|503|504)|Error updating the NVD Data|timed out|rate limit" \
+            if [ "${attempt}" -eq 1 ] && \
+              grep -Eqi \
+              "NvdApiException|NVD Returned Status Code: (429|500|502|503|504)|Error updating the NVD Data|Read timed out|rate limit" \
               "target/dependency-check/scan-attempt-${attempt}.log"; then
 
-              if [ "${attempt}" -lt 2 ]; then
-                echo "::warning::Temporary NVD update issue. Retrying after 60 seconds."
-                sleep 60
-                continue
-              fi
+              echo "::warning::Temporary NVD update problem. Retrying after 60 seconds."
+              sleep 60
+              continue
             fi
 
-            echo "::error::Dependency-Check failed. Review the logs and reports."
+            echo "::error::Dependency-Check failed. Review the saved scan log."
             exit 1
           done
 
