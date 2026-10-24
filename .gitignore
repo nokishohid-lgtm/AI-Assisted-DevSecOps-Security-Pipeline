@@ -11,3 +11,5 @@ Thumbs.db
 zap-reports/phase1-docs.ps1
 zap-reports/
 zap-reports/
+*.pem
+pub-sealed-secrets.pem
