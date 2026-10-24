@@ -231,7 +231,7 @@ This project demonstrates practical experience with:
 
 | Category | Technologies |
 |---|---|
-| Application | Java 17, Maven, JUnit |
+| Application | Java 25 (LTS), Maven, JUnit |
 | Database | PostgreSQL |
 | Containers | Docker, Docker Compose |
 | CI/CD | GitHub Actions |

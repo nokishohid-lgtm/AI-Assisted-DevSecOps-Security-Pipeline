@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
@@ -17,11 +17,12 @@ spec:
         app.kubernetes.io/name: api
     spec:
       securityContext:
+        runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: api
-          image: ai-assisted-devsecops-security-pipeline-api:latest
+          image: ai-assisted-devsecops-security-pipeline-api:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

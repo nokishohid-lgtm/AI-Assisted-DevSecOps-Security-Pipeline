@@ -2,18 +2,24 @@ name: Policy Enforcement
 
 "on":
   push:
-    branches: ["main"]
+    branches:
+      - main
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
       - ".github/workflows/policy.yml"
 
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
     paths:
       - "Dockerfile"
+      - "Dockerfile.api"
+      - "Dockerfile.worker"
       - "policy/**"
       - "k8s/**"
       - "security-tests/policy/**"
@@ -43,7 +49,11 @@ jobs:
             openpolicyagent/conftest:v0.55.0 \
             --version
 
-      - name: Validate secure project Dockerfile
+      # ------------------------------------------------------------
+      # Docker policy validation
+      # ------------------------------------------------------------
+
+      - name: Validate main Dockerfile
         shell: bash
         run: |
           docker run --rm \
@@ -55,6 +65,30 @@ jobs:
             --namespace docker \
             Dockerfile
 
+      - name: Validate API Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.api
+
+      - name: Validate worker Dockerfile
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy \
+            --namespace docker \
+            Dockerfile.worker
+
       - name: Run Docker policy regression tests
         shell: bash
         run: |
@@ -64,3 +98,57 @@ jobs:
             --entrypoint sh \
             openpolicyagent/conftest:v0.55.0 \
             security-tests/policy/test-docker-policy-regression.sh
+
+      # ------------------------------------------------------------
+      # Production Kubernetes manifest validation
+      # ------------------------------------------------------------
+
+      - name: Validate Kubernetes API Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/api/deployment.yaml
+
+      - name: Validate Kubernetes worker Deployment
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/worker/deployment.yaml
+
+      - name: Validate Kubernetes PostgreSQL StatefulSet
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            openpolicyagent/conftest:v0.55.0 \
+            test \
+            --policy policy/kubernetes \
+            --namespace kubernetes \
+            k8s/base/postgres/statefulset.yaml
+
+      # ------------------------------------------------------------
+      # Kubernetes policy regression matrix
+      # ------------------------------------------------------------
+
+      - name: Run Kubernetes policy regression tests
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/project" \
+            -w /project \
+            --entrypoint sh \
+            openpolicyagent/conftest:v0.55.0 \
+            security-tests/policy/kubernetes/test-kubernetes-policy-regression.sh
