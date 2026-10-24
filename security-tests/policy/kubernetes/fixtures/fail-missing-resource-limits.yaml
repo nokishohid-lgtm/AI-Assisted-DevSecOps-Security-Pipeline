@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: missing-resource-limits
+  namespace: devsecops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: missing-resource-limits
+  template:
+    metadata:
+      labels:
+        app: missing-resource-limits
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: example/app:1.0.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
