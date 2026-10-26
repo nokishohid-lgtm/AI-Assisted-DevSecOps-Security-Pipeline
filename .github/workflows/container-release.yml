@@ -1,3 +1,4 @@
+
 name: Secure Container Release
 
 "on":
@@ -9,6 +10,7 @@ permissions:
   contents: read
   packages: write
   id-token: write
+  attestations: write
 
 env:
   REGISTRY: ghcr.io
@@ -32,6 +34,8 @@ jobs:
       - name: Build container image
         run: |
           docker build --pull \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
             -t "${IMAGE_NAME}:${GITHUB_SHA}" \
             -t "${IMAGE_NAME}:latest" \
             .
@@ -61,6 +65,7 @@ jobs:
         run: docker push "${IMAGE_NAME}:${GITHUB_SHA}"
 
       - name: Capture published image digest
+        id: capture_image_digest
         shell: bash
         run: |
           IMAGE_REF=$(docker image inspect \
@@ -68,13 +73,17 @@ jobs:
             "${IMAGE_NAME}:${GITHUB_SHA}")
 
           DIGEST="${IMAGE_REF#${IMAGE_NAME}@}"
+
           if [[ "$IMAGE_REF" != "${IMAGE_NAME}@"* ]] ||
              [[ ! "$DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]; then
-            echo "Could not determine a valid published image digest."
+            echo "::error::Invalid published image digest."
             exit 1
           fi
 
           echo "IMAGE_REF=${IMAGE_REF}" >> "$GITHUB_ENV"
+          echo "IMAGE_DIGEST=${DIGEST}" >> "$GITHUB_ENV"
+          echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
+
           echo "Published image: ${IMAGE_REF}"
 
       - name: Install Cosign
@@ -90,10 +99,29 @@ jobs:
             --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
             "${IMAGE_REF}"
 
+      - name: Generate signed build provenance
+        uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.capture_image_digest.outputs.digest }}
+          push-to-registry: true
+          create-storage-record: false
+
       - name: Publish latest after successful verification
         run: docker push "${IMAGE_NAME}:latest"
 
-      - name: Record verified image
+      - name: Record verified image and provenance
+        shell: bash
         run: |
-          echo "### Verified container image" >> "$GITHUB_STEP_SUMMARY"
-          echo "${IMAGE_REF}" >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "### Trusted container release"
+            echo ""
+            echo "- Repository: ${GITHUB_REPOSITORY}"
+            echo "- Source commit: ${GITHUB_SHA}"
+            echo "- Workflow: ${GITHUB_WORKFLOW}"
+            echo "- Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Image reference: ${IMAGE_REF}"
+            echo "- Image digest: ${IMAGE_DIGEST}"
+            echo "- Cosign signature: verified"
+            echo "- Build provenance: generated"
+          } >> "$GITHUB_STEP_SUMMARY"
