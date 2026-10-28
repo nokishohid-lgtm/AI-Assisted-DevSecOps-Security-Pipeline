@@ -107,6 +107,29 @@ jobs:
           push-to-registry: true
           create-storage-record: false
 
+      - name: Enforce trusted release gate
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          echo "Verifying Cosign signature..."
+
+          cosign verify \
+            --certificate-identity="https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/.github/workflows/container-release.yml@refs/heads/main" \
+            --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
+            "${IMAGE_REF}" > /dev/null
+
+          echo "Verifying signed build provenance..."
+
+          gh attestation verify "oci://${IMAGE_REF}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --signer-workflow "${GITHUB_REPOSITORY}/.github/workflows/container-release.yml" \
+            --source-ref "${GITHUB_REF}"
+
+          echo "PASS: Trusted release gate verified."
+
       - name: Publish latest after successful verification
         run: docker push "${IMAGE_NAME}:latest"
 
