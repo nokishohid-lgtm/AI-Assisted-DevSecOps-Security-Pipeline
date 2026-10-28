@@ -41,15 +41,47 @@ def load_sarif(path: str) -> list[dict]:
 
 
 def read_context(file_path: str, line: int, window: int = CONTEXT_LINES) -> str:
-    p = Path(file_path)
-    if not p.exists():
-        return "(file not found in checkout)"
-    lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
+    repo_root = Path(__file__).resolve().parent.parent
+    source_root = (repo_root / "src").resolve()
+
+    if not isinstance(file_path, str) or not file_path or "://" in file_path:
+        return "(invalid SARIF source path)"
+
+    try:
+        requested = Path(file_path)
+
+        if requested.is_absolute():
+            return "(absolute source path rejected)"
+
+        source_file = (repo_root / requested).resolve(strict=True)
+
+        if not source_file.is_relative_to(source_root):
+            return "(source path outside allowed directory)"
+
+        if not source_file.is_file() or source_file.suffix != ".java":
+            return "(non-Java source rejected)"
+
+        if source_file.stat().st_size > 1024 * 1024:
+            return "(source file exceeds size limit)"
+
+        if not isinstance(line, int) or line < 1:
+            return "(invalid source line)"
+
+        lines = source_file.read_text(
+            encoding="utf-8",
+            errors="replace"
+        ).splitlines()
+
+    except (OSError, RuntimeError, ValueError):
+        return "(source file unavailable)"
+
     start = max(0, line - window - 1)
     end = min(len(lines), line + window)
-    numbered = [f"{i+1:4d} | {lines[i]}" for i in range(start, end)]
-    return "\n".join(numbered)
 
+    return "\n".join(
+        f"{i + 1:4d} | {lines[i]}"
+        for i in range(start, end)
+    )
 
 def triage(client: OpenAI, finding: dict, context: str) -> dict:
     prompt = f"""You are a security engineer triaging a SAST finding.
@@ -100,12 +132,22 @@ def post_pr_comment(body: str) -> None:
     subprocess.run(["gh", "pr", "comment", pr_number, "--body", body], check=True)
 
 
+
 def main():
     if len(sys.argv) < 2:
         print("usage: triage.py <sarif-file>", file=sys.stderr)
         sys.exit(2)
 
+    # Secure default: external AI requests require explicit opt-in.
+    if os.environ.get("AI_TRIAGE_EXTERNAL_ENABLED") != "true":
+        findings = load_sarif(sys.argv[1])
+        print("SAFE DEFAULT: External AI processing disabled.")
+        print(f"Local SARIF findings: {len(findings)}")
+        print("No SARIF findings or source code sent to Groq.")
+        return
+
     api_key = os.environ.get("GROQ_API_KEY")
+
     if not api_key:
         print("GROQ_API_KEY not set", file=sys.stderr)
         sys.exit(2)
