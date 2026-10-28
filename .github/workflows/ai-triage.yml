@@ -4,20 +4,29 @@ on:
   workflow_run:
     workflows: ["CodeQL Security Scan"]
     types: [completed]
-  workflow_dispatch:
 
 permissions:
   contents: read
-  pull-requests: write
+  actions: read
 
 jobs:
   triage:
+    name: Secure AI Triage
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'    
-    steps:
-      - uses: actions/checkout@v4
+    timeout-minutes: 15
 
-      - uses: actions/setup-python@v5
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -34,13 +43,16 @@ jobs:
 
       - name: Find SARIF file
         id: find_sarif
+        shell: bash
         run: |
-          SARIF=$(find ./sarif -name "*.sarif" | head -n1)
-          echo "path=$SARIF" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          SARIF=$(find ./sarif -type f -name "*.sarif" -print -quit)
+          if [ -z "$SARIF" ]; then
+            echo "::error::No SARIF file found."
+            exit 1
+          fi
+          echo "path=$SARIF" >> "$GITHUB_OUTPUT"
+
 
       - name: Run AI triage
-        env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/triage.py "${{ steps.find_sarif.outputs.path }}"
