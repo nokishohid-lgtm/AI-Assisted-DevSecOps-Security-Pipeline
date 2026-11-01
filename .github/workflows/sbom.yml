@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Build API image
         run: |
@@ -64,7 +64,7 @@ jobs:
 
       - name: Upload API CycloneDX SBOM
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: api-cyclonedx-sbom
           path: sbom-output/api-sbom.cdx.json
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload worker CycloneDX SBOM
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: worker-cyclonedx-sbom
           path: sbom-output/worker-sbom.cdx.json
