@@ -812,11 +812,12 @@ MITRE ATT&CK
 Incident investigation
 ```
 
-### Phase 15 — Threat Model and Final Portfolio Packaging
+## Phase 15 — Threat Model and Final Portfolio Packaging
+Status: Completed — Formally Closed
 
-Status: **In Progress**
+Phase 15 completed the final security architecture, threat-modeling, risk-mapping, portfolio-validation, and project-closure work.
 
-Completed Phase 15 work includes:
+Completed capabilities include:
 
 - STRIDE threat-model expansion
 - application and CI/CD trust-boundary documentation
@@ -828,9 +829,14 @@ Completed Phase 15 work includes:
 - centralized risk and security-control mapping
 - STRIDE and CIA cross-references
 - formalized residual-risk and risk-acceptance documentation
+- final documentation integrity validation
+- final repository security validation
+- 45/45 GitHub Actions references verified as SHA-pinned
+- pull-request validation completed
+- PR #120 merged successfully into `main`
+- final main-branch synchronization and closure validation completed
 
-Remaining Phase 15 work is final portfolio validation, pull-request validation,
-merge verification, and project closure.
+The 15-phase DevSecOps security project is now formally complete.
 
 ## Responsible Use
 
