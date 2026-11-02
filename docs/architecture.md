@@ -2,243 +2,467 @@
 
 ## Purpose and Scope
 
-This educational application consists of a Java API, a background
-worker, and PostgreSQL. The worker simulates asynchronous processing
-by changing stored jobs from pending to done.
+This document describes the current application, security, CI/CD, software supply-chain, AI-assisted triage, and security-metrics architecture of the AI-Assisted DevSecOps Security Pipeline.
 
-The repository also contains an earlier single-container HTTP
-application. Historical scans and release evidence for that application
-do not establish equivalent coverage for the API and worker images.
+The project consists of:
+
+- a Java API
+- a background Java worker
+- PostgreSQL
+- Docker and Docker Compose
+- GitHub Actions CI/CD
+- SAST, SCA, secret scanning, container scanning, and DAST
+- policy-as-code
+- SBOM generation
+- container signing and verification
+- AI-assisted security triage
+- security metrics and reliability validation
+
+The architecture is educational and portfolio-oriented. It demonstrates defense-in-depth DevSecOps controls but is not presented as a complete production platform.
+
+---
 
 ## Application Architecture
 
 ```mermaid
-flowchart TD
-    Client["Local client"] -->|"Submit job / read counts"| API["Java API"]
-    API -->|"Insert jobs / query counts"| DB[("PostgreSQL: jobs")]
-    Worker["Java worker"] -->|"Select pending job / mark done"| DB
+flowchart LR
+    Client["Client"] -->|"POST /jobs / GET status"| API["Java API"]
+    API -->|"Insert jobs / query counts"| DB[("PostgreSQL")]
+    Worker["Java Worker"] -->|"Select pending job / update status"| DB
 ```
-
-PostgreSQL coordinates the services. There is no separate message broker
-in the current application.
 
 ### Components
 
-| Component | Source | Responsibility |
-|---|---|---|
-| API | `src/main/java/com/nokishohid/devsecops/api/ApiMain.java` | Accept jobs and return aggregate status counts |
-| Worker | `src/main/java/com/nokishohid/devsecops/worker/WorkerMain.java` | Select pending jobs and update their status |
-| Database helper | `src/main/java/com/nokishohid/devsecops/Database.java` | JDBC connections, schema creation, insertion, and counts |
-| Initial schema | `db/init.sql` | Define the jobs table and status index |
-| Local stack | `docker-compose.yml` | Configure PostgreSQL and build the two application services |
+| Component | Implementation | Responsibility |
+| --- | --- | --- |
+| Java API | `src/main/java/com/nokishohid/devsecops/api/ApiMain.java` | Accept jobs and return status information |
+| Java Worker | `src/main/java/com/nokishohid/devsecops/worker/WorkerMain.java` | Select pending jobs and update their state |
+| Database Helper | `src/main/java/com/nokishohid/devsecops/Database.java` | JDBC connectivity and schema support |
+| PostgreSQL | `postgres:16-alpine` | Persist jobs and processing state |
+| Docker Compose | `docker-compose.yml` | Coordinate local API, worker, and database services |
+| API Container | `Dockerfile.api` | Package the Java API |
+| Worker Container | `Dockerfile.worker` | Package the Java worker |
 
-### Job Lifecycle
+---
+
+## Job Lifecycle
 
 1. A client submits a request to `POST /jobs`.
-2. The API stores its body as text in PostgreSQL.
-3. The API returns a job ID and pending status.
-4. The worker selects a pending job inside a database transaction.
-5. The worker marks it done and records processing timestamps.
-6. The worker commits the transaction.
+2. The Java API stores the submitted job data in PostgreSQL.
+3. The API returns the job identifier and pending state.
+4. The worker selects a pending job within a database transaction.
+5. The worker updates the job state and processing timestamps.
+6. The worker commits the database transaction.
+7. The API provides aggregate status information to clients.
 
-The worker uses `FOR UPDATE SKIP LOCKED`. It waits two seconds when
-no job is processed. It does not transform or otherwise process the
-payload beyond updating status and timestamps.
+The worker uses `FOR UPDATE SKIP LOCKED` to reduce transaction contention when selecting pending jobs.
 
-Multiple-worker behavior has not been validated by the reviewed evidence.
+---
 
-### API Behavior
+## API Behavior
 
-| Request | Current behavior |
-|---|---|
-| `GET /health` | Returns a static API health response |
-| `POST /jobs` | Stores the request body and returns an ID with pending status |
-| `GET /jobs` | Returns counts grouped by status |
+The API exposes a deliberately small application surface.
 
-The health response does not check database readiness. Status groups
-without rows may be absent from the counts response.
+Representative behavior includes:
 
-There is no dedicated per-job status endpoint. The handler uses prefix
-routing without strict exact-path validation. Request bodies are not
-validated as JSON, and there is no explicit request-size limit.
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /jobs` | Submit a job |
+| `GET /jobs` | Return aggregate job-state counts |
+| `GET /health` | Return API health response |
 
-### Database
+The project has undergone API hardening and DAST validation, but the application remains educational rather than a complete production API gateway or identity platform.
 
-The jobs table stores:
+Known production-oriented gaps are documented in the threat model and include comprehensive authentication, authorization, rate limiting, and WAF-style protection.
 
-- Job ID.
-- Payload text.
-- Status, initially pending.
-- Creation timestamp.
-- Pickup and completion timestamps.
+---
 
-The PostgreSQL initialization script creates the schema for a new
-database. The API and worker also call the database helper's schema
-creation method during startup.
+## Database Architecture
 
-## Local Runtime
+PostgreSQL stores job payloads, state, and processing metadata.
 
-The Compose configuration defines three services on a shared bridge network.
+The API and worker both use the shared database helper for connectivity and schema support.
 
-| Service | Build or image | Host exposure |
-|---|---|---|
-| API | `Dockerfile.api` | `127.0.0.1:8081` maps to container port 8080 |
-| Worker | `Dockerfile.worker` | No published port |
-| PostgreSQL | `postgres:16-alpine` | No published host port |
+The database acts as the coordination layer between the API and worker. There is no separate message broker.
 
-Both application services wait for PostgreSQL's configured health check
-before startup. This does not establish ongoing application readiness.
+Primary database security concerns include:
 
-### Configured Restrictions
+- credential exposure
+- unauthorized database access
+- SQL injection
+- transaction integrity
+- job-state tampering
+- production credential separation
 
-The API and worker have:
+---
 
-- Read-only root filesystems.
-- Temporary `/tmp` storage with `noexec` and `nosuid`.
-- All Linux capabilities dropped.
-- `no-new-privileges` enabled.
+## Local Runtime Architecture
 
-These restrictions are not configured identically for PostgreSQL.
-CPU and memory limits are not present in the reviewed Compose file.
+The Docker Compose configuration coordinates three main services:
 
-The database credentials are development defaults. Use non-sensitive
-lab data. Durable database storage and recovery across container
-recreation require separate configuration and validation.
+| Service | Runtime Role |
+| --- | --- |
+| API | Java HTTP service |
+| Worker | Background job processor |
+| PostgreSQL | Persistent database |
 
-## Continuous Integration
+The API is mapped to localhost for local testing.
 
-The `ci.yml` workflow runs on pushes and pull requests to main,
-and supports manual execution.
+The worker and PostgreSQL are not exposed as public application endpoints.
 
-| Job | Configured actions | Coverage limit |
-|---|---|---|
-| Build and Test | Run Maven clean verify | Database test is skipped unless its environment guard is enabled |
-| Multi-service smoke test | Start PostgreSQL, enable database tests, build API and worker images | Does not start the application images |
+Application services wait for PostgreSQL health before startup.
 
-### Database Integration Test
+---
 
-`MultiServiceIntegrationTest` runs when `RUN_DB_TESTS=true`.
+## CI/CD Architecture
 
-It checks:
+```mermaid
+flowchart TD
+    Dev["Developer"] --> PR["Pull Request"]
+    PR --> CI["GitHub Actions"]
 
-- Database connectivity.
-- Schema creation.
-- Job insertion and a positive returned ID.
-- Aggregate status counts.
+    CI --> Build["Build & Tests"]
+    CI --> SAST["CodeQL"]
+    CI --> Secrets["Gitleaks"]
+    CI --> SCA["Dependency-Check / Trivy"]
+    CI --> DAST["OWASP ZAP"]
+    CI --> Policy["Conftest / Rego"]
+    CI --> SBOM["CycloneDX SBOM"]
+    CI --> Metrics["Security Metrics"]
+    CI --> AI["AI-Assisted Triage"]
 
-It does not call the API, execute the worker, or verify completion
-of the specific inserted job.
+    CI --> Release["Trusted Release"]
+    Release --> Sign["Cosign"]
+    Release --> Registry["GHCR"]
+```
 
-Building both images is implemented. Full container-stack integration
-testing remains planned.
+GitHub Actions is the primary automation layer.
+
+The repository contains independent security workflows so each security domain can be validated explicitly.
+
+---
 
 ## Security Workflow Coverage
 
-The repository contains separate workflows. They should not be
-represented as one sequential pipeline without verified dependencies.
+| Workflow | Security Function |
+| --- | --- |
+| `ci.yml` | Build and test |
+| `codeql.yml` | Static application security testing |
+| `codeql-regression.yml` | CodeQL regression validation |
+| `gitleaks.yml` | Secret detection |
+| `dependency-check.yml` | Dependency vulnerability analysis |
+| `trivy.yml` | Filesystem/container vulnerability scanning |
+| `zap.yml` | Dynamic application security testing |
+| `zap-regression.yml` | ZAP regression validation |
+| `sbom.yml` | CycloneDX SBOM generation |
+| `policy.yml` | Policy-as-code validation |
+| `container-release.yml` | Trusted container release |
+| `ai-triage.yml` | Advisory AI-assisted finding triage |
+| `security-metrics.yml` | Security metrics and reliability validation |
 
-| Workflow | Role |
-|---|---|
-| `ci.yml` | Maven tests, database integration test, and application image builds |
-| `codeql.yml` | Source-code security analysis |
-| `gitleaks.yml` | Secret scanning |
-| `trivy.yml` | Root Dockerfile image vulnerability scan |
-| `zap.yml` | ZAP baseline scanning |
-| `sbom.yml` | Software inventory generation |
-| `container-release.yml` | Container release workflow |
-| `policy.yml` | Conftest command against the root Dockerfile |
-| `ai-triage.yml` | Advisory analysis of CodeQL findings |
+---
 
-### Verified Configuration Boundaries
+## GitHub Actions Hardening
 
-- The reviewed Trivy command scans fixable HIGH/CRITICAL OS
-  vulnerabilities in the root Dockerfile image.
-- It excludes application dependency scanning.
-- It does not scan the separate API and worker images.
-- The reviewed Conftest command tests the root Dockerfile, even
-  though Kubernetes changes can trigger its workflow.
-- The reviewed workflows do not feed a Trivy report into
-  `policy/trivy.rego`.
-- A 30-day vulnerability-age rule is not established as enforced.
-- Reviewed action references use version tags rather than uniform
-  full commit-SHA pinning.
+GitHub Actions workflows use immutable SHA pinning for third-party actions.
 
-Historical branch-protection evidence records three required checks.
-Current merge requirements must be confirmed in repository settings.
+The current repository verification confirms all detected action references are pinned using full commit SHAs.
 
-## AI Triage and External Data Flow
+Additional workflow hardening includes:
 
-The AI triage workflow is configured to react to successful completion
-of a workflow named `CodeQL Security Scan`, or manual invocation.
+- explicit workflow permissions
+- read-only permissions where possible
+- protected branch requirements
+- pull-request-based development
+- security regression checks
+- actionlint validation
+- controlled workflow triggers
 
-Its script reads a CodeQL SARIF artifact and, when findings are present,
-can send up to 10 findings and available surrounding source-code context
-to Groq.
+This reduces dependency on mutable action tags.
 
-The script requests advisory classifications and fix suggestions.
-It posts a summary to a pull request when a PR number is available;
-otherwise, it prints the summary to workflow output.
+---
 
-### Limitations
+## Static Application Security Testing
 
-- A no-findings run does not exercise the model request.
-- Classification accuracy requires independent evaluation.
-- The script does not automatically fix code or dismiss findings.
-- Source context must match the scanned commit; the workflow does
-  not explicitly select that commit for checkout.
-- The script does not implement general sensitive-data redaction
-  or repository-bound validation of SARIF file paths.
-- Manual execution requires a valid artifact source; the workflow's
-  run ID expression is derived from a workflow-run event.
+CodeQL performs SAST against the application source.
 
-AI triage is separate from the API and worker runtime. The shared
-application code does not invoke an AI model.
+The project also includes controlled regression validation so that security detection behavior can be verified rather than assumed.
 
-## Trust Boundaries and Data Handling
+CodeQL findings may feed the AI-assisted triage workflow after successful analysis.
 
-| Boundary | Data or interaction |
-|---|---|
-| Client to API | Job payload submission and status-count requests |
-| API and worker to PostgreSQL | Payload storage and job status updates |
-| Repository to CI runner | Source checkout, builds, and tests |
-| AI triage to Groq | Finding details and available source-code context |
-| Release tooling to external services | Historical GHCR publishing and Sigstore signing interactions |
+---
 
-The application accepts arbitrary payload text and does not prevent
-personal information from being stored. Scanning data does not all
-remain inside GitHub Actions because AI triage can send data to Groq.
+## Secret Detection
 
-Artifact retention must be established from workflow configuration
-and repository settings. No project-wide retention period is assumed.
+Gitleaks scans source changes and repository content for exposed secrets.
 
-## Deployment Evidence
+Regression validation ensures secret-detection behavior remains operational.
 
-Render configuration and Kubernetes manifests exist in the repository.
-Their presence alone does not prove that the complete stack is deployed
-or that runtime admission policies are enforced.
+Secrets required by CI/CD are expected to use repository or workflow secret mechanisms rather than source-code storage.
 
-Historical container publishing and signing results must remain tied
-to their original image, commit, and workflow run. Signature verification
-during release does not establish verification at deployment admission.
+---
 
-## Planned Phase 2 Architecture Validation
+## Software Composition Analysis
 
-- Build both service images and record their identities.
-- Scan both images for OS and application dependency vulnerabilities.
-- Start the API, worker, and PostgreSQL together in CI.
-- Submit a job through HTTP.
-- Verify that the same job reaches done within a bounded timeout.
-- Retain service logs and test results.
-- Run API-specific web security checks.
-- Generate a separate SBOM for each image.
+Dependency-Check and Trivy provide vulnerability analysis across dependencies, filesystem content, and container-related assets.
 
-Completion requires passing evidence from the running stack and
-security reports tied to both service images.
+The project distinguishes:
+
+- dependency vulnerabilities
+- operating-system package vulnerabilities
+- fixability
+- severity
+- report availability
+
+Security metrics consume selected SCA results to provide consolidated reporting.
+
+---
+
+## Dynamic Application Security Testing
+
+OWASP ZAP evaluates runtime web-security behavior.
+
+The project includes:
+
+- baseline scanning
+- policy-based interpretation
+- regression validation
+- historical scan evidence
+
+DAST complements SAST by evaluating behavior only visible when the application is running.
+
+---
+
+## Container Security
+
+Container security includes:
+
+- hardened Dockerfiles
+- vulnerability scanning
+- runtime configuration validation
+- reduced-privilege design where implemented
+- controlled publishing
+- image signing
+- provenance-oriented release controls
+
+Container controls are validated independently from application source-code controls.
+
+---
+
+## Policy as Code
+
+Conftest and Rego policies provide automated configuration validation.
+
+Policy controls are intended to detect insecure infrastructure or container configuration before release.
+
+Policy-as-code provides repeatable enforcement instead of relying only on manual review.
+
+---
+
+## Software Supply Chain
+
+```mermaid
+flowchart LR
+    Source["Source"] --> Build["CI Build"]
+    Build --> Scan["Security Validation"]
+    Scan --> SBOM["CycloneDX SBOM"]
+    SBOM --> Release["Release Gate"]
+    Release --> Sign["Cosign Signing"]
+    Sign --> GHCR["GHCR"]
+    GHCR --> Verify["Signature / Artifact Verification"]
+```
+
+Supply-chain controls include:
+
+- CycloneDX SBOM generation
+- container release gating
+- GHCR publishing
+- Cosign keyless signing
+- signature verification
+- trusted release evidence
+- dependency and container scanning
+
+These controls improve artifact traceability and tamper resistance.
+
+---
+
+## AI-Assisted Security Triage
+
+The AI triage workflow is separate from the application runtime.
+
+The Java API and worker do not directly call an AI model.
+
+The workflow analyzes security findings after CodeQL execution.
+
+Security controls include:
+
+- external AI disabled by default
+- explicit opt-in requirement
+- API key requirement
+- repository source-path restrictions
+- Java source-context restrictions
+- file-size restrictions
+- finding-count limits
+- malformed-response fallback
+- advisory-only output
+
+Malformed or untrusted AI output falls back to `needs_review`.
+
+AI output does not automatically fix code, dismiss findings, or bypass required security checks.
+
+---
+
+## AI External Data Boundary
+
+When external AI is explicitly enabled, selected finding information and restricted source context may leave GitHub Actions and be processed by the configured external AI provider.
+
+This creates a distinct trust boundary.
+
+Primary risks include:
+
+- accidental disclosure
+- excessive context sharing
+- malformed AI output
+- inaccurate classification
+- overreliance on model recommendations
+
+The workflow is therefore default-disabled and advisory.
+
+---
+
+## Security Metrics and Reliability
+
+Phase 14 introduced automated security metrics collection.
+
+The metrics architecture includes:
+
+- Dependency-Check report ingestion
+- Trivy report ingestion
+- ZAP report ingestion
+- deterministic metrics generation
+- missing-report handling
+- regression validation
+- CI reliability measurement
+
+The metrics collector does not treat unavailable historical security reports as fatal.
+
+Instead, report availability is explicitly recorded.
+
+This improves CI resilience while preserving visibility into missing evidence.
+
+---
+
+## Trust Boundaries
+
+Important trust boundaries include:
+
+| Boundary | Primary Risk |
+| --- | --- |
+| Client → API | Untrusted input and denial of service |
+| API / Worker → PostgreSQL | Credential misuse and data tampering |
+| Developer → GitHub | Account compromise and malicious commits |
+| Repository → GitHub Actions | Workflow tampering and execution risk |
+| CI → Security tools | Tool and dependency trust |
+| CI → GHCR | Artifact publishing integrity |
+| CI → Sigstore/Cosign | Signing identity and verification trust |
+| Security reports → AI triage | Data disclosure and AI-output risk |
+
+Detailed STRIDE analysis is maintained in `docs/threat-model.md`.
+
+---
+
+## Branch Protection and Change Control
+
+The repository uses pull-request-based development and protected-branch controls for `main`.
+
+Required checks provide merge gating for security-sensitive changes.
+
+Git history, pull-request history, workflow logs, and evidence artifacts provide traceability.
+
+Branch protection is considered a preventive control, while scanning and regression validation provide detective controls.
+
+---
+
+## Security Evidence Architecture
+
+The project intentionally preserves security evidence across phases.
+
+Evidence includes:
+
+- screenshots
+- scan reports
+- regression-test output
+- workflow logs
+- SBOMs
+- policy results
+- security metrics
+- pull-request validation
+
+This evidence supports repeatability, portfolio review, and audit-style verification.
+
+Evidence does not replace automated controls; it demonstrates that those controls were executed.
+
+---
+
+## Deployment and Runtime Limitations
+
+The repository contains deployment-related artifacts, including Render and Kubernetes configuration.
+
+Their presence does not by itself prove:
+
+- continuous production deployment
+- Kubernetes admission enforcement
+- production identity management
+- production-grade rate limiting
+- production WAF protection
+- production database RBAC
+- end-to-end runtime monitoring
+
+These limitations are intentionally retained as residual risks rather than presented as completed capabilities.
+
+---
+
+## Known Architectural Limitations
+
+Current known limitations include:
+
+- multiple-worker concurrency behavior is not fully validated as a production workload
+- the project is not a complete production IAM implementation
+- the API does not represent a full API-gateway architecture
+- production WAF and comprehensive rate limiting are not implemented
+- development credentials must not be reused in production
+- external service availability remains outside repository control
+- scanner false positives and false negatives remain possible
+- AI classification accuracy requires independent evaluation
+- deployment-time admission verification is not equivalent to release-time signing
+- local and CI environments do not fully reproduce production infrastructure
+
+---
+
+## Security Architecture Summary
+
+The project implements defense in depth across:
+
+1. source-code security
+2. secrets detection
+3. dependency security
+4. container security
+5. runtime web testing
+6. policy enforcement
+7. software supply-chain integrity
+8. workflow hardening
+9. AI-assisted security analysis
+10. security metrics and reliability
+
+The architecture combines preventive, detective, and validation controls rather than relying on a single security tool.
+
+---
 
 ## Related Documentation
 
-- [Project README](../README.md)
-- [Project scope](../PROJECT-SCOPE.md)
-- [Policy documentation](POLICIES.md)
-- [Architecture decision records](adr/README.md)
-- [Historical CodeQL repair evidence](../screenshots/phase2-codeql-repair/README.md)
+- `docs/threat-model.md`
+- `docs/METRICS.md`
+- `docs/POLICIES.md`
+- `docs/adr/README.md`
+- `PROJECT-SCOPE.md`
+- `README.md`

@@ -56,29 +56,31 @@ been measured in this educational lab.
 
 ## Feature Status
 
+## Feature Status
+
 **Implemented and tested:** Functionality exists and has current validation.
 
-**Implemented:** Functionality exists, but additional validation may still be
-planned.
-
-**Historical:** Evidence belongs to an earlier implementation or test scope.
-
-**Planned:** Additional work remains.
+**Historical:** Evidence belongs to an earlier implementation or validation scope.
 
 | Capability | Status | Current coverage |
 |---|---|---|
 | Java API and PostgreSQL storage | Implemented and tested | Accepts jobs and returns aggregate status counts |
-| Background worker | Implemented and tested | Processes pending jobs and changes status to `done` |
-| API and worker image builds | Implemented and tested | Both service images are built in CI |
-| Full container-stack integration | Implemented and tested | Starts PostgreSQL, API, and worker and validates job processing |
-| Separate API and worker SBOMs | Implemented and tested | CycloneDX inventory is generated separately for each service image |
-| API and worker Trivy scans | Implemented and tested | Service images are scanned separately and reports are retained |
-| OWASP ZAP API scan | Implemented and tested | Active scan runs against the Compose API using an OpenAPI specification |
-| CodeQL SAST | Implemented and tested | Source-code security analysis runs in GitHub Actions |
-| Gitleaks secret scanning | Implemented and tested | Pinned Gitleaks scanning, project-specific rules, allowlist handling, remediation validation, and a six-test regression suite run as CI security controls |
-| AI-assisted CodeQL triage | Implemented | Advisory Groq integration; accuracy validation remains outstanding |
+| Background worker | Implemented and tested | Processes pending jobs and updates job state |
+| API and worker container builds | Implemented and tested | Both application service images are built and validated |
+| Full container-stack integration | Implemented and tested | PostgreSQL, API, and worker integration is exercised |
+| Separate API and worker SBOMs | Implemented and tested | CycloneDX inventory is generated for service images |
+| Dependency and container vulnerability scanning | Implemented and tested | Dependency-Check and Trivy provide SCA and container/filesystem coverage |
+| OWASP ZAP API security testing | Implemented and tested | Runtime API security testing and regression validation |
+| CodeQL SAST | Implemented and tested | Static security analysis plus controlled regression coverage |
+| Gitleaks secret scanning | Implemented and tested | Secret detection, remediation, allowlist, and regression validation |
+| Policy as Code | Implemented and tested | Conftest/Rego security-policy validation |
+| Trusted releases | Implemented and tested | SBOMs, GHCR publishing, Cosign signing, and verification |
+| GitHub Actions hardening | Implemented and tested | Third-party action references are pinned to immutable commit SHAs |
+| AI-assisted CodeQL triage | Implemented and tested | Advisory-only triage with opt-in external AI and safe fallback behavior |
+| Security metrics and reliability | Implemented and tested | Security-report aggregation, regression tests, and CI reliability analysis |
+| STRIDE threat modeling | Implemented | Assets, trust boundaries, threats, controls, and residual risks documented |
+| Risk and control mapping | Implemented | STRIDE, CIA, CI/CD, supply-chain, AI, and risk-acceptance mappings documented |
 | Earlier single-container security testing | Historical | Retained as earlier project evidence |
-| Expanded trusted release validation | Planned | Dual-service release identity, inventory, and rollback validation remain future work |
 
 ## Run the Application Locally
 
@@ -480,20 +482,13 @@ Supporting documentation:
 
 ## Action References and Merge Requirements
 
-GitHub Actions currently use versioned action references such as:
+GitHub Actions third-party dependencies are pinned to immutable full commit SHAs.
+
+Phase 15 verification confirmed:
 
 ```text
-@v4
-@v5
-```
-
-They are not uniformly pinned to full commit SHAs.
-
-Pull-request evidence shows security checks running successfully before merge.
-
-Repository rules and required-check settings are configuration outside the
-source tree and should be confirmed in repository settings before making
-claims about which checks are currently mandatory.
+Action references: 45
+SHA-pinned references: 45
 
 ## Project Evidence
 
@@ -817,12 +812,25 @@ MITRE ATT&CK
 Incident investigation
 ```
 
-### Final Verification and Portfolio Packaging
+### Phase 15 — Threat Model and Final Portfolio Packaging
 
-Status: **Planned**
+Status: **In Progress**
 
-The final project stage will validate reproducibility, documentation accuracy,
-evidence organization, threat modeling, and portfolio presentation.
+Completed Phase 15 work includes:
+
+- STRIDE threat-model expansion
+- application and CI/CD trust-boundary documentation
+- current security architecture documentation
+- security workflow architecture
+- software supply-chain architecture
+- AI-assisted triage architecture
+- security metrics and reliability architecture
+- centralized risk and security-control mapping
+- STRIDE and CIA cross-references
+- formalized residual-risk and risk-acceptance documentation
+
+Remaining Phase 15 work is final portfolio validation, pull-request validation,
+merge verification, and project closure.
 
 ## Responsible Use
 

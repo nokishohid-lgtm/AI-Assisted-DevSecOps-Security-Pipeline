@@ -2,292 +2,706 @@
 
 ## Purpose
 
-Build and document an educational Java application with automated
-testing, security scanning, container restrictions, and software
-supply-chain workflows.
+The AI-Assisted DevSecOps Security Pipeline is an educational and portfolio-focused Java security engineering project designed to demonstrate how security controls can be integrated throughout the software development lifecycle.
 
-The main application consists of an API, a background worker, and
-PostgreSQL. A separate AI triage script provides advisory analysis
-of CodeQL findings.
+The project combines:
+
+- Java application development
+- PostgreSQL data persistence
+- Docker containerization
+- GitHub Actions CI/CD
+- static application security testing
+- secrets detection
+- software composition analysis
+- container vulnerability management
+- dynamic application security testing
+- policy-as-code
+- SBOM generation
+- software supply-chain security
+- signed container releases
+- hardened GitHub Actions workflows
+- AI-assisted security triage
+- security metrics and reliability validation
+- STRIDE threat modeling
+- risk and security-control mapping
+
+The primary application consists of a Java API, a background Java worker, and PostgreSQL.
+
+AI-assisted security triage is implemented as a separate CI/CD security capability and is not part of the Java application's runtime processing path.
+
+---
 
 ## Authorized Testing Scope
 
-Testing is limited to my own application, repository, containers,
-and explicitly authorized environments.
+Security testing is limited to:
 
-Use non-sensitive demonstration data. External systems are excluded
-unless testing permission has been obtained.
+- this project repository
+- locally controlled application services
+- project-owned containers
+- project-owned CI/CD workflows
+- controlled security fixtures
+- explicitly authorized environments
+
+Testing must use non-sensitive demonstration data.
+
+External applications, infrastructure, accounts, and systems are outside the authorized testing scope unless explicit permission has been obtained.
+
+---
 
 ## Application Scope
 
-| Component | Current behavior |
+| Component | Current Role |
 |---|---|
-| Java API | Accepts job submissions and returns aggregate status counts |
-| PostgreSQL | Stores job payloads, statuses, and timestamps |
-| Java worker | Simulates processing by marking pending jobs done |
-| Earlier HTTP application | Remains in the repository with historical tests and scan evidence |
-| AI triage script | Sends selected CodeQL findings and available code context to Groq for advisory review |
+| Java API | Accepts job submissions and returns aggregate status information |
+| PostgreSQL | Stores job payloads, state, and processing timestamps |
+| Java Worker | Selects pending jobs and updates processing state |
+| Database Helper | Provides JDBC connectivity, schema support, insertion, and status queries |
+| Docker Compose | Coordinates the API, worker, and PostgreSQL services |
+| AI Triage | Provides advisory analysis of selected CodeQL findings |
+| Earlier HTTP Application | Retained as historical implementation and security evidence |
 
-The worker does not transform the submitted payload. PostgreSQL
-coordinates the services without a separate message broker.
+PostgreSQL coordinates work between the API and worker.
+
+The application does not use a separate message broker.
+
+---
 
 ## Environment
 
-- Windows 11 and PowerShell.
-- Java 25 (LTS) and Maven.
-- Git and GitHub.
-- GitHub Actions.
-- Visual Studio Code.
-- Docker Desktop with Linux containers.
-- PostgreSQL 16 in the Compose configuration.
+The validated development and testing environment includes:
+
+- Windows 11
+- PowerShell
+- Java
+- Maven
+- Git
+- GitHub
+- GitHub Actions
+- Visual Studio Code
+- Docker Desktop using Linux containers
+- PostgreSQL 16 in the Compose configuration
+
+External CI/CD services such as GitHub Container Registry and Sigstore/Cosign are used where applicable to the software supply-chain workflows.
+
+---
 
 ## Status Definitions
 
-- **Implemented:** Code or configuration exists.
-- **Tested — historical:** A result was recorded for a particular earlier run.
-- **Planned:** Implementation or validation remains outstanding.
+### Implemented and Tested
 
-A workflow file alone does not prove successful execution. Historical
-evidence does not automatically apply to newer images or commits.
+The functionality or control exists and has current validation evidence.
+
+### Implemented
+
+The functionality or control exists, but its complete behavior may depend on environment-specific validation.
+
+### Historical
+
+The evidence represents an earlier implementation, workflow, image, or project stage.
+
+### Outside Validated Scope
+
+The capability is intentionally not claimed as completed or production-validated by this project.
+
+A workflow file or configuration file alone is not considered proof of successful execution.
+
+Historical results must not automatically be treated as evidence for newer images, commits, or workflow revisions.
+
+---
 
 ## Implemented Application Features
 
-| Feature | Evidence |
+| Feature | Primary Evidence |
 |---|---|
-| Job submission | `ApiMain.java` and `Database.enqueue()` |
-| Aggregate status counts | `Database.countsByStatus()` |
+| Job submission | `ApiMain.java` and database enqueue logic |
+| Aggregate status counts | Database status-count logic |
 | Worker status updates | `WorkerMain.java` |
-| Database initialization | `db/init.sql` and `Database.migrate()` |
-| Separate API and worker builds | `Dockerfile.api`, `Dockerfile.worker`, and `ci.yml` |
-| Local three-service configuration | `docker-compose.yml` |
-| Database integration test | `MultiServiceIntegrationTest.java` |
-| Advisory AI triage | `ai-triage.yml` and `scripts/triage.py` |
+| Database initialization | Database helper and initialization logic |
+| Separate API and worker builds | `Dockerfile.api` and `Dockerfile.worker` |
+| Three-service local runtime | `docker-compose.yml` |
+| Database integration testing | Multi-service integration tests |
+| API hardening | Application validation and error-handling implementation |
+| Advisory AI triage | `.github/workflows/ai-triage.yml` and triage scripts |
+| Security metrics | `.github/workflows/security-metrics.yml` and metrics collector |
+
+---
+
+## Application Runtime Architecture
+
+The primary application flow is:
+
+1. A client submits a job to the Java API.
+2. The API validates and stores the request in PostgreSQL.
+3. The API returns the resulting job state.
+4. The worker selects a pending job inside a database transaction.
+5. The worker updates the processing state and timestamps.
+6. The transaction is committed.
+7. The API can return aggregate job-state information.
+
+The worker uses transactional job selection, including `FOR UPDATE SKIP LOCKED`.
+
+---
 
 ## Current CI Coverage
 
-The Build and Test job runs Maven clean verify.
+The project uses multiple GitHub Actions workflows rather than one monolithic security pipeline.
 
-The multi-service smoke-test job:
+Application CI validates:
 
-1. Starts PostgreSQL as a service container.
-2. Enables database integration tests with `RUN_DB_TESTS=true`.
-3. Runs Maven tests.
-4. Builds the API image.
-5. Builds the worker image.
+- Maven build and testing
+- database integration
+- API and worker image builds
+- multi-service integration
+- runtime readiness
+- controlled application processing
 
-The database integration test checks connectivity, schema creation,
-insertion, and aggregate counts.
+Security validation is handled by dedicated workflows for separate security domains.
 
-The current multi-service CI validation starts PostgreSQL, the API, and the
-worker, verifies application readiness, submits a job through HTTP, and confirms
-that the running stack processes the job successfully.
+---
 
 ## Security Workflow Scope
 
-The repository contains security and CI workflows that provide application,
-container, secret-detection, policy, dynamic-testing, software-inventory,
-release, and AI-assisted analysis capabilities.
-
-| Workflow | Purpose and current scope |
+| Workflow | Security Purpose |
 |---|---|
-| `ci.yml` | Builds and tests the application and performs multi-service integration validation |
-| `codeql.yml` | Performs Java source-code security analysis |
-| `gitleaks.yml` | Runs deterministic secret regression testing and repository secret scanning |
-| `trivy.yml` | Builds and scans API and worker service images and validates vulnerability gating |
-| `zap.yml` | Starts the Compose stack and performs active OWASP ZAP API testing using OpenAPI |
-| `sbom.yml` | Generates separate CycloneDX SBOMs for the API and worker service images |
-| `container-release.yml` | Performs container publishing, signing, and verification workflow operations |
-| `policy.yml` | Performs Conftest Policy-as-Code validation |
-| `ai-triage.yml` | Provides advisory AI-assisted analysis of CodeQL findings |
+| `ci.yml` | Application build, testing, and CI validation |
+| `full-stack.yml` | Multi-service integration validation |
+| `codeql.yml` | Java static application security testing |
+| `codeql-regression.yml` | Controlled CodeQL regression validation |
+| `gitleaks.yml` | Secret detection and regression validation |
+| `dependency-check.yml` | Dependency vulnerability analysis |
+| `trivy.yml` | Filesystem and container vulnerability analysis |
+| `zap.yml` | OWASP ZAP dynamic application security testing |
+| `zap-regression.yml` | Controlled ZAP regression validation |
+| `sbom.yml` | CycloneDX software inventory generation |
+| `policy.yml` | Conftest/Rego policy-as-code validation |
+| `container-release.yml` | Trusted container release, signing, and verification |
+| `ai-triage.yml` | Advisory AI-assisted security triage |
+| `security-metrics.yml` | Security metrics and reliability validation |
 
-Dependabot configuration is separate from these workflows.
+Dependabot configuration operates separately from these workflows.
 
-### Vulnerability and Policy Boundaries
+---
 
-- Trivy scans the API and worker service images separately.
-- Vulnerability findings describe the image state and vulnerability data
-  available at scan time.
-- Scanner success does not prove that an image is free from every vulnerability.
-- Conftest policy validation remains separate from Trivy vulnerability scanning.
-- Kubernetes policy coverage is evaluated separately from Dockerfile policy
-  validation.
-- SBOM generation inventories software components but does not determine whether
-  those components are vulnerable.
-- Regression testing validates specific controlled failure conditions and should
-  not be interpreted as exhaustive security testing.
-- Gitleaks regression testing uses controlled synthetic values rather than real
-  production credentials.
-- GitHub Actions references are not uniformly pinned to full commit SHAs.
+## Vulnerability and Policy Boundaries
+
+The project distinguishes between different security-control functions.
+
+- CodeQL evaluates source-code security weaknesses.
+- Gitleaks detects potential credential and secret exposure.
+- Dependency-Check evaluates vulnerable application dependencies.
+- Trivy evaluates filesystem and container vulnerability conditions.
+- OWASP ZAP evaluates runtime web/API behavior.
+- Conftest/Rego evaluates policy-defined configuration requirements.
+- CycloneDX generates software inventories.
+- Cosign provides artifact-signing and verification controls.
+- Security metrics aggregate selected security results.
+- Regression tests validate controlled security-gate behavior.
+
+No individual tool is treated as proof that the application is secure.
+
+Scanner success does not establish the absence of vulnerabilities.
+
+---
+
+## GitHub Actions Hardening
+
+GitHub Actions third-party action references are pinned to immutable full commit SHAs.
+
+Current repository validation confirmed:
+
+```text
+Action references: 45
+SHA-pinned references: 45
+```
+
+Workflow hardening also includes:
+
+- explicit permissions
+- read-only permissions where appropriate
+- controlled workflow triggers
+- pull-request-based development
+- protected-branch controls
+- regression validation
+- actionlint validation
+
+SHA pinning reduces exposure to mutable action tags but does not eliminate upstream software-supply-chain risk.
+
+---
 
 ## Runtime Restrictions
 
-The Compose configuration applies these restrictions to the API
-and worker:
+The API and worker containers include reduced-privilege runtime controls.
 
-- Read-only root filesystem.
-- Temporary `/tmp` storage with `noexec` and `nosuid`.
-- All Linux capabilities dropped.
-- `no-new-privileges` enabled.
-- Startup dependency on PostgreSQL's health check.
+Validated controls include:
 
-The API is bound to `127.0.0.1:8081`. PostgreSQL has no published
-host port.
+- read-only root filesystem
+- temporary writable storage where required
+- Linux capability reduction
+- `no-new-privileges`
+- PostgreSQL startup dependency and health checks
+- limited host exposure for application services
 
-Equivalent restrictions are not configured for PostgreSQL, and the
-reviewed Compose file does not define CPU or memory limits.
+The API is intended for controlled local or CI validation rather than direct public production exposure.
 
-Image-level properties require verification of each service Dockerfile.
+PostgreSQL does not have equivalent application-container restrictions and is not presented as a production-hardened database deployment.
+
+---
+
+## Static Application Security Testing
+
+CodeQL provides SAST coverage for Java source code.
+
+The project includes controlled regression validation to demonstrate that security detection continues operating after configuration and workflow changes.
+
+Validated CodeQL coverage includes multiple source-code weakness categories used throughout the project phases.
+
+---
+
+## Secrets Security
+
+Gitleaks provides repository secrets detection.
+
+The project includes:
+
+- default Gitleaks rules
+- project-specific controlled rules
+- synthetic secret fixtures
+- remediation validation
+- allowlist testing
+- deterministic regression tests
+- CI enforcement
+
+Controlled test values are used rather than real production credentials.
+
+---
+
+## Software Composition Analysis
+
+Software composition and vulnerability management controls include:
+
+- OWASP Dependency-Check
+- Trivy
+- severity analysis
+- fixability analysis
+- security gating
+- vulnerability report retention
+- documented exception handling
+- risk acceptance
+
+The project distinguishes temporary risk acceptance from permanent vulnerability suppression.
+
+---
+
+## Dynamic Application Security Testing
+
+OWASP ZAP provides runtime security validation against the project API.
+
+The project includes:
+
+- API security testing
+- OpenAPI-based validation
+- controlled failure conditions
+- remediation evidence
+- regression testing
+- security-header validation
+
+DAST complements static analysis rather than replacing it.
+
+---
+
+## Policy as Code
+
+Conftest and Rego are used to validate security-policy requirements.
+
+Policy-as-code provides repeatable enforcement for defined configuration expectations.
+
+Policy validation remains distinct from vulnerability scanning.
+
+---
+
+## Software Bill of Materials
+
+CycloneDX SBOM generation provides software-component inventory evidence.
+
+SBOMs improve:
+
+- component visibility
+- traceability
+- release documentation
+- supply-chain analysis
+
+An SBOM is an inventory and does not independently determine whether a component is vulnerable or safe.
+
+---
+
+## Trusted Release and Software Supply Chain
+
+The project includes validated trusted-release controls.
+
+Implemented controls include:
+
+- SBOM generation
+- GHCR publishing
+- container release gating
+- Cosign keyless signing
+- signature verification
+- release evidence
+- artifact traceability
+- tampering-oriented validation
+
+These controls improve artifact identity and integrity.
+
+Signed artifacts are not automatically equivalent to secure artifacts.
+
+---
+
+## AI-Assisted Security Triage
+
+AI-assisted triage is separate from the Java application runtime.
+
+External AI processing is disabled by default.
+
+External processing requires explicit opt-in and the required API credential.
+
+Security restrictions include:
+
+- controlled finding count
+- restricted repository source paths
+- Java source-context restrictions
+- file-size restrictions
+- rejection of unsafe path forms
+- malformed-response handling
+- safe fallback to `needs_review`
+- advisory-only output
+
+AI output does not:
+
+- automatically fix source code
+- dismiss security findings
+- approve risk
+- bypass required checks
+- authorize a release
+
+Human review remains required.
+
+The project does not claim that AI classification is infallible or equivalent to expert security review.
+
+---
+
+## AI External Data Boundary
+
+When external AI is explicitly enabled, selected security-finding information and restricted source context may leave GitHub Actions and be processed by the configured external AI provider.
+
+This creates a separate trust boundary.
+
+The project therefore treats AI-assisted triage as optional decision support rather than an autonomous security authority.
+
+The workflow is not presented as a comprehensive data-loss-prevention system.
+
+---
+
+## Security Metrics and Reliability
+
+Phase 14 introduced security metrics and reliability validation.
+
+The metrics capability includes:
+
+- Dependency-Check report processing
+- Trivy report processing
+- ZAP report processing
+- deterministic output
+- report-availability tracking
+- nonfatal handling of unavailable historical reports
+- metrics regression tests
+- CI reliability analysis
+- GitHub Actions integration
+
+Metrics provide visibility into security validation but do not replace the underlying scanners.
+
+---
+
+## Threat Modeling
+
+The project includes a formal STRIDE-oriented threat model in:
+
+`docs/threat-model.md`
+
+The threat model documents:
+
+- system scope
+- assets
+- trust boundaries
+- application data flow
+- CI/CD data flow
+- STRIDE threat scenarios
+- security controls
+- residual risks
+- risk-reduction strategy
+- validation strategy
+
+Threat modeling is used to connect individual security controls to realistic system risks.
+
+---
+
+## Risk and Security-Control Mapping
+
+The project includes a centralized risk and security-control mapping in:
+
+`docs/risk-control-mapping.md`
+
+The mapping covers:
+
+- risk-treatment approaches
+- STRIDE cross-reference
+- CIA security objectives
+- software supply-chain risk
+- CI/CD risk
+- AI-assisted triage risk
+- vulnerability risk acceptance
+- residual risk
+- control-validation strategy
+
+The purpose is to demonstrate security risk management rather than simply list security tools.
+
+---
+
+## Risk Acceptance
+
+The project contains a documented SCA risk-acceptance process.
+
+Related files include:
+
+- `security/sca/RISK-ACCEPTANCE-POLICY.md`
+- `security/sca/RISK-ACCEPTANCE-TEMPLATE.md`
+
+Risk acceptance requires documented justification, compensating controls, approval, review, and expiration.
+
+Risk acceptance is temporary and must not be used to silently bypass a security gate.
+
+---
+
+## Branch Protection and Merge Controls
+
+The repository uses pull-request-based development and protected-branch controls.
+
+Security workflows provide merge-gating evidence.
+
+Exact GitHub-hosted repository-rule configuration should be checked when making time-specific claims about which checks are currently mandatory.
+
+Git history, pull requests, workflow runs, and screenshots provide change-control evidence.
+
+---
+
+## Release Claims
+
+Trusted-release workflows provide evidence for:
+
+- image publishing
+- artifact identity
+- Cosign signing
+- signature verification
+- SBOM generation
+- controlled release behavior
+
+Release signature verification does not prove that a production deployment admission controller enforces signature verification.
+
+Runtime admission enforcement remains outside the validated project scope.
+
+---
 
 ## Historical Validation
 
-Earlier project documentation records:
+The repository retains evidence from earlier project stages.
 
-- Four passing HTTP tests for the earlier application.
-- A successful local container build.
-- Zero fixable HIGH/CRITICAL OS findings in a documented Trivy scan.
-- A ZAP result with 66 passed checks, zero failures, and one warning.
-- CycloneDX SBOM generation.
-- Container publishing, signing, and signature verification.
-- A controlled HTTP assertion failure that blocked merging.
-- Local API, worker, and Compose screenshots.
-- CodeQL workflow repair and follow-up evidence.
+Historical evidence includes earlier:
 
-These are historical observations, not new results from this
-documentation update. See the README and linked evidence for context.
+- application implementations
+- CI validation
+- CodeQL repairs
+- container scans
+- ZAP scans
+- SBOM generation
+- release validation
+- pull-request security checks
 
-A failing HTTP assertion demonstrates test enforcement; it does not
-demonstrate detection of a real vulnerability or exposed secret.
+Historical results remain useful for demonstrating project evolution but are not automatically treated as current validation.
+
+---
+
+## Phase Evolution
+
+### Early Architecture and CI
+
+The project established the Java application, PostgreSQL integration, worker architecture, containerization, and CI foundation.
+
+### Multi-Service Security Coverage
+
+The project added:
+
+- separate service builds
+- service-specific SBOM generation
+- service-specific vulnerability scanning
+- full-stack integration
+- API-focused DAST
+
+### Security Gate Validation and Regression
+
+Controlled failure and remediation testing demonstrated that security gates could detect intended test conditions and return to passing state after remediation.
+
+### Advanced Security Hardening
+
+Later phases expanded:
+
+- CodeQL coverage
+- secrets security
+- SCA
+- container hardening
+- API/DAST hardening
+- policy-as-code
+- trusted releases
+- GitHub Actions hardening
+- AI-assisted triage
+- security metrics
+- threat modeling
+- risk mapping
+
+---
 
 ## Current Security Validation
 
-The repository now includes validated controls beyond the earlier historical
-baseline.
-
 Current validated capabilities include:
 
-- Full API, PostgreSQL, and worker integration testing.
-- Separate CycloneDX SBOM generation for API and worker images.
-- Separate Trivy scanning for API and worker images.
-- Active OWASP ZAP API testing using the OpenAPI definition.
-- Repeatable Trivy regression testing.
-- Repeatable Gitleaks regression testing.
-- CodeQL detection and remediation regression coverage.
-- OWASP ZAP security-header regression validation.
-- Conftest Policy-as-Code regression validation.
-- Advanced CodeQL coverage for command injection, SQL injection, path injection,
-  and log injection.
-- Secrets-security validation covering multiple controlled secret classes,
-  allowlist handling, remediation, regression testing, and CI enforcement.
+- full API, PostgreSQL, and worker integration testing
+- separate API and worker CycloneDX SBOM generation
+- dependency vulnerability analysis
+- Trivy vulnerability scanning
+- OWASP ZAP API security testing
+- CodeQL SAST
+- CodeQL regression validation
+- Gitleaks secrets-security regression validation
+- policy-as-code validation
+- container security hardening
+- trusted-release controls
+- Cosign signing and verification
+- immutable GitHub Actions SHA pinning
+- AI-assisted security-triage validation
+- security metrics and reliability validation
+- STRIDE threat modeling
+- centralized risk and security-control mapping
+- documented residual-risk treatment
+- time-limited vulnerability risk acceptance
 
-These controls provide evidence of tested security behavior. They do not
-establish production readiness or guarantee the absence of vulnerabilities.
+These capabilities demonstrate tested security behavior.
 
+They do not establish complete production readiness or guarantee the absence of vulnerabilities.
 
-## Merge and Release Claims
+---
 
-Historical branch-protection evidence records three required checks:
+## Known Limitations
 
-- Build and Test.
-- Detect Hardcoded Secrets.
-- Build and Scan Container.
+The project intentionally documents remaining limitations.
 
-Current requirements must be confirmed in repository settings.
+Current limitations include:
 
-Historical release documentation describes publishing a commit-tagged
-image, signing and verifying its digest, and then updating the latest
-tag. Current release behavior requires review of the workflow and a
-corresponding run.
+- educational rather than production deployment scope
+- no complete production IAM platform
+- no production-grade API gateway
+- no comprehensive production WAF
+- no comprehensive production rate limiting
+- development credentials must not be reused in production
+- PostgreSQL is not presented as a production-grade RBAC deployment
+- production-scale multiple-worker behavior is not fully validated
+- deployment-time signature admission enforcement is not implemented
+- local and CI environments do not fully reproduce production infrastructure
+- external-service availability remains outside repository control
+- automated scanners may generate false positives and false negatives
+- AI output requires independent human review
+- security validation does not prove absence of unknown vulnerabilities
 
-Release signature verification does not establish that a deployment
-admission controller verifies images.
+---
 
-## AI Assistance and External Sharing
+## Outside the Validated Project Scope
 
-AI supported development, explanations, and troubleshooting.
+The following remain outside the project's validated scope:
 
-The separate triage script can send up to 10 CodeQL findings and
-available surrounding source-code context to Groq. Summaries are
-posted to a pull request when a PR number is available, or printed
-to workflow output.
+- dedicated Checkov infrastructure scanning
+- production IAM and authorization architecture
+- production WAF deployment
+- comprehensive API gateway rate limiting
+- runtime image-signature admission enforcement
+- production PostgreSQL RBAC and hardening
+- automated policy-exception expiration enforcement
+- production-scale runtime observability
+- production-scale multiple-worker concurrency validation
+- enterprise-grade disaster recovery
+- production incident-response operations
 
-- AI output is advisory and requires human review.
-- A no-findings run does not validate model requests or accuracy.
-- The script does not automatically fix code or dismiss findings.
-- Source context must correspond to the scanned commit.
-- General sensitive-data redaction and repository-bound SARIF path
-  validation are not implemented in the reviewed script.
+These limitations are documented rather than represented as completed capabilities.
 
-Scanning data therefore does not all remain within GitHub Actions.
-The application also accepts arbitrary payload text and does not
-prevent personal information from being submitted.
-
-Artifact retention must be established from actual settings.
-No project-wide retention period is assumed.
-
-## Known Application Limitations
-
-- Educational lab; production readiness has not been established.
-- No dedicated per-job status endpoint.
-- Static health response without a database readiness check.
-- No JSON payload validation or explicit request-size limit.
-- Prefix routing without strict exact-path validation.
-- Worker processing consists of status and timestamp updates.
-- Multiple-worker behavior has not been validated.
-- Development database credentials are included in Compose.
-- Durable storage and recovery require separate validation.
-- A successful scan does not prove the absence of vulnerabilities.
-- An SBOM inventories components; signing does not establish safety.
-
-## Phase 2 Completion
-
-Phase 2 completed the planned multi-service security coverage.
-
-Completed capabilities include:
-
-- Building both application service images.
-- Starting the API, worker, and PostgreSQL containers in CI.
-- Submitting a job through HTTP and verifying successful processing.
-- Using bounded validation and retaining failure diagnostics.
-- Running API-specific OWASP ZAP security testing.
-- Scanning API and worker service images separately with Trivy.
-- Generating and retaining separate CycloneDX SBOMs for both service images.
-
-Phase 2 completion is supported by service-specific reports, integration
-validation, remediation evidence, CI execution, and pull-request evidence.
-
-## Additional Deferred Objectives
-
-The following remain outside the completed Phase 1–6 scope:
-
-- Dedicated Checkov infrastructure scanning.
-- AI recommendation accuracy validation case study.
-- Formal project-wide risk assessment and remediation case study.
-- Standalone technical report and executive summary.
-- Expanded trusted-release and rollback validation where not already covered by
-  existing release evidence.
-- Runtime image-signature admission enforcement.
-- Automated policy-exception expiry.
-
-Controlled secret-detection testing is no longer deferred. It was completed and
-expanded during Phase 6 — Secrets Security Hardening.
+---
 
 ## Evidence Standard
 
-For new validation results, record:
+For new security validation, evidence should record where applicable:
 
-- Commit SHA and workflow run URL.
-- Image identity where applicable.
-- Tool version and scan scope.
-- Expected and actual results.
-- Report or relevant log.
-- Limitations and unresolved findings.
+- commit SHA
+- workflow run
+- pull request
+- tool version
+- image identity
+- scan scope
+- expected result
+- actual result
+- retained report or relevant output
+- limitations
+- unresolved findings
 
-Financial savings, incident reduction, and remediation-speed
-improvements have not been measured.
+Evidence should demonstrate what was actually validated rather than imply broader guarantees.
+
+---
+
+## Portfolio Positioning
+
+This project demonstrates practical experience with:
+
+- Java application security
+- GitHub Actions
+- CI/CD security
+- SAST
+- DAST
+- SCA
+- secret scanning
+- container security
+- vulnerability management
+- SBOMs
+- supply-chain security
+- policy-as-code
+- signed releases
+- threat modeling
+- risk assessment
+- AI-assisted security analysis
+- security metrics
+- control validation
+- technical documentation
+
+The project is intended to demonstrate applied DevSecOps and cybersecurity engineering skills through reproducible technical evidence.
+
+---
+
+## Financial and Operational Claims
+
+Financial savings, incident reduction, operational efficiency improvements, and remediation-speed improvements have not been formally measured in this educational project.
+
+No unsupported business-impact metrics should be inferred from the technical validation results.
+
+---
 
 ## Related Documentation
 
 - [README](README.md)
-- [Architecture](docs/architecture.md)
+- [Security Architecture](docs/architecture.md)
+- [Threat Model](docs/threat-model.md)
+- [Risk and Security-Control Mapping](docs/risk-control-mapping.md)
+- [Security Metrics](docs/METRICS.md)
 - [Policies](docs/POLICIES.md)
-- [Architecture decision records](docs/adr/README.md)
+- [Architecture Decision Records](docs/adr/README.md)
