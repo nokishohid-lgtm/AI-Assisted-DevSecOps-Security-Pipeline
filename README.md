@@ -1,8 +1,38 @@
 # AI-Assisted DevSecOps Security Pipeline
 
+**Status:** Completed — 15-phase security engineering project formally closed
+
 **Live Demo:** https://ai-assisted-devsecops-security-pipeline.onrender.com
 
-**Pipeline Status:** ![CI](https://github.com/nokishohid-lgtm/AI-Assisted-DevSecOps-Security-Pipeline/actions/workflows/ci.yml/badge.svg)
+A production-style DevSecOps security portfolio project demonstrating secure CI/CD, application security testing, container security, software supply-chain security, policy enforcement, AI-assisted security triage, threat modeling, risk mapping, and security metrics.
+
+The application uses a Java API, background worker, PostgreSQL, Docker, and GitHub Actions. Security controls are integrated throughout the software-delivery lifecycle rather than applied only at the end.
+
+## Security Highlights
+
+- **SAST:** CodeQL with controlled security regression validation
+- **Secrets Detection:** Gitleaks with remediation and regression testing
+- **SCA:** OWASP Dependency-Check
+- **Container Security:** Trivy scanning and runtime hardening
+- **DAST:** OWASP ZAP API security testing
+- **SBOM:** CycloneDX inventories for API and worker images
+- **Policy as Code:** Conftest and Rego
+- **Supply-Chain Security:** GHCR, provenance, Cosign signing, and verification
+- **GitHub Actions Hardening:** 45/45 third-party action references pinned to immutable commit SHAs
+- **AI-Assisted Security Triage:** Advisory CodeQL triage with safeguards and mandatory human review
+- **Threat Modeling:** STRIDE-based threat analysis and trust-boundary documentation
+- **Risk Management:** Risk-to-control mapping, CIA mapping, residual-risk documentation, and risk-acceptance procedures
+- **Security Metrics:** Automated security-report aggregation and reliability validation
+
+## Final Project Status
+
+- 15 security engineering phases completed
+- Final threat model completed
+- Security architecture documented
+- Risk and control mapping completed
+- Trusted release controls validated
+- Final pull-request and main-branch validation completed
+- Project formally closed
 
 ## Executive Summary
 
