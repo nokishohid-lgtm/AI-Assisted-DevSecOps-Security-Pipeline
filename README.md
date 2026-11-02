@@ -46,7 +46,7 @@ The current project validates the following areas:
 | ZAP coverage | Performs active API security testing against the running Compose stack |
 | CodeQL | Performs static source-code security analysis |
 | Gitleaks | Detects hardcoded secrets and validates project-specific secret classes through deterministic regression testing |
-| AI triage | Advisory review of CodeQL findings; accuracy validation remains separate work |
+| AI triage | Advisory review of CodeQL findings with validation safeguards, controlled source context, and human-review fallback |
 
 Security scan results describe specific builds and test runs. They are not a
 guarantee that the application is free of vulnerabilities.
@@ -617,8 +617,8 @@ Important limitations include:
 
 | Limitation | Current state |
 |---|---|
-| AI triage accuracy | Not yet formally evaluated against a labeled test set |
-| Trusted dual-image releases | Additional release validation remains planned |
+| AI triage accuracy | Advisory output is intentionally non-authoritative and requires human review; production-grade model benchmarking is outside this lab scope |
+| Trusted dual-image releases | API and worker release images are published through the trusted release workflow with SBOM, provenance, signing, and verification controls |
 | Production secrets management | Development credentials are used in the local Compose lab |
 | Kubernetes policy coverage | Must be verified separately from Dockerfile policy checks |
 | Resource limits | Not comprehensively defined for every service |
