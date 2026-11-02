@@ -25,9 +25,9 @@ TRIVY_REPORT = (
 ZAP_REPORT = ROOT / "zap-reports" / "zap-phase9-policy-report.json"
 
 
-def load_json(path: Path):
+def load_json_optional(path: Path):
     if not path.exists():
-        raise FileNotFoundError(f"Missing report: {path}")
+        return None
 
     with path.open("r", encoding="utf-8-sig") as file:
         return json.load(file)
@@ -48,9 +48,17 @@ def normalize_severity(value):
     return aliases.get(value, value)
 
 
+def unavailable_metrics(report_type, path):
+    return {
+        "report_type": report_type,
+        "available": False,
+        "source": str(path.relative_to(ROOT)),
+        "findings_total": 0,
+    }
+
+
 def collect_dependency_check_metrics(data):
     counts = Counter()
-
     dependencies = data.get("dependencies", [])
 
     for dependency in dependencies:
@@ -62,6 +70,7 @@ def collect_dependency_check_metrics(data):
 
     return {
         "report_type": "Dependency-Check",
+        "available": True,
         "dependencies_scanned": len(dependencies),
         "findings_total": sum(counts.values()),
         "severity": dict(sorted(counts.items())),
@@ -96,6 +105,7 @@ def collect_trivy_metrics(data):
 
     return {
         "report_type": "Trivy",
+        "available": True,
         "result_targets": len(results),
         "vulnerabilities": vulnerability_count,
         "misconfigurations": misconfiguration_count,
@@ -132,7 +142,6 @@ def collect_zap_metrics(data):
             counts[normalize_severity(risk)] += 1
 
     insights = data.get("insights") or []
-
     insight_counts = Counter()
 
     for insight in insights:
@@ -148,7 +157,9 @@ def collect_zap_metrics(data):
 
     return {
         "report_type": "OWASP ZAP",
+        "available": True,
         "alerts_total": alert_count,
+        "findings_total": alert_count,
         "alert_severity": dict(sorted(counts.items())),
         "insights_total": sum(insight_counts.values()),
         "insight_level": dict(sorted(insight_counts.items())),
@@ -172,15 +183,35 @@ def print_section(title, metrics):
 
 def main():
     try:
-        dependency_check_data = load_json(DEPENDENCY_CHECK_REPORT)
-        trivy_data = load_json(TRIVY_REPORT)
-        zap_data = load_json(ZAP_REPORT)
+        dependency_data = load_json_optional(DEPENDENCY_CHECK_REPORT)
+        trivy_data = load_json_optional(TRIVY_REPORT)
+        zap_data = load_json_optional(ZAP_REPORT)
 
-        dependency_metrics = collect_dependency_check_metrics(
-            dependency_check_data
-        )
-        trivy_metrics = collect_trivy_metrics(trivy_data)
-        zap_metrics = collect_zap_metrics(zap_data)
+        if dependency_data is None:
+            dependency_metrics = unavailable_metrics(
+                "Dependency-Check",
+                DEPENDENCY_CHECK_REPORT,
+            )
+        else:
+            dependency_metrics = collect_dependency_check_metrics(
+                dependency_data
+            )
+
+        if trivy_data is None:
+            trivy_metrics = unavailable_metrics(
+                "Trivy",
+                TRIVY_REPORT,
+            )
+        else:
+            trivy_metrics = collect_trivy_metrics(trivy_data)
+
+        if zap_data is None:
+            zap_metrics = unavailable_metrics(
+                "OWASP ZAP",
+                ZAP_REPORT,
+            )
+        else:
+            zap_metrics = collect_zap_metrics(zap_data)
 
         print("=== PHASE 14 SECURITY METRICS ===")
 
@@ -189,23 +220,33 @@ def main():
         print_section("OWASP ZAP", zap_metrics)
 
         combined_total = (
-            dependency_metrics["findings_total"]
-            + trivy_metrics["findings_total"]
-            + zap_metrics["alerts_total"]
+            dependency_metrics.get("findings_total", 0)
+            + trivy_metrics.get("findings_total", 0)
+            + zap_metrics.get("findings_total", 0)
+        )
+
+        available_reports = sum(
+            1
+            for metrics in (
+                dependency_metrics,
+                trivy_metrics,
+                zap_metrics,
+            )
+            if metrics.get("available") is True
         )
 
         print("\n=== AGGREGATE ===")
+        print(f"Available reports: {available_reports}/3")
         print(f"Combined security findings: {combined_total}")
         print("PASS: Security metrics collected successfully.")
 
         return 0
 
-    except FileNotFoundError as error:
-        print(f"ERROR: {error}", file=sys.stderr)
-        return 2
-
     except json.JSONDecodeError as error:
-        print(f"ERROR: Invalid JSON report: {error}", file=sys.stderr)
+        print(
+            f"ERROR: Invalid JSON report: {error}",
+            file=sys.stderr,
+        )
         return 3
 
     except Exception as error:

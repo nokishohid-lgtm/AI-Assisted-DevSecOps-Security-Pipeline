@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "metrics" / "collect-security-metrics.py"
+ZAP_REPORT = ROOT / "zap-reports" / "zap-phase9-policy-report.json"
 
 
 def run_script():
@@ -65,7 +66,6 @@ def test_deterministic_output():
 
     assert first.returncode == 0
     assert second.returncode == 0
-
     assert first.stdout == second.stdout, (
         "Metrics output changed between identical executions"
     )
@@ -73,11 +73,47 @@ def test_deterministic_output():
     print("PASS: collector output is deterministic")
 
 
+def test_missing_zap_report_is_nonfatal():
+    if not ZAP_REPORT.exists():
+        result = run_script()
+
+        assert result.returncode == 0
+        assert "available: False" in result.stdout
+        assert "Available reports:" in result.stdout
+
+        print("PASS: missing ZAP report handled safely")
+        return
+
+    backup = ZAP_REPORT.with_suffix(".json.phase14-backup")
+
+    ZAP_REPORT.rename(backup)
+
+    try:
+        result = run_script()
+
+        assert result.returncode == 0, (
+            f"Collector failed when ZAP report was missing\n"
+            f"STDOUT:\n{result.stdout}\n"
+            f"STDERR:\n{result.stderr}"
+        )
+
+        assert "=== OWASP ZAP ===" in result.stdout
+        assert "available: False" in result.stdout
+        assert "Available reports: 2/3" in result.stdout
+        assert "PASS: Security metrics collected successfully." in result.stdout
+
+        print("PASS: missing ZAP report handled safely")
+
+    finally:
+        backup.rename(ZAP_REPORT)
+
+
 def main():
     test_script_exists()
     test_collector_success()
     test_no_traceback()
     test_deterministic_output()
+    test_missing_zap_report_is_nonfatal()
 
     print(
         "PASS: Phase 14 security metrics regression validation completed"
