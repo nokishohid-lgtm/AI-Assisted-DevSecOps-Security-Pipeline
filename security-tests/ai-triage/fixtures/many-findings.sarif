@@ -1,0 +1,304 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "CodeQL",
+          "rules": [
+            {
+              "id": "java/test-rule-1",
+              "help": {
+                "text": "Controlled help text 1"
+              }
+            },
+            {
+              "id": "java/test-rule-2",
+              "help": {
+                "text": "Controlled help text 2"
+              }
+            },
+            {
+              "id": "java/test-rule-3",
+              "help": {
+                "text": "Controlled help text 3"
+              }
+            },
+            {
+              "id": "java/test-rule-4",
+              "help": {
+                "text": "Controlled help text 4"
+              }
+            },
+            {
+              "id": "java/test-rule-5",
+              "help": {
+                "text": "Controlled help text 5"
+              }
+            },
+            {
+              "id": "java/test-rule-6",
+              "help": {
+                "text": "Controlled help text 6"
+              }
+            },
+            {
+              "id": "java/test-rule-7",
+              "help": {
+                "text": "Controlled help text 7"
+              }
+            },
+            {
+              "id": "java/test-rule-8",
+              "help": {
+                "text": "Controlled help text 8"
+              }
+            },
+            {
+              "id": "java/test-rule-9",
+              "help": {
+                "text": "Controlled help text 9"
+              }
+            },
+            {
+              "id": "java/test-rule-10",
+              "help": {
+                "text": "Controlled help text 10"
+              }
+            },
+            {
+              "id": "java/test-rule-11",
+              "help": {
+                "text": "Controlled help text 11"
+              }
+            },
+            {
+              "id": "java/test-rule-12",
+              "help": {
+                "text": "Controlled help text 12"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "java/test-rule-1",
+          "message": {
+            "text": "Controlled Phase 13 finding 1"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-2",
+          "message": {
+            "text": "Controlled Phase 13 finding 2"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-3",
+          "message": {
+            "text": "Controlled Phase 13 finding 3"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 3
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-4",
+          "message": {
+            "text": "Controlled Phase 13 finding 4"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 4
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-5",
+          "message": {
+            "text": "Controlled Phase 13 finding 5"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 5
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-6",
+          "message": {
+            "text": "Controlled Phase 13 finding 6"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 6
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-7",
+          "message": {
+            "text": "Controlled Phase 13 finding 7"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 7
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-8",
+          "message": {
+            "text": "Controlled Phase 13 finding 8"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-9",
+          "message": {
+            "text": "Controlled Phase 13 finding 9"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 9
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-10",
+          "message": {
+            "text": "Controlled Phase 13 finding 10"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 10
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-11",
+          "message": {
+            "text": "Controlled Phase 13 finding 11"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "java/test-rule-12",
+          "message": {
+            "text": "Controlled Phase 13 finding 12"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/main/java/com/noki/Test.java"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
